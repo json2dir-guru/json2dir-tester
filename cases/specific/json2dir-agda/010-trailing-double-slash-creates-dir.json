@@ -1,0 +1,17 @@
+{
+  "description": "Object member 'folder//' creates directory 'folder'",
+  "section": "4.2.1",
+  "level": "core",
+  "source": "json2dir-agda tests/test_cli.py::test_normalized_names_keep_original_io_spelling",
+  "only": [
+    "json2dir-agda"
+  ],
+  "input": {
+    "folder//": {}
+  },
+  "expect": {
+    "tree": {
+      "folder": {}
+    }
+  }
+}

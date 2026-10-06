@@ -1,0 +1,10 @@
+{
+  "description": "An extreme number member value (1.7976931348623157e308) is rejected",
+  "section": "4.5",
+  "level": "core",
+  "source": "json2dir-scheme tests/test_cli.py::test_unsupported_entry_values[1.7976931348623157e308]",
+  "input_text": "{\"foo\":1.7976931348623157e308}",
+  "expect": {
+    "error": true
+  }
+}

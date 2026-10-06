@@ -1,0 +1,15 @@
+{
+  "description": "A link target containing NUL cannot be created and is rejected",
+  "section": "10",
+  "level": "core",
+  "source": "json2dir-llvm-IR tests/test_json2dir.py::test_nul_in_paths",
+  "input": {
+    "link": [
+      "link",
+      "x\u0000y"
+    ]
+  },
+  "expect": {
+    "error": true
+  }
+}

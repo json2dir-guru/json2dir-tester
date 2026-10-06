@@ -1,0 +1,28 @@
+{
+  "description": "With umask 000 files get mode 0666 and scripts 0777",
+  "section": "4.4.2",
+  "level": "core",
+  "source": "json2dir-llvm-IR tests/test_json2dir.py::test_script_umask",
+  "umask": "000",
+  "input": {
+    "f": "data",
+    "s": [
+      "script",
+      "data"
+    ]
+  },
+  "expect": {
+    "tree": {
+      "f": [
+        "mode",
+        "0666",
+        "data"
+      ],
+      "s": [
+        "mode",
+        "0777",
+        "data"
+      ]
+    }
+  }
+}

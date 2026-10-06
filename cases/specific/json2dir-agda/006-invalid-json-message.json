@@ -1,0 +1,14 @@
+{
+  "description": "Malformed JSON is reported with the reference diagnostic",
+  "section": "3",
+  "level": "core",
+  "source": "json2dir-agda tests/test_cli.py::test_invalid_json_has_no_effects",
+  "only": [
+    "json2dir-agda"
+  ],
+  "input_text": "{\"x\":false,}",
+  "expect": {
+    "error": true,
+    "stderr_contains": "couldn't convert stdin to JSON"
+  }
+}

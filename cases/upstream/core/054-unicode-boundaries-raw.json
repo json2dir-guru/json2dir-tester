@@ -1,0 +1,12 @@
+{
+  "description": "UTF-8 boundary code points written raw are encoded exactly",
+  "section": "4.3",
+  "level": "core",
+  "source": "json2dir-agda tests/test_cli.py::test_unicode_boundaries; json2dir-F- tests/test_cli.py::CliTests::test_every_unicode_boundary",
+  "input_text": "{\"unicode\": \"\\u0000߿ࠀ퟿￿𐀀􏿿\"}",
+  "expect": {
+    "tree": {
+      "unicode": "\u0000߿ࠀ퟿￿𐀀􏿿"
+    }
+  }
+}

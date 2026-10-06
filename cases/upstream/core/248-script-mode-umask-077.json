@@ -1,0 +1,22 @@
+{
+  "description": "Under umask 077 a script gets mode 0711 (0666 & ~umask | 0111)",
+  "section": "4.4.2",
+  "level": "core",
+  "source": "json2dir-scheme tests/test_cli.py::test_script_permissions_respect_umask_then_add_execute_bits[mask=077]",
+  "umask": "077",
+  "input": {
+    "foo": [
+      "script",
+      ""
+    ]
+  },
+  "expect": {
+    "tree": {
+      "foo": [
+        "mode",
+        "0711",
+        ""
+      ]
+    }
+  }
+}

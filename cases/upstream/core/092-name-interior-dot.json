@@ -1,0 +1,12 @@
+{
+  "description": "Name 'foo/./bar' is rejected",
+  "section": "4.2.1",
+  "level": "core",
+  "source": "json2dir-ats tests/test_cli.py::Contract::test_paths[invalid 'foo/./bar']",
+  "input": {
+    "foo/./bar": "x"
+  },
+  "expect": {
+    "error": true
+  }
+}

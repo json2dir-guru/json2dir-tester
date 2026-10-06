@@ -1,0 +1,15 @@
+{
+  "description": "folder// with an object value creates the directory folder",
+  "section": "4.2.1",
+  "level": "core",
+  "source": "json2dir-F- tests/test_cli.py::CliTests::test_rust_path_normalization",
+  "input": {
+    "folder//": {}
+  },
+  "expect": {
+    "tree": {
+      "folder": {}
+    },
+    "accept_error": true
+  }
+}

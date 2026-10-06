@@ -1,0 +1,12 @@
+{
+  "description": "A name ending in /.. is rejected",
+  "section": "4.2.1",
+  "level": "core",
+  "source": "json2dir-lean Spec.lean parseName (\"a/..\" -> multipleComponents)",
+  "input": {
+    "a/..": "x"
+  },
+  "expect": {
+    "error": true
+  }
+}

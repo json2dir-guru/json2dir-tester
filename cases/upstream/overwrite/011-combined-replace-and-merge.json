@@ -1,0 +1,65 @@
+{
+  "description": "File, dir, file-link, dangling-link and dir-link entries are replaced or merged correctly in one run",
+  "section": "5",
+  "level": "overwrite",
+  "source": "json2dir-ats tests/test_cli.py::Contract::test_replacement_and_directory_merge[combined fixture]",
+  "setup": {
+    "file": [
+      "mode",
+      "0700",
+      "old"
+    ],
+    "dir": {
+      "keep": "keep"
+    },
+    "target": "untouched",
+    "alias": [
+      "link",
+      "target"
+    ],
+    "dangling": [
+      "link",
+      "nowhere"
+    ],
+    "linkdir": [
+      "link",
+      "dir"
+    ]
+  },
+  "input": {
+    "file": "new",
+    "dir": {
+      "new": "n"
+    },
+    "alias": "replaced",
+    "dangling": [
+      "link",
+      "target"
+    ],
+    "linkdir": {
+      "own": "x"
+    }
+  },
+  "expect": {
+    "tree": {
+      "file": [
+        "mode",
+        "0644",
+        "new"
+      ],
+      "dir": {
+        "keep": "keep",
+        "new": "n"
+      },
+      "target": "untouched",
+      "alias": "replaced",
+      "dangling": [
+        "link",
+        "target"
+      ],
+      "linkdir": {
+        "own": "x"
+      }
+    }
+  }
+}

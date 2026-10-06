@@ -1,0 +1,16 @@
+{
+  "description": "With duplicate names the last value wins even if earlier values are invalid (or the document is rejected)",
+  "section": "4.2",
+  "level": "core",
+  "source": "json2dir-scheme tests/test_cli.py::test_duplicate_keys_last_value_wins",
+  "input_text": "{\"foo\":3,\"foo\":\"last\",\"dir\":{\"a\":false,\"a\":\"ok\"}}",
+  "expect": {
+    "tree": {
+      "foo": "last",
+      "dir": {
+        "a": "ok"
+      }
+    },
+    "accept_error": true
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "description": "Merging, replacing a file and replacing a symlink in one run leave unrelated entries untouched",
+  "section": "5",
+  "level": "overwrite",
+  "source": "json2dir-llvm-IR tests/test_json2dir.py::test_overwrite_and_preserve_unrelated_entries",
+  "setup": {
+    "dir": {
+      "keep": "keep"
+    },
+    "f": "old",
+    "outside": "untouched",
+    "link": [
+      "link",
+      "outside"
+    ]
+  },
+  "input": {
+    "dir": {
+      "new": "new"
+    },
+    "f": "new",
+    "link": "new"
+  },
+  "expect": {
+    "tree": {
+      "dir": {
+        "keep": "keep",
+        "new": "new"
+      },
+      "f": "new",
+      "outside": "untouched",
+      "link": "new"
+    }
+  }
+}

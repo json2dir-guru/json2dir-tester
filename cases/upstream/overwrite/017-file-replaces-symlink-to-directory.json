@@ -1,0 +1,26 @@
+{
+  "description": "A regular file replaces an existing symlink to a directory without touching the link target directory",
+  "section": "5.3",
+  "level": "overwrite",
+  "source": "json2dir-nix tests/cli.py::CliTests::test_replacement_matrix[old=link, new=file]",
+  "setup": {
+    "target": {
+      "untouched": "safe"
+    },
+    "entry": [
+      "link",
+      "target"
+    ]
+  },
+  "input": {
+    "entry": "new"
+  },
+  "expect": {
+    "tree": {
+      "target": {
+        "untouched": "safe"
+      },
+      "entry": "new"
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "description": "An invalid value (false) for a name that exists as a file makes the run fail (partial results are not checked)",
+  "section": "4.5",
+  "level": "core",
+  "source": "json2dir-bimbo tests/test_json2dir.py::Json2DirTests::test_sorted_keys_and_partial_semantic_failure",
+  "setup": {
+    "b": "old"
+  },
+  "input_text": "{\"z\":\"later\",\"b\":false,\"a\":\"first\"}",
+  "expect": {
+    "error": true
+  }
+}

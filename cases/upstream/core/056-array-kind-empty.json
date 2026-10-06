@@ -1,0 +1,15 @@
+{
+  "description": "Array kind '' is rejected",
+  "section": "4.4",
+  "level": "core",
+  "source": "json2dir-ats tests/test_cli.py::Contract::test_invalid_entries[kind '']",
+  "input": {
+    "file": [
+      "",
+      "payload"
+    ]
+  },
+  "expect": {
+    "error": true
+  }
+}

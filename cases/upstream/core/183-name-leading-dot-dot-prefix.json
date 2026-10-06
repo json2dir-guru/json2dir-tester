@@ -1,0 +1,16 @@
+{
+  "description": "Names starting with '..' or containing a backslash are ordinary names",
+  "section": "4.2.1",
+  "level": "core",
+  "source": "json2dir-llvm-IR tests/test_json2dir.py::test_path_validation",
+  "input": {
+    "back\\slash": "ok",
+    "..normal": "ok"
+  },
+  "expect": {
+    "tree": {
+      "back\\slash": "ok",
+      "..normal": "ok"
+    }
+  }
+}

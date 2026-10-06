@@ -1,0 +1,14 @@
+{
+  "description": "An out-of-range number (1.7976931348623158e308) is a parse error even when a later duplicate overrides it",
+  "section": "3",
+  "level": "core",
+  "source": "json2dir-agda tests/test_cli.py::test_overflow_before_writes_and_duplicates",
+  "only": [
+    "json2dir-agda"
+  ],
+  "input_text": "{\"x\":1.7976931348623158e308,\"x\":\"last\"}",
+  "expect": {
+    "error": true,
+    "stderr_contains": "couldn't convert stdin to JSON"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "description": "A UTF-8 encoded surrogate (ED A0 80) is rejected",
+  "section": "3",
+  "level": "core",
+  "source": "json2dir-scheme tests/test_cli.py::test_invalid_utf8[b'{\"file\":\"\\xed\\xa0\\x80\"}']",
+  "input_base64": "eyJmaWxlIjoi7aCAIn0=",
+  "expect": {
+    "error": true
+  }
+}

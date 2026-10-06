@@ -1,0 +1,15 @@
+{
+  "description": "A link target containing NUL cannot be created and is rejected",
+  "section": "10",
+  "level": "core",
+  "source": "json2dir-agda tests/test_cli.py::test_nul_in_link_target",
+  "input": {
+    "link": [
+      "link",
+      "before\u0000after"
+    ]
+  },
+  "expect": {
+    "error": true
+  }
+}

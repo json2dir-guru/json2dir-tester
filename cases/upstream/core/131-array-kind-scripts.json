@@ -1,0 +1,15 @@
+{
+  "description": "Array kind \"scripts\" is rejected",
+  "section": "4.4",
+  "level": "core",
+  "source": "json2dir-llvm-IR tests/test_json2dir.py::test_array_shapes",
+  "input": {
+    "f": [
+      "scripts",
+      "x"
+    ]
+  },
+  "expect": {
+    "error": true
+  }
+}

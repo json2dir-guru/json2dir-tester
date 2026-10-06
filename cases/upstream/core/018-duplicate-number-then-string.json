@@ -1,0 +1,13 @@
+{
+  "description": "A duplicate name whose earlier value is a number: the last occurrence wins",
+  "section": "4.2",
+  "level": "core",
+  "source": "json2dir-agda tests/test_cli.py::test_duplicates_last_wins",
+  "input_text": "{\"x\":3,\"x\":\"last\"}",
+  "expect": {
+    "tree": {
+      "x": "last"
+    },
+    "accept_error": true
+  }
+}

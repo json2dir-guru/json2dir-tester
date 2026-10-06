@@ -1,0 +1,12 @@
+{
+  "description": "Member name 'foo/../bar' is rejected",
+  "section": "4.2.1",
+  "level": "core",
+  "source": "json2dir-llvm-IR tests/test_json2dir.py::test_path_validation",
+  "input": {
+    "foo/../bar": "no"
+  },
+  "expect": {
+    "error": true
+  }
+}

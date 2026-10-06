@@ -1,0 +1,13 @@
+{
+  "description": "A leading UTF-8 byte order mark is rejected (RFC 3 says a consumer MAY ignore it)",
+  "section": "3",
+  "level": "core",
+  "source": "json2dir-agda tests/test_cli.py::test_invalid_json_has_no_effects",
+  "only": [
+    "json2dir-agda"
+  ],
+  "input_base64": "77u/e30=",
+  "expect": {
+    "error": true
+  }
+}

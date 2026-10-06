@@ -1,0 +1,22 @@
+{
+  "description": "folder//./ naming an existing directory merges into it",
+  "section": "4.2.1",
+  "level": "overwrite",
+  "source": "json2dir-F- tests/test_cli.py::CliTests::test_rust_path_normalization",
+  "setup": {
+    "folder": {}
+  },
+  "input": {
+    "folder//./": {
+      "child": "x"
+    }
+  },
+  "expect": {
+    "tree": {
+      "folder": {
+        "child": "x"
+      }
+    },
+    "accept_error": true
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "description": "Invalid UTF-8 input (truncated in string) is rejected",
+  "section": "3",
+  "level": "core",
+  "source": "json2dir-agda tests/test_cli.py::test_invalid_utf8; json2dir-ats tests/test_cli.py::Contract::test_malformed_json_has_no_effects[b'{\"x\":\"\\xe2\\x82\"}']; json2dir-bimbo tests/test_json2dir.py::Json2DirTests::test_invalid_inputs; json2dir-F- tests/test_cli.py::CliTests::test_invalid_utf8",
+  "input_base64": "eyJ4Ijoi4oIifQ==",
+  "expect": {
+    "error": true
+  }
+}

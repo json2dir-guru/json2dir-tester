@@ -1,0 +1,50 @@
+{
+  "description": "Names and link targets with dashes, spaces, newlines and shell syntax are used literally",
+  "section": "4.4.1",
+  "level": "core",
+  "source": "json2dir-ats tests/test_cli.py::Contract::test_symlinks_and_literal_names",
+  "input": {
+    "-n": [
+      "link",
+      "--target with spaces"
+    ],
+    "back\\slash": "x",
+    ".dot": "y",
+    "broken": [
+      "link",
+      "../missing"
+    ],
+    "absolute": [
+      "link",
+      "/tmp"
+    ],
+    "line\nbreak": "z",
+    "shell$(echo nope)": [
+      "script",
+      "#!/bin/sh\nexit 0\n"
+    ]
+  },
+  "expect": {
+    "tree": {
+      "-n": [
+        "link",
+        "--target with spaces"
+      ],
+      "back\\slash": "x",
+      ".dot": "y",
+      "broken": [
+        "link",
+        "../missing"
+      ],
+      "absolute": [
+        "link",
+        "/tmp"
+      ],
+      "line\nbreak": "z",
+      "shell$(echo nope)": [
+        "script",
+        "#!/bin/sh\nexit 0\n"
+      ]
+    }
+  }
+}

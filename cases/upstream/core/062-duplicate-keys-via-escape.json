@@ -1,0 +1,13 @@
+{
+  "description": "Names are compared after unescaping: \"a\" and \"\\u0061\" are duplicates (last wins or rejection)",
+  "section": "4.2",
+  "level": "core",
+  "source": "json2dir-ats tests/test_cli.py::Contract::test_sorted_last_duplicate_wins[escaped duplicate]",
+  "input_text": "{\"a\": \"old\", \"\\u0061\": \"new\"}",
+  "expect": {
+    "tree": {
+      "a": "new"
+    },
+    "accept_error": true
+  }
+}

@@ -56,8 +56,14 @@ Each implementation is a file in [`implementations/`](implementations):
 
 ## Test cases
 
-[`cases/conformance`](cases/conformance) is the [conformance suite](https://github.com/kitsunoff/awesome-json2dir/tree/main/conformance) from awesome-json2dir (CC0), commit `eed169d`.
-The tester judges results exactly like its `run.py`:
+| Suite | Cases | Source |
+| --- | --- | --- |
+| `conformance` | 68 | The awesome-json2dir conformance suite (CC0), unchanged |
+| `upstream` | 289 | Converted from the test suites of json2dir, json2dir-zig, -scheme, -ats, -llvm-IR, -agda, -bimbo, -F-, -nix, -lean |
+| `specific/<impl>` | 119 | Same sources, but only valid for one implementation |
+
+See [cases/README.md](cases/README.md) for the format and its extensions.
+Results are judged exactly like the conformance suite's `run.py`:
 
 1. Success cases must exit with 0 and produce exactly the expected tree.
 2. Error cases must exit non-zero; the tree left behind is not checked.
@@ -66,6 +72,8 @@ The tester judges results exactly like its `run.py`:
 
 ## Results
 
-| Implementation | core | overwrite |
-| --- | --- | --- |
-| `json2dir` | 52/52 | 15/16 — `215-trailing-slash-does-not-follow-symlink`: the name `d/` writes through an existing symlink `d` |
+| Implementation | conformance | upstream | specific |
+| --- | --- | --- | --- |
+| `json2dir` | 67/68 | 289/289 | 2/2 |
+
+`json2dir` fails `conformance/overwrite/215-trailing-slash-does-not-follow-symlink`: the name `d/` writes through an existing symlink `d`.

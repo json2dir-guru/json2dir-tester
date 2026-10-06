@@ -1,0 +1,14 @@
+{
+  "description": "A nested '..' name fails and the diagnostic names the parent path ./parent/child",
+  "section": "4.2.1",
+  "level": "core",
+  "source": "json2dir-ats tests/test_cli.py::Contract::test_paths[nested ..]",
+  "only": [
+    "json2dir-ats"
+  ],
+  "input_text": "{\"parent\":{\"child\":{\"..\":\"escape\"}}}",
+  "expect": {
+    "error": true,
+    "stderr_contains": "./parent/child"
+  }
+}

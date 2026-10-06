@@ -1,0 +1,14 @@
+{
+  "description": "A name consisting of a single dash is a valid entry name",
+  "section": "4.2.1",
+  "level": "core",
+  "source": "json2dir-zig src/manifest.zig test \"validateName rejects garbage\" (accepts \"-\")",
+  "input": {
+    "-": "x"
+  },
+  "expect": {
+    "tree": {
+      "-": "x"
+    }
+  }
+}

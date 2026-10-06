@@ -1,0 +1,36 @@
+{
+  "description": "Shell metacharacters, control characters and Nix interpolation syntax in names, contents and link targets are written literally",
+  "section": "4.3",
+  "level": "core",
+  "source": "json2dir-nix tests/cli.py::CliTests::test_literal_bytes_and_names",
+  "input": {
+    "-option": "",
+    "'\"$(`touch injected`)\n": "'; $(touch injected); `touch injected`; %s\\n\n\n",
+    "unicode-Привет-🌍": "Привет 🌍\t\r\n\b\f\u0001",
+    "back\\slash": "\\u0000 is literal, as is ${builtins.abort \"oops\"}",
+    "script": [
+      "script",
+      "#!/bin/sh\nprintf '%s' '$HOME'\n\n"
+    ],
+    "link": [
+      "link",
+      "-strange ' target\n"
+    ]
+  },
+  "expect": {
+    "tree": {
+      "-option": "",
+      "'\"$(`touch injected`)\n": "'; $(touch injected); `touch injected`; %s\\n\n\n",
+      "unicode-Привет-🌍": "Привет 🌍\t\r\n\b\f\u0001",
+      "back\\slash": "\\u0000 is literal, as is ${builtins.abort \"oops\"}",
+      "script": [
+        "script",
+        "#!/bin/sh\nprintf '%s' '$HOME'\n\n"
+      ],
+      "link": [
+        "link",
+        "-strange ' target\n"
+      ]
+    }
+  }
+}

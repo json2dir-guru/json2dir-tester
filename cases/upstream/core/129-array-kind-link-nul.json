@@ -1,0 +1,15 @@
+{
+  "description": "Array kind \"link\\u0000\" is rejected",
+  "section": "4.4",
+  "level": "core",
+  "source": "json2dir-llvm-IR tests/test_json2dir.py::test_array_shapes",
+  "input": {
+    "f": [
+      "link\u0000",
+      "x"
+    ]
+  },
+  "expect": {
+    "error": true
+  }
+}

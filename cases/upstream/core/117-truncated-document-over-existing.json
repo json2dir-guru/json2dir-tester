@@ -1,0 +1,13 @@
+{
+  "description": "A truncated document fails even though its first member is valid and exists on disk",
+  "section": "6",
+  "level": "core",
+  "source": "json2dir-bimbo tests/test_json2dir.py::Json2DirTests::test_entire_json_parsed_before_writes",
+  "setup": {
+    "a": "old"
+  },
+  "input_text": "{\"a\":\"new\",\"b\":",
+  "expect": {
+    "error": true
+  }
+}

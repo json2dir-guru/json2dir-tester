@@ -1,0 +1,10 @@
+{
+  "description": "Two JSON values separated by a space are rejected",
+  "section": "3",
+  "level": "core",
+  "source": "json2dir src/tests.rs::test #3; json2dir-agda tests/test_cli.py::test_invalid_json_has_no_effects; json2dir-ats tests/test_cli.py::Contract::test_malformed_json_has_no_effects[b'3 4']; json2dir-scheme tests/test_cli.py::test_invalid_json_has_no_side_effects['3 4']",
+  "input_text": "3 4",
+  "expect": {
+    "error": true
+  }
+}

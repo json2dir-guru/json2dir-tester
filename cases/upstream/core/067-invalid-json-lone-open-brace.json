@@ -1,0 +1,10 @@
+{
+  "description": "Malformed JSON '{' is rejected",
+  "section": "3",
+  "level": "core",
+  "source": "json2dir-ats tests/test_cli.py::Contract::test_malformed_json_has_no_effects[b'{']; json2dir-scheme tests/test_cli.py::test_invalid_json_has_no_side_effects['{']",
+  "input_text": "{",
+  "expect": {
+    "error": true
+  }
+}

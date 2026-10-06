@@ -1,0 +1,12 @@
+{
+  "description": "Member name 'a/./b' keeps two components after dropping empty and '.' parts and is rejected",
+  "section": "4.2.1",
+  "level": "core",
+  "source": "json2dir-agda src/Json2dir/Spec.agda::parseName; json2dir-lean Spec.lean parseName (\"a/./b\" -> multipleComponents)",
+  "input": {
+    "a/./b": "x"
+  },
+  "expect": {
+    "error": true
+  }
+}

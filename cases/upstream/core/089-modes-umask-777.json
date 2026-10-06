@@ -1,0 +1,28 @@
+{
+  "description": "Under umask 777 files get 0000 and scripts 0111",
+  "section": "4.4.2",
+  "level": "core",
+  "source": "json2dir-ats tests/test_cli.py::Contract::test_script_modes_respect_umask[mask=777]",
+  "umask": "777",
+  "input": {
+    "file": "",
+    "script": [
+      "script",
+      ""
+    ]
+  },
+  "expect": {
+    "tree": {
+      "file": [
+        "mode",
+        "0000",
+        ""
+      ],
+      "script": [
+        "mode",
+        "0111",
+        ""
+      ]
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "description": "Malformed JSON '{\"a\": \"unfinished}' is rejected",
+  "section": "3",
+  "level": "core",
+  "source": "json2dir-scheme tests/test_cli.py::test_invalid_json_has_no_side_effects['{\"a\": \"unfinished}']",
+  "input_text": "{\"a\": \"unfinished}",
+  "expect": {
+    "error": true
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "description": "An invalid member fails and the diagnostic names its path \"./m\" (source also asserts only \"a\" was created)",
+  "section": "6",
+  "level": "core",
+  "source": "json2dir-scheme tests/test_cli.py::test_sorted_order_and_partial_changes",
+  "only": [
+    "json2dir-scheme"
+  ],
+  "input_text": "{\"z\":\"never\",\"m\":null,\"a\":\"created\"}",
+  "expect": {
+    "error": true,
+    "stderr_contains": "\"./m\"",
+    "stdout_empty": true
+  }
+}

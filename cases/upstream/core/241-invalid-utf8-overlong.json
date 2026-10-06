@@ -1,0 +1,10 @@
+{
+  "description": "An overlong UTF-8 sequence in a string is rejected",
+  "section": "3",
+  "level": "core",
+  "source": "json2dir-scheme tests/test_cli.py::test_invalid_utf8[b'{\"file\":\"\\xc0\\xaf\"}']",
+  "input_base64": "eyJmaWxlIjoiwK8ifQ==",
+  "expect": {
+    "error": true
+  }
+}

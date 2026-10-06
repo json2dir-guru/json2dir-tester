@@ -1,0 +1,13 @@
+{
+  "description": "An unescaped NUL byte inside a JSON string is invalid JSON and is rejected",
+  "section": "3",
+  "level": "core",
+  "source": "json2dir-nix tests/cli.py::CliTests::test_invalid_input_does_not_mutate",
+  "setup": {
+    "a": "old"
+  },
+  "input_base64": "eyJ4IjoicmF3AG51bCJ9",
+  "expect": {
+    "error": true
+  }
+}

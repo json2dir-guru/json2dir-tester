@@ -1,0 +1,17 @@
+{
+  "description": "Any argument (--help) makes the command fail with a usage message",
+  "section": "7",
+  "level": "cli",
+  "source": "json2dir-bimbo tests/test_json2dir.py::Json2DirTests::test_arguments",
+  "only": [
+    "json2dir-bimbo"
+  ],
+  "args": [
+    "--help"
+  ],
+  "input": {},
+  "expect": {
+    "error": true,
+    "stderr_contains": "usage:"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "description": "Malformed JSON is reported with the reference diagnostic",
+  "section": "3",
+  "level": "core",
+  "source": "json2dir-llvm-IR tests/test_json2dir.py::test_invalid_json_never_writes",
+  "only": [
+    "json2dir-llvm-IR"
+  ],
+  "input_text": "{\"a\":\"ok\",}",
+  "expect": {
+    "error": true,
+    "stderr_contains": "couldn't convert stdin to JSON"
+  }
+}

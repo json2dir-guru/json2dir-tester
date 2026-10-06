@@ -1,0 +1,20 @@
+{
+  "description": "A string member replaces a pre-existing symlink to / instead of following it",
+  "section": "5.3",
+  "level": "overwrite",
+  "source": "json2dir-zig src/manifest.zig test \"a pre-existing symlink at an entry path is replaced, not followed\" (also nix/smoke.nix step 8)",
+  "setup": {
+    "f": [
+      "link",
+      "/"
+    ]
+  },
+  "input": {
+    "f": "safe"
+  },
+  "expect": {
+    "tree": {
+      "f": "safe"
+    }
+  }
+}

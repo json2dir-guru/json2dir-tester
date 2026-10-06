@@ -1,0 +1,10 @@
+{
+  "description": "An invalid UTF-8 byte after the document is rejected",
+  "section": "3",
+  "level": "core",
+  "source": "json2dir-scheme tests/test_cli.py::test_invalid_utf8[b'{}\\xff']",
+  "input_base64": "e33/",
+  "expect": {
+    "error": true
+  }
+}

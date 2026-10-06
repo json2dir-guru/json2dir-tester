@@ -1,0 +1,26 @@
+{
+  "description": "A string member replaces an existing directory link without touching its target",
+  "section": "5.3",
+  "level": "overwrite",
+  "source": "json2dir-scheme tests/test_cli.py::test_symlinks_are_unlinked_without_touching_targets[kind=directory-link, value=\"new\"]",
+  "setup": {
+    "target": {
+      "keep": "untouched"
+    },
+    "foo": [
+      "link",
+      "target"
+    ]
+  },
+  "input": {
+    "foo": "new"
+  },
+  "expect": {
+    "tree": {
+      "target": {
+        "keep": "untouched"
+      },
+      "foo": "new"
+    }
+  }
+}

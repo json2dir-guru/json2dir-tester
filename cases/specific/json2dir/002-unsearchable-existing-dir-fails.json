@@ -1,0 +1,23 @@
+{
+  "description": "An empty object over an existing directory without search permission fails (the reference changes into it)",
+  "section": "5.1",
+  "level": "overwrite",
+  "source": "json2dir src/tests.rs::test_unix #6 (MakeUnexecutableDir)",
+  "only": [
+    "json2dir"
+  ],
+  "requires_non_root": true,
+  "setup": {
+    "foo": [
+      "dirmode",
+      "0600",
+      {}
+    ]
+  },
+  "input": {
+    "foo": {}
+  },
+  "expect": {
+    "error": true
+  }
+}

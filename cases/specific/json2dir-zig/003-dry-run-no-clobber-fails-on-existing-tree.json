@@ -1,0 +1,26 @@
+{
+  "description": "--dry-run with --no-clobber fails when the document names existing entries, like a real run would",
+  "section": "7",
+  "level": "cli",
+  "source": "json2dir-zig src/manifest.zig test \"dry-run + no-clobber is faithful against an existing tree\" (second half)",
+  "only": [
+    "json2dir-zig"
+  ],
+  "args": [
+    "--dry-run",
+    "--no-clobber"
+  ],
+  "setup": {
+    "d": {
+      "x": "y"
+    }
+  },
+  "input": {
+    "d": {
+      "x": "y"
+    }
+  },
+  "expect": {
+    "error": true
+  }
+}

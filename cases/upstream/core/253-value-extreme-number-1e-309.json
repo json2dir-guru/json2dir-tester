@@ -1,0 +1,10 @@
+{
+  "description": "An extreme number member value (1e-309) is rejected",
+  "section": "4.5",
+  "level": "core",
+  "source": "json2dir-scheme tests/test_cli.py::test_unsupported_entry_values[1e-309]",
+  "input_text": "{\"foo\":1e-309}",
+  "expect": {
+    "error": true
+  }
+}

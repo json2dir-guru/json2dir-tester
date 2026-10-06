@@ -1,0 +1,15 @@
+{
+  "description": "A symlink target containing NUL cannot be created and fails",
+  "section": "4.4.1",
+  "level": "core",
+  "source": "json2dir-scheme tests/test_cli.py::test_nul_in_filename_or_link_target_is_a_clean_error[link target with NUL]",
+  "input": {
+    "foo": [
+      "link",
+      "bad\u0000target"
+    ]
+  },
+  "expect": {
+    "error": true
+  }
+}

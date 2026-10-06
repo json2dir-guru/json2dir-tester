@@ -1,0 +1,15 @@
+{
+  "description": "A document with a null member fails when the target already has content (partial results are not checked)",
+  "section": "4.5",
+  "level": "core",
+  "source": "json2dir-F- tests/test_cli.py::CliTests::test_duplicates_and_order",
+  "setup": {
+    "x": "last",
+    "z": "z",
+    "a": "a"
+  },
+  "input_text": "{\"z\":\"changed\",\"a\":null}",
+  "expect": {
+    "error": true
+  }
+}

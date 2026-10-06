@@ -16,8 +16,8 @@ static class Shell
             ? s
             : "'" + s.Replace("'", "'\"'\"'") + "'";
 
-    /// <summary>Runs <paramref name="command"/> with /bin/sh under umask 022; a null exit code means timeout.</summary>
-    public static ShellResult Run(string command, string cwd, byte[]? stdin, TimeSpan? timeout, bool inheritOutput = false)
+    /// <summary>Runs <paramref name="command"/> with /bin/sh under <paramref name="umask"/>; a null exit code means timeout.</summary>
+    public static ShellResult Run(string command, string cwd, byte[]? stdin, TimeSpan? timeout, bool inheritOutput = false, string umask = "022")
     {
         var psi = new ProcessStartInfo("/bin/sh")
         {
@@ -28,7 +28,7 @@ static class Shell
             UseShellExecute = false,
         };
         psi.ArgumentList.Add("-c");
-        psi.ArgumentList.Add("umask 022\n" + command);
+        psi.ArgumentList.Add($"umask {umask}\n" + command);
 
         using var process = Process.Start(psi)!;
         var stdout = inheritOutput ? Task.FromResult("") : process.StandardOutput.ReadToEndAsync();

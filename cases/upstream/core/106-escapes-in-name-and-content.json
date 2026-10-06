@@ -1,0 +1,12 @@
+{
+  "description": "Escapes in a name (\\u00e9) and content (surrogate pair, \\u0000, \\/, \\b, \\f, \\n, \\r, \\t) are decoded exactly",
+  "section": "4.3",
+  "level": "core",
+  "source": "json2dir-bimbo tests/test_json2dir.py::Json2DirTests::test_unicode_escapes_and_binary_string_content",
+  "input_text": "{\"caf\\u00e9\":\"\\uD83D\\uDC85\\u0000\\/\\\"\\\\\\b\\f\\n\\r\\t\"}",
+  "expect": {
+    "tree": {
+      "café": "💅\u0000/\"\\\b\f\n\r\t"
+    }
+  }
+}

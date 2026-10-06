@@ -1,0 +1,16 @@
+{
+  "description": "With duplicate names the last value wins even when an earlier one (null, or a file later redefined as a directory) is invalid; rejecting is also allowed",
+  "section": "4.2",
+  "level": "core",
+  "source": "json2dir-bimbo tests/test_json2dir.py::Json2DirTests::test_duplicate_keys_last_wins",
+  "input_text": "{\"x\":null,\"x\":\"last\",\"z\":\"old\",\"z\":{\"y\":\"new\"}}",
+  "expect": {
+    "tree": {
+      "x": "last",
+      "z": {
+        "y": "new"
+      }
+    },
+    "accept_error": true
+  }
+}

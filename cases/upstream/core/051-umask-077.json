@@ -1,0 +1,28 @@
+{
+  "description": "With umask 077 files get mode 0600 and scripts 0711",
+  "section": "4.4.2",
+  "level": "core",
+  "source": "json2dir-agda tests/test_cli.py::test_umask",
+  "umask": "077",
+  "input": {
+    "file": "x",
+    "script": [
+      "script",
+      "x"
+    ]
+  },
+  "expect": {
+    "tree": {
+      "file": [
+        "mode",
+        "0600",
+        "x"
+      ],
+      "script": [
+        "mode",
+        "0711",
+        "x"
+      ]
+    }
+  }
+}

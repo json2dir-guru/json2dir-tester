@@ -1,0 +1,26 @@
+{
+  "description": "The failure inside a read-only directory names the path ./locked/file",
+  "section": "7",
+  "level": "overwrite",
+  "source": "json2dir-F- tests/test_cli.py::CliTests::test_unwritable_directory",
+  "only": [
+    "json2dir-F-"
+  ],
+  "requires_non_root": true,
+  "setup": {
+    "locked": [
+      "dirmode",
+      "0500",
+      {}
+    ]
+  },
+  "input": {
+    "locked": {
+      "file": "content"
+    }
+  },
+  "expect": {
+    "error": true,
+    "stderr_contains": "./locked/file"
+  }
+}

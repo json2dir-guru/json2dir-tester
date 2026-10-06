@@ -1,0 +1,19 @@
+{
+  "description": "Command-line arguments (anything else) fail with the usage message",
+  "section": "7",
+  "level": "cli",
+  "source": "json2dir-ats tests/test_cli.py::Contract::test_empty_and_usage[anything else]",
+  "only": [
+    "json2dir-ats"
+  ],
+  "args": [
+    "anything",
+    "else"
+  ],
+  "input": {},
+  "expect": {
+    "error": true,
+    "stderr_contains": "Usage: json2dir < file.json",
+    "stdout_empty": true
+  }
+}

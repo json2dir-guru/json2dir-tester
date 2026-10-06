@@ -1,0 +1,10 @@
+{
+  "description": "Invalid UTF-8 input (bare overlong) is rejected",
+  "section": "3",
+  "level": "core",
+  "source": "json2dir-agda tests/test_cli.py::test_invalid_utf8",
+  "input_base64": "wK8=",
+  "expect": {
+    "error": true
+  }
+}

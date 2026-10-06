@@ -1,0 +1,12 @@
+{
+  "description": "Member name 'a/../b' is rejected",
+  "section": "4.2.1",
+  "level": "core",
+  "source": "json2dir-agda tests/test_cli.py::test_paths; json2dir-F- tests/test_cli.py::CliTests::test_path_validation",
+  "input": {
+    "a/../b": "x"
+  },
+  "expect": {
+    "error": true
+  }
+}

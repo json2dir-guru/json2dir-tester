@@ -1,0 +1,19 @@
+{
+  "description": "An unknown array kind is reported with the reference diagnostic",
+  "section": "4.4",
+  "level": "core",
+  "source": "json2dir-llvm-IR tests/test_json2dir.py::test_array_shapes",
+  "only": [
+    "json2dir-llvm-IR"
+  ],
+  "input": {
+    "f": [
+      "scripts",
+      "x"
+    ]
+  },
+  "expect": {
+    "error": true,
+    "stderr_contains": "either \"link\" or \"script\""
+  }
+}

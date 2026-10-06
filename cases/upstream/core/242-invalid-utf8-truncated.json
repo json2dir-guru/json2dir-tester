@@ -1,0 +1,10 @@
+{
+  "description": "A truncated UTF-8 sequence in a string is rejected",
+  "section": "3",
+  "level": "core",
+  "source": "json2dir-scheme tests/test_cli.py::test_invalid_utf8[b'{\"file\":\"\\xe2\\x82\"}']",
+  "input_base64": "eyJmaWxlIjoi4oIifQ==",
+  "expect": {
+    "error": true
+  }
+}

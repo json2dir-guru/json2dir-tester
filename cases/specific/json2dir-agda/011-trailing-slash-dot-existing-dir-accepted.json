@@ -1,0 +1,24 @@
+{
+  "description": "Object member 'folder//./' merges into an existing 'folder'",
+  "section": "4.2.1",
+  "level": "overwrite",
+  "source": "json2dir-agda tests/test_cli.py::test_normalized_names_keep_original_io_spelling",
+  "only": [
+    "json2dir-agda"
+  ],
+  "setup": {
+    "folder": {}
+  },
+  "input": {
+    "folder//./": {
+      "child": "x"
+    }
+  },
+  "expect": {
+    "tree": {
+      "folder": {
+        "child": "x"
+      }
+    }
+  }
+}

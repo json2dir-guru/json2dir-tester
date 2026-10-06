@@ -1,0 +1,25 @@
+{
+  "description": "Replacing an existing 0700 file yields a fresh 0644 file (no inherited mode or content)",
+  "section": "5.2",
+  "level": "overwrite",
+  "source": "json2dir-scheme tests/test_cli.py::test_existing_files_are_recreated[file fixture -> string]",
+  "setup": {
+    "foo": [
+      "mode",
+      "0700",
+      "old content"
+    ]
+  },
+  "input": {
+    "foo": "new"
+  },
+  "expect": {
+    "tree": {
+      "foo": [
+        "mode",
+        "0644",
+        "new"
+      ]
+    }
+  }
+}

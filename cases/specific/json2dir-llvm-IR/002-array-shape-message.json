@@ -1,0 +1,20 @@
+{
+  "description": "A malformed array is reported with the reference diagnostic",
+  "section": "4.4",
+  "level": "core",
+  "source": "json2dir-llvm-IR tests/test_json2dir.py::test_array_shapes",
+  "only": [
+    "json2dir-llvm-IR"
+  ],
+  "input": {
+    "f": [
+      "link",
+      "x",
+      "extra"
+    ]
+  },
+  "expect": {
+    "error": true,
+    "stderr_contains": "form [type, payload]"
+  }
+}

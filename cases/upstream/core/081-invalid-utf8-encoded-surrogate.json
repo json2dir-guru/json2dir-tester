@@ -1,0 +1,10 @@
+{
+  "description": "Invalid UTF-8 (encoded surrogate) is rejected",
+  "section": "3",
+  "level": "core",
+  "source": "json2dir-ats tests/test_cli.py::Contract::test_malformed_json_has_no_effects[b'{\"x\":\"\\xed\\xa0\\x80\"}']; json2dir-bimbo tests/test_json2dir.py::Json2DirTests::test_invalid_inputs",
+  "input_base64": "eyJ4Ijoi7aCAIn0=",
+  "expect": {
+    "error": true
+  }
+}

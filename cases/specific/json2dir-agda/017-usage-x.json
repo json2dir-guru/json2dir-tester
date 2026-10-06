@@ -1,0 +1,18 @@
+{
+  "description": "Command-line argument(s) 'x' make the command fail with a usage message before reading input",
+  "section": "7",
+  "level": "cli",
+  "source": "json2dir-agda tests/test_cli.py::test_usage",
+  "only": [
+    "json2dir-agda"
+  ],
+  "args": [
+    "x"
+  ],
+  "input_text": "invalid",
+  "expect": {
+    "error": true,
+    "stderr_contains": "Usage: json2dir < file.json",
+    "stdout_empty": true
+  }
+}

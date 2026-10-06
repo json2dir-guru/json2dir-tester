@@ -1,0 +1,38 @@
+{
+  "description": "With -o DIR FILE, the document in FILE is materialized into DIR, which is created",
+  "section": "7",
+  "level": "cli",
+  "source": "json2dir-zig nix/smoke.nix step 1",
+  "only": [
+    "json2dir-zig"
+  ],
+  "args": [
+    "-o",
+    "out",
+    "tree.json"
+  ],
+  "setup": {
+    "tree.json": "{\n  \"greeting\": \"Hello, world!\",\n  \"dir\": {\n    \"subfile\": \"Content.\\n\",\n    \"subdir\": {}\n  },\n  \"symlink\": [\n    \"link\",\n    \"target path\"\n  ],\n  \"script\": [\n    \"script\",\n    \"#!/bin/sh\\necho Howdy!\"\n  ]\n}\n"
+  },
+  "input": {},
+  "expect": {
+    "tree": {
+      "tree.json": "{\n  \"greeting\": \"Hello, world!\",\n  \"dir\": {\n    \"subfile\": \"Content.\\n\",\n    \"subdir\": {}\n  },\n  \"symlink\": [\n    \"link\",\n    \"target path\"\n  ],\n  \"script\": [\n    \"script\",\n    \"#!/bin/sh\\necho Howdy!\"\n  ]\n}\n",
+      "out": {
+        "greeting": "Hello, world!",
+        "dir": {
+          "subfile": "Content.\n",
+          "subdir": {}
+        },
+        "symlink": [
+          "link",
+          "target path"
+        ],
+        "script": [
+          "script",
+          "#!/bin/sh\necho Howdy!"
+        ]
+      }
+    }
+  }
+}

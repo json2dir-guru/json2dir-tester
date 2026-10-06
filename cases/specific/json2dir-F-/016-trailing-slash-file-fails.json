@@ -1,0 +1,20 @@
+{
+  "description": "A string value under a name with a trailing slash (bad/) is rejected",
+  "section": "4.2.1",
+  "level": "core",
+  "source": "json2dir-F- tests/test_cli.py::CliTests::test_rust_path_normalization",
+  "only": [
+    "json2dir-F-"
+  ],
+  "setup": {
+    "folder": {
+      "child": "x"
+    }
+  },
+  "input": {
+    "bad/": "x"
+  },
+  "expect": {
+    "error": true
+  }
+}

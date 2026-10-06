@@ -1,0 +1,38 @@
+{
+  "description": "--no-clobber fails when entries already exist and names the option in the error",
+  "section": "7",
+  "level": "cli",
+  "source": "json2dir-zig nix/smoke.nix step 3",
+  "only": [
+    "json2dir-zig"
+  ],
+  "args": [
+    "-o",
+    "out",
+    "tree.json",
+    "--no-clobber"
+  ],
+  "setup": {
+    "tree.json": "{\n  \"greeting\": \"Hello, world!\",\n  \"dir\": {\n    \"subfile\": \"Content.\\n\",\n    \"subdir\": {}\n  },\n  \"symlink\": [\n    \"link\",\n    \"target path\"\n  ],\n  \"script\": [\n    \"script\",\n    \"#!/bin/sh\\necho Howdy!\"\n  ]\n}\n",
+    "out": {
+      "greeting": "Hello, world!",
+      "dir": {
+        "subfile": "Content.\n",
+        "subdir": {}
+      },
+      "symlink": [
+        "link",
+        "target path"
+      ],
+      "script": [
+        "script",
+        "#!/bin/sh\necho Howdy!"
+      ]
+    }
+  },
+  "input": {},
+  "expect": {
+    "error": true,
+    "stderr_contains": "--no-clobber"
+  }
+}

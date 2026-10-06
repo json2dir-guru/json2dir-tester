@@ -1,0 +1,10 @@
+{
+  "description": "Malformed JSON '{\"a\": \"would be written\", \"z\": [1,]}' is rejected",
+  "section": "3",
+  "level": "core",
+  "source": "json2dir-ats tests/test_cli.py::Contract::test_malformed_json_has_no_effects[b'{\"a\": \"would be written\", \"z\": [1,]}']",
+  "input_text": "{\"a\": \"would be written\", \"z\": [1,]}",
+  "expect": {
+    "error": true
+  }
+}

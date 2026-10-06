@@ -1,0 +1,17 @@
+{
+  "description": "An array whose kind is itself an array is rejected",
+  "section": "4.4",
+  "level": "core",
+  "source": "json2dir-ats tests/test_cli.py::Contract::test_invalid_entries[array [[\"link\"], \"x\"]]",
+  "input": {
+    "file": [
+      [
+        "link"
+      ],
+      "x"
+    ]
+  },
+  "expect": {
+    "error": true
+  }
+}

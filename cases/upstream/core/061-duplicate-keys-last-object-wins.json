@@ -1,0 +1,15 @@
+{
+  "description": "Of three duplicates (invalid, string, object) the last one wins (or the document is rejected)",
+  "section": "4.2",
+  "level": "core",
+  "source": "json2dir-ats tests/test_cli.py::Contract::test_sorted_last_duplicate_wins[false, string, object]",
+  "input_text": "{\"foo\": false, \"foo\": \"last\", \"foo\": {\"x\": \"yes\"}}",
+  "expect": {
+    "tree": {
+      "foo": {
+        "x": "yes"
+      }
+    },
+    "accept_error": true
+  }
+}

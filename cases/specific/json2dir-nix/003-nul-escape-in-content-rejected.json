@@ -1,0 +1,16 @@
+{
+  "description": "A \\u0000 escape in file content is rejected because Nix strings cannot hold NUL (contradicts RFC 4.3)",
+  "section": "4.3",
+  "level": "core",
+  "source": "json2dir-nix tests/cli.py::CliTests::test_invalid_input_does_not_mutate",
+  "only": [
+    "json2dir-nix"
+  ],
+  "setup": {
+    "a": "old"
+  },
+  "input_text": "{\"x\":\"before\\u0000after\"}",
+  "expect": {
+    "error": true
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "description": "An unescaped tab inside a string is rejected",
+  "section": "3",
+  "level": "core",
+  "source": "json2dir-bimbo tests/test_json2dir.py::Json2DirTests::test_invalid_inputs",
+  "input_text": "{\"x\":\"\t\"}",
+  "expect": {
+    "error": true
+  }
+}

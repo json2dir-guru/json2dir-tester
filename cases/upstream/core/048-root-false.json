@@ -1,0 +1,10 @@
+{
+  "description": "A document whose root is false is rejected",
+  "section": "4.1",
+  "level": "core",
+  "source": "json2dir-agda tests/test_cli.py::test_top_level; json2dir-ats tests/test_cli.py::Contract::test_invalid_entries[root False]; json2dir-bimbo tests/test_json2dir.py::Json2DirTests::test_invalid_inputs; json2dir-F- tests/test_cli.py::CliTests::test_top_level; json2dir-llvm-IR tests/test_json2dir.py::test_top_level; json2dir-scheme tests/test_cli.py::test_root_must_be_object[false]",
+  "input_text": "false",
+  "expect": {
+    "error": true
+  }
+}

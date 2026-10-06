@@ -1,0 +1,32 @@
+{
+  "description": "A symlink replaces an existing script",
+  "section": "5.2",
+  "level": "overwrite",
+  "source": "json2dir-nix tests/cli.py::CliTests::test_replacement_matrix[old=script, new=link]",
+  "setup": {
+    "target": {
+      "untouched": "safe"
+    },
+    "entry": [
+      "script",
+      "old"
+    ]
+  },
+  "input": {
+    "entry": [
+      "link",
+      "target"
+    ]
+  },
+  "expect": {
+    "tree": {
+      "target": {
+        "untouched": "safe"
+      },
+      "entry": [
+        "link",
+        "target"
+      ]
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "description": "Object member 'folder//./' fails when 'folder' does not exist",
+  "section": "4.2.1",
+  "level": "core",
+  "source": "json2dir-agda tests/test_cli.py::test_normalized_names_keep_original_io_spelling",
+  "only": [
+    "json2dir-agda"
+  ],
+  "input": {
+    "folder//./": {
+      "child": "x"
+    }
+  },
+  "expect": {
+    "error": true
+  }
+}

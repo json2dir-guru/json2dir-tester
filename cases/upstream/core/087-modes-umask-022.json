@@ -1,0 +1,30 @@
+{
+  "description": "Under umask 022 files get 0644 and scripts 0755",
+  "section": "4.4.2",
+  "level": "core",
+  "source": "json2dir-ats tests/test_cli.py::Contract::test_script_modes_respect_umask[mask=022]",
+  "umask": "022",
+  "input": {
+    "file": "",
+    "dir": {},
+    "script": [
+      "script",
+      ""
+    ]
+  },
+  "expect": {
+    "tree": {
+      "file": [
+        "mode",
+        "0644",
+        ""
+      ],
+      "script": [
+        "mode",
+        "0755",
+        ""
+      ],
+      "dir": {}
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "description": "An object member naming an existing directory without search permission (0600) fails",
+  "section": "5.1",
+  "level": "overwrite",
+  "source": "json2dir-bimbo tests/test_json2dir.py::Json2DirTests::test_unsearchable_directory",
+  "only": [
+    "json2dir-bimbo"
+  ],
+  "requires_non_root": true,
+  "setup": {
+    "foo": [
+      "dirmode",
+      "0600",
+      {}
+    ]
+  },
+  "input_text": "{\"foo\":{}}",
+  "expect": {
+    "error": true
+  }
+}

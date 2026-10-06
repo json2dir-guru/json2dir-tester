@@ -1,0 +1,14 @@
+{
+  "description": "A leading UTF-8 byte order mark is rejected (RFC section 3 lets consumers ignore it)",
+  "section": "3",
+  "level": "core",
+  "source": "json2dir-ats tests/test_cli.py::Contract::test_malformed_json_has_no_effects[b'\\xef\\xbb\\xbf{}']",
+  "only": [
+    "json2dir-ats"
+  ],
+  "input_base64": "77u/e30=",
+  "expect": {
+    "error": true,
+    "stderr_contains": "couldn't convert stdin to JSON"
+  }
+}

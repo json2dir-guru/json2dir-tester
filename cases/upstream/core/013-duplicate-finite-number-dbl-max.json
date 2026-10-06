@@ -1,0 +1,13 @@
+{
+  "description": "A finite number (1.7976931348623157e308) overridden by a later duplicate string is accepted",
+  "section": "4.2",
+  "level": "core",
+  "source": "json2dir-agda tests/test_cli.py::test_finite_number_duplicate_is_accepted",
+  "input_text": "{\"x\":1.7976931348623157e308,\"x\":\"last\"}",
+  "expect": {
+    "tree": {
+      "x": "last"
+    },
+    "accept_error": true
+  }
+}

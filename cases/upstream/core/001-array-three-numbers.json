@@ -1,0 +1,16 @@
+{
+  "description": "A three-element array of numbers is rejected",
+  "section": "4.4",
+  "level": "core",
+  "source": "json2dir src/tests.rs::test_unix #4",
+  "input": {
+    "foo": [
+      1,
+      2,
+      3
+    ]
+  },
+  "expect": {
+    "error": true
+  }
+}

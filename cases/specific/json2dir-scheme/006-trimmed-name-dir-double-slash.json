@@ -1,0 +1,21 @@
+{
+  "description": "Object member named 'foo//' is accepted as directory foo (trimmed name)",
+  "section": "4.2.1",
+  "level": "core",
+  "source": "json2dir-scheme tests/test_cli.py::test_single_component_directory_paths[foo//]",
+  "only": [
+    "json2dir-scheme"
+  ],
+  "input": {
+    "foo//": {
+      "bar": "x"
+    }
+  },
+  "expect": {
+    "tree": {
+      "foo": {
+        "bar": "x"
+      }
+    }
+  }
+}

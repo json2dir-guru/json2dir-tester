@@ -1,0 +1,24 @@
+{
+  "description": "Raw UTF-8 names and contents with NUL, control escapes and code-point boundary characters are exact",
+  "section": "4.3",
+  "level": "core",
+  "source": "json2dir-ats tests/test_cli.py::Contract::test_utf8_escapes_and_nul_content[ascii=False]",
+  "input": {
+    "данные 🚀": "Привет 🦀\u0000tail\n\t\r\b\f\\\"/",
+    "empty": "",
+    "run": [
+      "script",
+      "\u0000􏿿߿ࠀ￿"
+    ]
+  },
+  "expect": {
+    "tree": {
+      "данные 🚀": "Привет 🦀\u0000tail\n\t\r\b\f\\\"/",
+      "empty": "",
+      "run": [
+        "script",
+        "\u0000􏿿߿ࠀ￿"
+      ]
+    }
+  }
+}

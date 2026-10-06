@@ -1,0 +1,42 @@
+{
+  "description": "The README example succeeds and prints nothing on standard output",
+  "section": "7",
+  "level": "cli",
+  "source": "json2dir-F- tests/test_cli.py::CliTests::test_example",
+  "only": [
+    "json2dir-F-"
+  ],
+  "input": {
+    "greeting": "Hello, world!",
+    "dir": {
+      "subfile": "Content.\n",
+      "subdir": {}
+    },
+    "symlink": [
+      "link",
+      "target path"
+    ],
+    "script": [
+      "script",
+      "#!/bin/sh\necho Howdy!"
+    ]
+  },
+  "expect": {
+    "tree": {
+      "greeting": "Hello, world!",
+      "dir": {
+        "subfile": "Content.\n",
+        "subdir": {}
+      },
+      "symlink": [
+        "link",
+        "target path"
+      ],
+      "script": [
+        "script",
+        "#!/bin/sh\necho Howdy!"
+      ]
+    },
+    "stdout_empty": true
+  }
+}

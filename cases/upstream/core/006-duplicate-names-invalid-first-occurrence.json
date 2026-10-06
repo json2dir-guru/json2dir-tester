@@ -1,0 +1,15 @@
+{
+  "description": "With duplicate names the last value wins even when the first (a number) is invalid; rejecting is also allowed",
+  "section": "4.2",
+  "level": "core",
+  "source": "json2dir-F- tests/test_cli.py::CliTests::test_duplicates_and_order",
+  "input_text": "{\"x\":3,\"x\":\"last\",\"z\":\"z\",\"a\":\"a\"}",
+  "expect": {
+    "tree": {
+      "x": "last",
+      "z": "z",
+      "a": "a"
+    },
+    "accept_error": true
+  }
+}

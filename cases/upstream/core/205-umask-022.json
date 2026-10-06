@@ -1,0 +1,30 @@
+{
+  "description": "Under umask 022 files get mode 0666 & ~umask and scripts additionally get 0111",
+  "section": "4.4.2",
+  "level": "core",
+  "source": "json2dir-nix tests/cli.py::CliTests::test_umask[mask=0o22]",
+  "umask": "022",
+  "input": {
+    "file": "x",
+    "script": [
+      "script",
+      "x"
+    ],
+    "dir": {}
+  },
+  "expect": {
+    "tree": {
+      "file": [
+        "mode",
+        "0644",
+        "x"
+      ],
+      "script": [
+        "mode",
+        "0755",
+        "x"
+      ],
+      "dir": {}
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "description": "Running the same document over its own result succeeds and leaves the same tree",
+  "section": "5",
+  "level": "overwrite",
+  "source": "json2dir-zig src/manifest.zig test \"rerun is idempotent with default force\"",
+  "setup": {
+    "f": "one",
+    "d": {
+      "x": "two"
+    }
+  },
+  "input": {
+    "f": "one",
+    "d": {
+      "x": "two"
+    }
+  },
+  "expect": {
+    "tree": {
+      "f": "one",
+      "d": {
+        "x": "two"
+      }
+    }
+  }
+}

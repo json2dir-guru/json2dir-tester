@@ -1,0 +1,10 @@
+{
+  "description": "Malformed JSON '{\"a\": \"\\\\q\"}' is rejected",
+  "section": "3",
+  "level": "core",
+  "source": "json2dir-scheme tests/test_cli.py::test_invalid_json_has_no_side_effects['{\"a\": \"\\\\q\"}']",
+  "input_text": "{\"a\": \"\\q\"}",
+  "expect": {
+    "error": true
+  }
+}

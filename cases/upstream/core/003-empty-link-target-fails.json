@@ -1,0 +1,15 @@
+{
+  "description": "A link with an empty target is rejected by the file system on Linux and the run fails",
+  "section": "10",
+  "level": "core",
+  "source": "json2dir src/tests.rs::test_unix #14 (linux only)",
+  "input": {
+    "foo": [
+      "link",
+      ""
+    ]
+  },
+  "expect": {
+    "error": true
+  }
+}

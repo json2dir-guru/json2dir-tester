@@ -1,0 +1,15 @@
+{
+  "description": "A name ending in /./ is either rejected or treated as its trimmed name",
+  "section": "4.2.1",
+  "level": "core",
+  "source": "json2dir-lean Spec.lean parseName (\"a/./\" -> \"a\")",
+  "input": {
+    "a/./": "x"
+  },
+  "expect": {
+    "tree": {
+      "a": "x"
+    },
+    "accept_error": true
+  }
+}

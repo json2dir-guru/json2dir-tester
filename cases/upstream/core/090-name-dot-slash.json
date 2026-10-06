@@ -1,0 +1,12 @@
+{
+  "description": "Name './' (whose trimmed name is not simple) is rejected",
+  "section": "4.2.1",
+  "level": "core",
+  "source": "json2dir-ats tests/test_cli.py::Contract::test_paths[invalid './']",
+  "input": {
+    "./": "x"
+  },
+  "expect": {
+    "error": true
+  }
+}

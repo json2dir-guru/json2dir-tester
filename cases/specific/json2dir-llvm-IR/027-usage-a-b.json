@@ -1,0 +1,19 @@
+{
+  "description": "Command-line argument(s) 'a b' make the command fail with a usage message",
+  "section": "7",
+  "level": "cli",
+  "source": "json2dir-llvm-IR tests/test_json2dir.py::test_usage",
+  "only": [
+    "json2dir-llvm-IR"
+  ],
+  "args": [
+    "a",
+    "b"
+  ],
+  "input": {},
+  "expect": {
+    "error": true,
+    "stderr_contains": "Usage: json2dir",
+    "stdout_empty": true
+  }
+}

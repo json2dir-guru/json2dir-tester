@@ -1,0 +1,23 @@
+{
+  "description": "An existing directory without search permission makes even an empty object member fail",
+  "section": "5.1",
+  "level": "overwrite",
+  "source": "json2dir-agda tests/test_cli.py::test_unsearchable_empty_directory",
+  "only": [
+    "json2dir-agda"
+  ],
+  "requires_non_root": true,
+  "setup": {
+    "locked": [
+      "dirmode",
+      "0600",
+      {}
+    ]
+  },
+  "input": {
+    "locked": {}
+  },
+  "expect": {
+    "error": true
+  }
+}

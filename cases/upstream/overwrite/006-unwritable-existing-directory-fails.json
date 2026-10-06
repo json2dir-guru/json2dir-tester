@@ -1,0 +1,22 @@
+{
+  "description": "Creating a file inside an existing read-only (0500) directory fails",
+  "section": "10",
+  "level": "overwrite",
+  "source": "json2dir-F- tests/test_cli.py::CliTests::test_unwritable_directory",
+  "requires_non_root": true,
+  "setup": {
+    "locked": [
+      "dirmode",
+      "0500",
+      {}
+    ]
+  },
+  "input": {
+    "locked": {
+      "file": "content"
+    }
+  },
+  "expect": {
+    "error": true
+  }
+}

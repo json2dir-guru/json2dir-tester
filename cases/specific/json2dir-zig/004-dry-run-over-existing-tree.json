@@ -1,0 +1,29 @@
+{
+  "description": "--dry-run over an existing tree succeeds and leaves it unchanged",
+  "section": "7",
+  "level": "cli",
+  "source": "json2dir-zig src/manifest.zig test \"dry-run + no-clobber is faithful against an existing tree\" (first half)",
+  "only": [
+    "json2dir-zig"
+  ],
+  "args": [
+    "--dry-run"
+  ],
+  "setup": {
+    "d": {
+      "x": "y"
+    }
+  },
+  "input": {
+    "d": {
+      "x": "y"
+    }
+  },
+  "expect": {
+    "tree": {
+      "d": {
+        "x": "y"
+      }
+    }
+  }
+}

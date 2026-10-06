@@ -1,0 +1,28 @@
+{
+  "description": "A link member replaces an existing file link without touching its target",
+  "section": "5.3",
+  "level": "overwrite",
+  "source": "json2dir-scheme tests/test_cli.py::test_symlinks_are_unlinked_without_touching_targets[kind=file-link, value=[\"link\", \"elsewhere\"]]",
+  "setup": {
+    "target": "untouched",
+    "foo": [
+      "link",
+      "target"
+    ]
+  },
+  "input": {
+    "foo": [
+      "link",
+      "elsewhere"
+    ]
+  },
+  "expect": {
+    "tree": {
+      "target": "untouched",
+      "foo": [
+        "link",
+        "elsewhere"
+      ]
+    }
+  }
+}

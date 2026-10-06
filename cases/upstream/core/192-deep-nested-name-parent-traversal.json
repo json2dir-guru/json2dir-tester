@@ -1,0 +1,16 @@
+{
+  "description": "A name ../outside two levels below the root is rejected",
+  "section": "4.2.1",
+  "level": "core",
+  "source": "json2dir-nix tests/lib.nix invalid: deep.nested.\"../outside\"",
+  "input": {
+    "deep": {
+      "nested": {
+        "../outside": "text"
+      }
+    }
+  },
+  "expect": {
+    "error": true
+  }
+}

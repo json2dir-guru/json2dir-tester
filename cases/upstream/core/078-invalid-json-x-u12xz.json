@@ -1,0 +1,10 @@
+{
+  "description": "Malformed JSON '{\"x\":\"\\\\u12xz\"}' is rejected",
+  "section": "3",
+  "level": "core",
+  "source": "json2dir-ats tests/test_cli.py::Contract::test_malformed_json_has_no_effects[b'{\"x\":\"\\\\u12xz\"}']",
+  "input_text": "{\"x\":\"\\u12xz\"}",
+  "expect": {
+    "error": true
+  }
+}

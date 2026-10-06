@@ -1,0 +1,17 @@
+{
+  "description": "The CLI rejects a file name argument with a usage message",
+  "section": "7",
+  "level": "cli",
+  "source": "json2dir-nix tests/cli.py::CliTests::test_arguments[args=('file.json',)]",
+  "only": [
+    "json2dir-nix"
+  ],
+  "args": [
+    "file.json"
+  ],
+  "input": {},
+  "expect": {
+    "error": true,
+    "stderr_contains": "Usage:"
+  }
+}

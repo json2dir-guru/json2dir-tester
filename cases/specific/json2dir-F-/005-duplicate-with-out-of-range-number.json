@@ -1,0 +1,13 @@
+{
+  "description": "A duplicate name whose first value is an out-of-range number (1e400) fails, although last-wins would ignore it",
+  "section": "4.2",
+  "level": "core",
+  "source": "json2dir-F- tests/test_cli.py::CliTests::test_number_range_is_validated_before_writes",
+  "only": [
+    "json2dir-F-"
+  ],
+  "input_text": "{\"x\":1e400,\"x\":\"last\"}",
+  "expect": {
+    "error": true
+  }
+}

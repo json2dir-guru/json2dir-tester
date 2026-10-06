@@ -1,0 +1,13 @@
+{
+  "description": "Any command-line argument, such as --help, makes the run fail",
+  "section": "7",
+  "level": "cli",
+  "source": "json2dir scripts/helpers/test-cli (usage)",
+  "args": [
+    "--help"
+  ],
+  "input": {},
+  "expect": {
+    "error": true
+  }
+}

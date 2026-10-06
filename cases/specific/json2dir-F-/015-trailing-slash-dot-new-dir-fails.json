@@ -1,0 +1,17 @@
+{
+  "description": "folder//./ naming a not-yet-existing directory fails (Rust create_dir quirk; RFC would also allow creating it)",
+  "section": "4.2.1",
+  "level": "core",
+  "source": "json2dir-F- tests/test_cli.py::CliTests::test_rust_path_normalization",
+  "only": [
+    "json2dir-F-"
+  ],
+  "input": {
+    "folder//./": {
+      "child": "x"
+    }
+  },
+  "expect": {
+    "error": true
+  }
+}

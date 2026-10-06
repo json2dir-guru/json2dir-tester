@@ -1,0 +1,10 @@
+{
+  "description": "Input consisting of the single byte 0xFF is rejected",
+  "section": "3",
+  "level": "core",
+  "source": "json2dir scripts/helpers/test-cli (invalid UTF-8); json2dir-agda tests/test_cli.py::test_invalid_utf8; json2dir-scheme tests/test_cli.py::test_invalid_utf8[b'\\xff']",
+  "input_base64": "/w==",
+  "expect": {
+    "error": true
+  }
+}

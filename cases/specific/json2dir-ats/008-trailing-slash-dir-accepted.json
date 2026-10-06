@@ -1,0 +1,17 @@
+{
+  "description": "Object member 'foo/' creates directory foo",
+  "section": "4.2.1",
+  "level": "core",
+  "source": "json2dir-ats tests/test_cli.py::Contract::test_paths['foo/' -> {}]",
+  "only": [
+    "json2dir-ats"
+  ],
+  "input": {
+    "foo/": {}
+  },
+  "expect": {
+    "tree": {
+      "foo": {}
+    }
+  }
+}

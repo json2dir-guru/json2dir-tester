@@ -1,0 +1,24 @@
+{
+  "description": "A object member replaces an existing dangling link without touching its target",
+  "section": "5.3",
+  "level": "overwrite",
+  "source": "json2dir-scheme tests/test_cli.py::test_symlinks_are_unlinked_without_touching_targets[kind=dangling-link, value={\"child\": \"x\"}]",
+  "setup": {
+    "foo": [
+      "link",
+      "target"
+    ]
+  },
+  "input": {
+    "foo": {
+      "child": "x"
+    }
+  },
+  "expect": {
+    "tree": {
+      "foo": {
+        "child": "x"
+      }
+    }
+  }
+}

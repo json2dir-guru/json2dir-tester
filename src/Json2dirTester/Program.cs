@@ -15,6 +15,7 @@ const string Usage = """
       --timeout SEC     time limit per case (default 10)
       --json FILE       also write results as JSON
       --verbose         print stderr of failing cases
+      --cases DIR       load cases from DIR instead of cases/
 
     Global options:
       --sources DIR     where implementation sources live (default: <workspace>/others)
@@ -27,7 +28,7 @@ const string Usage = """
 var positional = new List<string>();
 var suites = new List<string>();
 var levels = new List<string>();
-string? filter = null, jsonPath = null, sources = null, runtimes = null;
+string? filter = null, jsonPath = null, sources = null, runtimes = null, casesDir = null;
 var timeout = TimeSpan.FromSeconds(10);
 bool all = false, verbose = false;
 
@@ -47,6 +48,7 @@ try
             case "--json": jsonPath = Path.GetFullPath(Next()); break;
             case "--sources": sources = Next(); break;
             case "--runtimes": runtimes = Next(); break;
+            case "--cases": casesDir = Path.GetFullPath(Next()); break;
             case "-h" or "--help": Console.WriteLine(Usage); return 0;
             case var a when a.StartsWith("--"): throw new ArgumentException($"unknown option {a}");
             default: positional.Add(args[i]); break;
@@ -121,7 +123,7 @@ static int Build(Implementation impl, Workspace ws)
 
 int RunAll(List<Implementation> impls, Workspace ws)
 {
-    var cases = Cases.Load(ws.Cases)
+    var cases = Cases.Load(casesDir ?? ws.Cases)
         .Where(c => suites.Count == 0 || suites.Contains(c.Name.Split('/')[0]))
         .Where(c => levels.Count == 0 || levels.Contains(c.Level))
         .Where(c => filter is null || c.Name.Contains(filter))
@@ -135,13 +137,19 @@ int RunAll(List<Implementation> impls, Workspace ws)
         Console.WriteLine(Paint($"== {impl.Name} — {impl.Description}", "1"));
         var command = impl.Expand(impl.Command, ws);
         var results = new List<CaseResult>();
-        foreach (var c in cases)
+        foreach (var c in cases.Where(c => c.AppliesTo(impl.Name)))
         {
             var r = Runner.Run(c, command, timeout);
             results.Add(r);
             if (r.Status == Status.Pass)
             {
                 Console.WriteLine($"{Paint("✓", "32")} {c.Name} {Paint(c.Description, "2")}");
+                continue;
+            }
+            if (r.Status == Status.Skip)
+            {
+                Console.WriteLine($"{Paint("-", "33")} {c.Name} {Paint(c.Description, "2")}");
+                Console.WriteLine($"    skipped: {r.Reason}");
                 continue;
             }
             Console.WriteLine($"{Paint("✗", "31")} {c.Name} {Paint(c.Description, "2")}");
@@ -154,9 +162,7 @@ int RunAll(List<Implementation> impls, Workspace ws)
         Console.WriteLine();
         foreach (var group in results.GroupBy(r => Group(r.Case)))
         {
-            var passed = group.Count(r => r.Status == Status.Pass);
-            var verdict = passed == group.Count() ? "conformant" : "not conformant";
-            Console.WriteLine(Paint($"{group.Key,-24} {passed}/{group.Count()} passed — {verdict}", "1"));
+            Console.WriteLine(Paint($"{group.Key,-24} {Score(group.ToList())}", "1"));
         }
         Console.WriteLine();
         report.Add((impl, results));
@@ -170,7 +176,8 @@ int RunAll(List<Implementation> impls, Workspace ws)
             Console.WriteLine($"{impl.Name,-20} " + string.Join(" ", groups.Select(g =>
             {
                 var rs = results.Where(r => Group(r.Case) == g).ToList();
-                return $"{rs.Count(r => r.Status == Status.Pass) + "/" + rs.Count,24}";
+                var ran = rs.Where(r => r.Status != Status.Skip).ToList();
+                return $"{(rs.Count == 0 ? "-" : ran.Count(r => r.Status == Status.Pass) + "/" + ran.Count),24}";
             })));
     }
 
@@ -185,7 +192,7 @@ int RunAll(List<Implementation> impls, Workspace ws)
                 {
                     @case = r.Case.Name,
                     level = r.Case.Level,
-                    status = r.Status == Status.Pass ? "pass" : "fail",
+                    status = r.Status.ToString().ToLowerInvariant(),
                     reason = r.Reason,
                 }),
             }),
@@ -197,7 +204,16 @@ int RunAll(List<Implementation> impls, Workspace ws)
         }) + "\n");
     }
 
-    return report.Any(x => x.Results.Any(r => r.Status != Status.Pass)) ? 1 : 0;
+    return report.Any(x => x.Results.Any(r => r.Status == Status.Fail)) ? 1 : 0;
+}
+
+static string Score(List<CaseResult> results)
+{
+    var ran = results.Where(r => r.Status != Status.Skip).ToList();
+    var passed = ran.Count(r => r.Status == Status.Pass);
+    var skipped = results.Count - ran.Count;
+    var verdict = passed == ran.Count ? "conformant" : "not conformant";
+    return $"{passed}/{ran.Count} passed — {verdict}" + (skipped > 0 ? $" ({skipped} skipped)" : "");
 }
 
 // "conformance/core/001-empty-object" -> "conformance/core"

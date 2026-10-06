@@ -1,0 +1,18 @@
+{
+  "description": "Any command-line argument (input.json) fails with the usage message",
+  "section": "7",
+  "level": "cli",
+  "source": "json2dir-scheme tests/test_cli.py::test_arguments[input.json]",
+  "only": [
+    "json2dir-scheme"
+  ],
+  "args": [
+    "input.json"
+  ],
+  "input": {},
+  "expect": {
+    "error": true,
+    "stderr_contains": "Usage: json2dir < file.json",
+    "stdout_empty": true
+  }
+}

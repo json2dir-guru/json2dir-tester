@@ -1,0 +1,10 @@
+{
+  "description": "An overlong UTF-8 encoding (C0 80) inside a string is rejected",
+  "section": "3",
+  "level": "core",
+  "source": "json2dir-bimbo tests/test_json2dir.py::Json2DirTests::test_invalid_inputs",
+  "input_base64": "eyJ4IjoiwIAifQ==",
+  "expect": {
+    "error": true
+  }
+}

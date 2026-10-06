@@ -1,0 +1,20 @@
+{
+  "description": "A link target with dashes, shell syntax and emoji is stored verbatim",
+  "section": "4.4.1",
+  "level": "core",
+  "source": "json2dir-agda tests/test_cli.py::test_symlink_payload_is_literal",
+  "input": {
+    "link": [
+      "link",
+      "--target with spaces; $(echo nope) 😀"
+    ]
+  },
+  "expect": {
+    "tree": {
+      "link": [
+        "link",
+        "--target with spaces; $(echo nope) 😀"
+      ]
+    }
+  }
+}

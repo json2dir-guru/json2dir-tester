@@ -1,0 +1,10 @@
+{
+  "description": "Invalid UTF-8 (overlong) is rejected",
+  "section": "3",
+  "level": "core",
+  "source": "json2dir-ats tests/test_cli.py::Contract::test_malformed_json_has_no_effects[b'{\"x\":\"\\xc0\\xaf\"}']",
+  "input_base64": "eyJ4IjoiwK8ifQ==",
+  "expect": {
+    "error": true
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "description": "The failure diagnostic names the path ./locked/file",
+  "section": "10",
+  "level": "overwrite",
+  "source": "json2dir-agda tests/test_cli.py::test_unwritable_directory",
+  "only": [
+    "json2dir-agda"
+  ],
+  "requires_non_root": true,
+  "setup": {
+    "locked": [
+      "dirmode",
+      "0500",
+      {}
+    ]
+  },
+  "input": {
+    "locked": {
+      "file": "x"
+    }
+  },
+  "expect": {
+    "error": true,
+    "stderr_contains": "./locked/file"
+  }
+}

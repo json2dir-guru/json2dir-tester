@@ -1,0 +1,13 @@
+{
+  "description": "A root that is a well-formed script array is rejected",
+  "section": "4.1",
+  "level": "core",
+  "source": "json2dir-ats tests/test_cli.py::Contract::test_invalid_entries[root [\"script\", \"x\"]]",
+  "input": [
+    "script",
+    "x"
+  ],
+  "expect": {
+    "error": true
+  }
+}

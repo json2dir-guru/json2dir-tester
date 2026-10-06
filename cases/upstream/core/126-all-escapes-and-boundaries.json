@@ -1,0 +1,12 @@
+{
+  "description": "An escaped name and every JSON escape plus UTF-8 boundary code points are decoded exactly",
+  "section": "4.3",
+  "level": "core",
+  "source": "json2dir-llvm-IR tests/test_json2dir.py::test_unicode_and_escapes",
+  "input_text": "{\"\\u043f\\u0440\\u0438\\u0432\\u0435\\u0442\":\"\\\"\\\\\\/\\b\\f\\n\\r\\t\\u0000\\u007F\\u0080\\u07FF\\u0800\\uD7FF\\uE000\\uFFFF\\uD800\\uDC00\\uDBFF\\uDFFF\\uD83D\\uDE00\"}",
+  "expect": {
+    "tree": {
+      "привет": "\"\\/\b\f\n\r\t\u0000߿ࠀ퟿￿𐀀􏿿😀"
+    }
+  }
+}

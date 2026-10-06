@@ -1,0 +1,10 @@
+{
+  "description": "Malformed JSON (number leading zero) is rejected",
+  "section": "3",
+  "level": "core",
+  "source": "json2dir-agda tests/test_cli.py::test_invalid_json_has_no_effects; json2dir-ats tests/test_cli.py::Contract::test_malformed_json_has_no_effects[b'{\"x\":01}']",
+  "input_text": "{\"x\":01}",
+  "expect": {
+    "error": true
+  }
+}

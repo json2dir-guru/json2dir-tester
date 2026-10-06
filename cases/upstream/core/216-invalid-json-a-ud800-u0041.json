@@ -1,0 +1,10 @@
+{
+  "description": "Malformed JSON '{\"a\": \"\\\\uD800\\\\u0041\"}' is rejected",
+  "section": "3",
+  "level": "core",
+  "source": "json2dir-scheme tests/test_cli.py::test_invalid_json_has_no_side_effects['{\"a\": \"\\\\uD800\\\\u0041\"}']",
+  "input_text": "{\"a\": \"\\uD800\\u0041\"}",
+  "expect": {
+    "error": true
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "description": "An invalid value for an existing file name is rejected",
+  "section": "4.5",
+  "level": "overwrite",
+  "source": "json2dir-llvm-IR tests/test_json2dir.py::test_invalid_value_unlinks_existing_file",
+  "setup": {
+    "f": "old"
+  },
+  "input": {
+    "f": false
+  },
+  "expect": {
+    "error": true
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "description": "--no-clobber fails when a file named by the document already exists",
+  "section": "7",
+  "level": "cli",
+  "source": "json2dir-zig src/manifest.zig test \"--no-clobber refuses to replace\"",
+  "only": [
+    "json2dir-zig"
+  ],
+  "args": [
+    "--no-clobber"
+  ],
+  "setup": {
+    "f": "one"
+  },
+  "input": {
+    "f": "one"
+  },
+  "expect": {
+    "error": true
+  }
+}

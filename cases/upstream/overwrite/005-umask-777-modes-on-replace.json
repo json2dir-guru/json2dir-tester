@@ -1,0 +1,40 @@
+{
+  "description": "Under umask 777, replacing a file and a script yields modes 0000 and 0111",
+  "section": "5.2",
+  "level": "overwrite",
+  "source": "json2dir-F- tests/test_cli.py::CliTests::test_modes_respect_umask",
+  "umask": "777",
+  "setup": {
+    "file": [
+      "mode",
+      "0600",
+      "x"
+    ],
+    "script": [
+      "mode",
+      "0711",
+      "x"
+    ]
+  },
+  "input": {
+    "file": "x",
+    "script": [
+      "script",
+      "x"
+    ]
+  },
+  "expect": {
+    "tree": {
+      "file": [
+        "mode",
+        "0000",
+        "x"
+      ],
+      "script": [
+        "mode",
+        "0111",
+        "x"
+      ]
+    }
+  }
+}

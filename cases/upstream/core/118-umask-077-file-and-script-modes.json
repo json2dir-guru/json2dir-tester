@@ -1,0 +1,22 @@
+{
+  "description": "Under umask 077 a file gets mode 0600 and a script 0711",
+  "section": "4.4.2",
+  "level": "core",
+  "source": "json2dir-bimbo tests/test_json2dir.py::Json2DirTests::test_script_mode_respects_umask_then_adds_execute",
+  "umask": "077",
+  "input_text": "{\"script\":[\"script\",\"\"],\"file\":\"\"}",
+  "expect": {
+    "tree": {
+      "script": [
+        "mode",
+        "0711",
+        ""
+      ],
+      "file": [
+        "mode",
+        "0600",
+        ""
+      ]
+    }
+  }
+}

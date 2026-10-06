@@ -1,0 +1,15 @@
+{
+  "description": "Array kind 'link\\x00' is rejected",
+  "section": "4.4",
+  "level": "core",
+  "source": "json2dir-ats tests/test_cli.py::Contract::test_invalid_entries[kind 'link\\x00']",
+  "input": {
+    "file": [
+      "link\u0000",
+      "payload"
+    ]
+  },
+  "expect": {
+    "error": true
+  }
+}

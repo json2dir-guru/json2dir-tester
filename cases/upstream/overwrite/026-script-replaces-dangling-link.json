@@ -1,0 +1,26 @@
+{
+  "description": "A script member replaces an existing dangling link without touching its target",
+  "section": "5.3",
+  "level": "overwrite",
+  "source": "json2dir-scheme tests/test_cli.py::test_symlinks_are_unlinked_without_touching_targets[kind=dangling-link, value=[\"script\", \"x\"]]",
+  "setup": {
+    "foo": [
+      "link",
+      "target"
+    ]
+  },
+  "input": {
+    "foo": [
+      "script",
+      "x"
+    ]
+  },
+  "expect": {
+    "tree": {
+      "foo": [
+        "script",
+        "x"
+      ]
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "description": "A null value for an existing file name is rejected",
+  "section": "4.5",
+  "level": "overwrite",
+  "source": "json2dir-agda tests/test_cli.py::test_invalid_value_removes_old_file",
+  "setup": {
+    "old": "old"
+  },
+  "input": {
+    "old": null
+  },
+  "expect": {
+    "error": true
+  }
+}

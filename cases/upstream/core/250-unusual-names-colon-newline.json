@@ -1,0 +1,26 @@
+{
+  "description": "Unusual but simple names (..hidden, a:b, a line break, etc.) are used literally",
+  "section": "4.2.1",
+  "level": "core",
+  "source": "json2dir-scheme tests/test_cli.py::test_normal_unusual_names",
+  "input": {
+    ".hidden": "content",
+    "..hidden": "content",
+    "has space": "content",
+    "back\\slash": "content",
+    "a:b": "content",
+    "-flag": "content",
+    "line\nbreak": "content"
+  },
+  "expect": {
+    "tree": {
+      ".hidden": "content",
+      "..hidden": "content",
+      "has space": "content",
+      "back\\slash": "content",
+      "a:b": "content",
+      "-flag": "content",
+      "line\nbreak": "content"
+    }
+  }
+}

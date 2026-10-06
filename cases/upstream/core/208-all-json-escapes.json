@@ -1,0 +1,12 @@
+{
+  "description": "All JSON escapes (\\\" \\\\ \\/ \\b \\f \\n \\r \\t, \\u0410, a surrogate pair) are decoded in content",
+  "section": "4.3",
+  "level": "core",
+  "source": "json2dir-scheme tests/test_cli.py::test_string_escapes_and_surrogate_pairs",
+  "input_text": "{\"file\": \"\\\"\\\\\\/\\b\\f\\n\\r\\t\\u0410\\uD83D\\uDE00\"}",
+  "expect": {
+    "tree": {
+      "file": "\"\\/\b\f\n\r\tА😀"
+    }
+  }
+}

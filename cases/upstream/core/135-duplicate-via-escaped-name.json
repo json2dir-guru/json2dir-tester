@@ -1,0 +1,13 @@
+{
+  "description": "With duplicate names the last occurrence wins (via escaped name)",
+  "section": "4.2",
+  "level": "core",
+  "source": "json2dir-llvm-IR tests/test_json2dir.py::test_duplicate_last_wins",
+  "input_text": "{\"f\":\"old\",\"\\u0066\":\"new\"}",
+  "expect": {
+    "tree": {
+      "f": "new"
+    },
+    "accept_error": true
+  }
+}

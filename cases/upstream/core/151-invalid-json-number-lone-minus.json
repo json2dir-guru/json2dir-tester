@@ -1,0 +1,10 @@
+{
+  "description": "Malformed JSON (number lone minus) is rejected",
+  "section": "3",
+  "level": "core",
+  "source": "json2dir-llvm-IR tests/test_json2dir.py::test_invalid_json_never_writes",
+  "input_text": "{\"a\":-}",
+  "expect": {
+    "error": true
+  }
+}

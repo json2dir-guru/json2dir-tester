@@ -1,0 +1,15 @@
+{
+  "description": "A symlink target containing NUL is rejected",
+  "section": "4.4.1",
+  "level": "core",
+  "source": "json2dir-ats tests/test_cli.py::Contract::test_paths[NUL link target]",
+  "input": {
+    "link": [
+      "link",
+      "target\u0000suffix"
+    ]
+  },
+  "expect": {
+    "error": true
+  }
+}

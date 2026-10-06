@@ -1,0 +1,16 @@
+{
+  "description": "NUL characters are written into files and scripts",
+  "section": "4.4.2",
+  "level": "core",
+  "source": "json2dir-llvm-IR tests/test_json2dir.py::test_nul_in_contents",
+  "input_text": "{\"f\":\"a\\u0000b\",\"s\":[\"script\",\"\\u0000\"]}",
+  "expect": {
+    "tree": {
+      "f": "a\u0000b",
+      "s": [
+        "script",
+        "\u0000"
+      ]
+    }
+  }
+}

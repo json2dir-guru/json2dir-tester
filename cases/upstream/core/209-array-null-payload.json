@@ -1,0 +1,15 @@
+{
+  "description": "An array with a null payload is rejected",
+  "section": "4.4",
+  "level": "core",
+  "source": "json2dir-scheme tests/test_cli.py::test_array_validation[[\"link\", null]]",
+  "input": {
+    "foo": [
+      "link",
+      null
+    ]
+  },
+  "expect": {
+    "error": true
+  }
+}

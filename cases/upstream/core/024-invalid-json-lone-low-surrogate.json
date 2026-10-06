@@ -1,0 +1,10 @@
+{
+  "description": "Malformed JSON (lone low surrogate) is rejected",
+  "section": "3",
+  "level": "core",
+  "source": "json2dir-agda tests/test_cli.py::test_invalid_json_has_no_effects; json2dir-ats tests/test_cli.py::Contract::test_malformed_json_has_no_effects[b'{\"x\":\"\\\\udc00\"}']; json2dir-F- tests/test_cli.py::CliTests::test_invalid_json",
+  "input_text": "{\"x\":\"\\udc00\"}",
+  "expect": {
+    "error": true
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "description": "A file replaces a dangling symlink without creating the link's target",
+  "section": "5.3",
+  "level": "overwrite",
+  "source": "json2dir-agda tests/test_cli.py::test_symlink_replacement_keeps_target; json2dir-F- tests/test_cli.py::CliTests::test_symlink_target_is_not_modified",
+  "setup": {
+    "target": "untouched",
+    "link": [
+      "link",
+      "missing"
+    ]
+  },
+  "input": {
+    "link": "new"
+  },
+  "expect": {
+    "tree": {
+      "target": "untouched",
+      "link": "new"
+    }
+  }
+}

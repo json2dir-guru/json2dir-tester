@@ -1,0 +1,17 @@
+{
+  "description": "Arguments --help make the command fail with a usage message",
+  "section": "7",
+  "level": "cli",
+  "source": "json2dir-F- tests/test_cli.py::CliTests::test_arguments",
+  "only": [
+    "json2dir-F-"
+  ],
+  "args": [
+    "--help"
+  ],
+  "input": {},
+  "expect": {
+    "error": true,
+    "stderr_contains": "usage:"
+  }
+}

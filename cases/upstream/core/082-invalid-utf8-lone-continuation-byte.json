@@ -1,0 +1,10 @@
+{
+  "description": "Invalid UTF-8 (lone continuation byte) is rejected",
+  "section": "3",
+  "level": "core",
+  "source": "json2dir-ats tests/test_cli.py::Contract::test_malformed_json_has_no_effects[b'{\"x\":\"\\x80\"}']",
+  "input_base64": "eyJ4IjoigCJ9",
+  "expect": {
+    "error": true
+  }
+}

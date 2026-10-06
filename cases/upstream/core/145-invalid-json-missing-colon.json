@@ -1,0 +1,10 @@
+{
+  "description": "Malformed JSON (missing colon) is rejected",
+  "section": "3",
+  "level": "core",
+  "source": "json2dir-llvm-IR tests/test_json2dir.py::test_invalid_json_never_writes; json2dir-scheme tests/test_cli.py::test_invalid_json_has_no_side_effects['{\"a\" \"x\"}']",
+  "input_text": "{\"a\" \"x\"}",
+  "expect": {
+    "error": true
+  }
+}

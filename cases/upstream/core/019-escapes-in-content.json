@@ -1,0 +1,12 @@
+{
+  "description": "Every JSON escape including \\/ and \\u0000 is decoded exactly",
+  "section": "4.3",
+  "level": "core",
+  "source": "json2dir-agda tests/test_cli.py::test_unicode_and_escapes",
+  "input_text": "{\"файл 😀\":\"Привет\\n\\t\\b\\f\\r\\\"\\\\\\/\\u0000\\ud83d\\ude00\"}",
+  "expect": {
+    "tree": {
+      "файл 😀": "Привет\n\t\b\f\r\"\\/\u0000😀"
+    }
+  }
+}

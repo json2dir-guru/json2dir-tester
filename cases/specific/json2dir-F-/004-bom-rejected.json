@@ -1,0 +1,13 @@
+{
+  "description": "A leading UTF-8 byte order mark is rejected (RFC allows ignoring it)",
+  "section": "3",
+  "level": "core",
+  "source": "json2dir-F- tests/test_cli.py::CliTests::test_invalid_json",
+  "only": [
+    "json2dir-F-"
+  ],
+  "input_text": "﻿{}",
+  "expect": {
+    "error": true
+  }
+}

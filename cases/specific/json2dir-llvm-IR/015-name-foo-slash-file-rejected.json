@@ -1,0 +1,15 @@
+{
+  "description": "A string member named 'foo/' is rejected",
+  "section": "4.2.1",
+  "level": "core",
+  "source": "json2dir-llvm-IR tests/test_json2dir.py::test_trailing_slashes_and_dots",
+  "only": [
+    "json2dir-llvm-IR"
+  ],
+  "input": {
+    "foo/": "text"
+  },
+  "expect": {
+    "error": true
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "description": "An invalid member value is reported with the reference diagnostic",
+  "section": "4.5",
+  "level": "core",
+  "source": "json2dir-llvm-IR tests/test_json2dir.py::test_invalid_values",
+  "only": [
+    "json2dir-llvm-IR"
+  ],
+  "input": {
+    "f": 1.25
+  },
+  "expect": {
+    "error": true,
+    "stderr_contains": "expected a JSON value"
+  }
+}

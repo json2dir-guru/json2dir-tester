@@ -1,0 +1,64 @@
+{
+  "description": "Reading stdin with -o DIR into an already materialized DIR succeeds and leaves the same tree",
+  "section": "7",
+  "level": "cli",
+  "source": "json2dir-zig nix/smoke.nix step 2",
+  "only": [
+    "json2dir-zig"
+  ],
+  "args": [
+    "-o",
+    "out"
+  ],
+  "setup": {
+    "out": {
+      "greeting": "Hello, world!",
+      "dir": {
+        "subfile": "Content.\n",
+        "subdir": {}
+      },
+      "symlink": [
+        "link",
+        "target path"
+      ],
+      "script": [
+        "script",
+        "#!/bin/sh\necho Howdy!"
+      ]
+    }
+  },
+  "input": {
+    "greeting": "Hello, world!",
+    "dir": {
+      "subfile": "Content.\n",
+      "subdir": {}
+    },
+    "symlink": [
+      "link",
+      "target path"
+    ],
+    "script": [
+      "script",
+      "#!/bin/sh\necho Howdy!"
+    ]
+  },
+  "expect": {
+    "tree": {
+      "out": {
+        "greeting": "Hello, world!",
+        "dir": {
+          "subfile": "Content.\n",
+          "subdir": {}
+        },
+        "symlink": [
+          "link",
+          "target path"
+        ],
+        "script": [
+          "script",
+          "#!/bin/sh\necho Howdy!"
+        ]
+      }
+    }
+  }
+}

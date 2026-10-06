@@ -1,0 +1,21 @@
+{
+  "description": "An object member naming an existing directory without search permission (0600) fails",
+  "section": "5.1",
+  "level": "overwrite",
+  "source": "json2dir-F- tests/test_cli.py::CliTests::test_unsearchable_empty_directory",
+  "only": [
+    "json2dir-F-"
+  ],
+  "requires_non_root": true,
+  "setup": {
+    "locked": [
+      "dirmode",
+      "0600",
+      {}
+    ]
+  },
+  "input_text": "{\"locked\":{}}",
+  "expect": {
+    "error": true
+  }
+}

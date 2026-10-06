@@ -1,0 +1,18 @@
+{
+  "description": "--dry-run validates the document and creates nothing in the target directory",
+  "section": "7",
+  "level": "cli",
+  "source": "json2dir-zig src/manifest.zig test \"--dry-run does not touch the filesystem\"",
+  "only": [
+    "json2dir-zig"
+  ],
+  "args": [
+    "--dry-run"
+  ],
+  "input": {
+    "f": "one"
+  },
+  "expect": {
+    "tree": {}
+  }
+}

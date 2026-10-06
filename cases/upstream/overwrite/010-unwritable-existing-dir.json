@@ -1,0 +1,22 @@
+{
+  "description": "Creating a file inside an existing read-only directory fails",
+  "section": "10",
+  "level": "overwrite",
+  "source": "json2dir-agda tests/test_cli.py::test_unwritable_directory",
+  "requires_non_root": true,
+  "setup": {
+    "locked": [
+      "dirmode",
+      "0500",
+      {}
+    ]
+  },
+  "input": {
+    "locked": {
+      "file": "x"
+    }
+  },
+  "expect": {
+    "error": true
+  }
+}

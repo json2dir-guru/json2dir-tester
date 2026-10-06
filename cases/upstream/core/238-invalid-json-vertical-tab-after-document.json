@@ -1,0 +1,10 @@
+{
+  "description": "Malformed JSON '{}\\x0b' is rejected",
+  "section": "3",
+  "level": "core",
+  "source": "json2dir-scheme tests/test_cli.py::test_invalid_json_has_no_side_effects['{}\\x0b']",
+  "input_text": "{}\u000b",
+  "expect": {
+    "error": true
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "description": "Invalid UTF-8 (truncated 4 byte) inside a string is rejected",
+  "section": "3",
+  "level": "core",
+  "source": "json2dir-llvm-IR tests/test_json2dir.py::test_invalid_utf8",
+  "input_base64": "eyJhIjoib2siLCJ6Ijoi8J+YIn0=",
+  "expect": {
+    "error": true
+  }
+}

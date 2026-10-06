@@ -1,0 +1,10 @@
+{
+  "description": "A high surrogate escape followed by a non-surrogate escape is rejected",
+  "section": "3",
+  "level": "core",
+  "source": "json2dir-bimbo tests/test_json2dir.py::Json2DirTests::test_invalid_inputs",
+  "input_text": "{\"x\":\"\\uD800\\u0041\"}",
+  "expect": {
+    "error": true
+  }
+}

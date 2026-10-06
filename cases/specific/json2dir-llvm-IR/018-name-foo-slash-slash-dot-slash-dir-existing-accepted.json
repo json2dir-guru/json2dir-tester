@@ -1,0 +1,24 @@
+{
+  "description": "An object member named 'foo//./' merges into an existing directory 'foo'",
+  "section": "4.2.1",
+  "level": "overwrite",
+  "source": "json2dir-llvm-IR tests/test_json2dir.py::test_trailing_slashes_and_dots",
+  "only": [
+    "json2dir-llvm-IR"
+  ],
+  "setup": {
+    "foo": {}
+  },
+  "input": {
+    "foo//./": {
+      "f": "text"
+    }
+  },
+  "expect": {
+    "tree": {
+      "foo": {
+        "f": "text"
+      }
+    }
+  }
+}

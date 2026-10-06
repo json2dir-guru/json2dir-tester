@@ -1,0 +1,10 @@
+{
+  "description": "Invalid UTF-8 (above u10ffff) is rejected",
+  "section": "3",
+  "level": "core",
+  "source": "json2dir-ats tests/test_cli.py::Contract::test_malformed_json_has_no_effects[b'{\"x\":\"\\xf4\\x90\\x80\\x80\"}']; json2dir-bimbo tests/test_json2dir.py::Json2DirTests::test_invalid_inputs",
+  "input_base64": "eyJ4Ijoi9JCAgCJ9",
+  "expect": {
+    "error": true
+  }
+}

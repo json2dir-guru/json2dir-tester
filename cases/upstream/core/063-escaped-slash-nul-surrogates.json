@@ -1,0 +1,16 @@
+{
+  "description": "Escapes \\/, \\u0041, \\u0000 and a lowercase surrogate pair decode exactly",
+  "section": "4.3",
+  "level": "core",
+  "source": "json2dir-ats tests/test_cli.py::Contract::test_utf8_escapes_and_nul_content[escape string]",
+  "input_text": "{\"a\":\"\\/\\u0041\\u0000\\ud83d\\ude80\"}",
+  "expect": {
+    "tree": {
+      "a": [
+        "mode",
+        "0644",
+        "/A\u0000🚀"
+      ]
+    }
+  }
+}

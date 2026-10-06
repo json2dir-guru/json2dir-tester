@@ -1,0 +1,13 @@
+{
+  "description": "A document whose root is false is rejected",
+  "section": "4.1",
+  "level": "core",
+  "source": "json2dir-nix tests/cli.py::CliTests::test_invalid_input_does_not_mutate",
+  "setup": {
+    "a": "old"
+  },
+  "input": false,
+  "expect": {
+    "error": true
+  }
+}

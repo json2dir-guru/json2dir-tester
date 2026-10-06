@@ -1,0 +1,24 @@
+{
+  "description": "An existing directory without search permission named by an empty object makes the run fail, naming ./dir",
+  "section": "5.1",
+  "level": "overwrite",
+  "source": "json2dir-nix tests/cli.py::CliTests::test_unsearchable_empty_directory",
+  "only": [
+    "json2dir-nix"
+  ],
+  "requires_non_root": true,
+  "setup": {
+    "dir": [
+      "dirmode",
+      "0600",
+      {}
+    ]
+  },
+  "input": {
+    "dir": {}
+  },
+  "expect": {
+    "error": true,
+    "stderr_contains": "./dir"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "description": "A name containing NUL is rejected for a link value too",
+  "section": "4.2.1",
+  "level": "core",
+  "source": "json2dir-ats tests/test_cli.py::Contract::test_paths[NUL name, value [\"link\", \"elsewhere\"]]",
+  "input": {
+    "name\u0000suffix": [
+      "link",
+      "elsewhere"
+    ]
+  },
+  "expect": {
+    "error": true
+  }
+}

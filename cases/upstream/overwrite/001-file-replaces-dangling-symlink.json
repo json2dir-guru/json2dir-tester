@@ -1,0 +1,20 @@
+{
+  "description": "A string member replaces a pre-existing dangling symlink with a regular file and creates nothing at the link target",
+  "section": "5.3",
+  "level": "overwrite",
+  "source": "json2dir src/tests.rs::test_unix #5 (MakeFooToBarSymlink)",
+  "setup": {
+    "foo": [
+      "link",
+      "bar"
+    ]
+  },
+  "input": {
+    "foo": "kek"
+  },
+  "expect": {
+    "tree": {
+      "foo": "kek"
+    }
+  }
+}

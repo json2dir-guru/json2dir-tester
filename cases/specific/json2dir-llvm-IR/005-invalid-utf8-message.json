@@ -1,0 +1,14 @@
+{
+  "description": "Invalid UTF-8 is reported with a diagnostic mentioning UTF-8",
+  "section": "3",
+  "level": "core",
+  "source": "json2dir-llvm-IR tests/test_json2dir.py::test_invalid_utf8",
+  "only": [
+    "json2dir-llvm-IR"
+  ],
+  "input_base64": "eyJhIjoib2siLCJ6IjoiwK8ifQ==",
+  "expect": {
+    "error": true,
+    "stderr_contains": "UTF-8"
+  }
+}

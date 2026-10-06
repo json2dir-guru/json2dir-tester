@@ -1,0 +1,30 @@
+{
+  "description": "A directory replaces an existing script",
+  "section": "5.2",
+  "level": "overwrite",
+  "source": "json2dir-nix tests/cli.py::CliTests::test_replacement_matrix[old=script, new=directory]",
+  "setup": {
+    "target": {
+      "untouched": "safe"
+    },
+    "entry": [
+      "script",
+      "old"
+    ]
+  },
+  "input": {
+    "entry": {
+      "child": "new"
+    }
+  },
+  "expect": {
+    "tree": {
+      "target": {
+        "untouched": "safe"
+      },
+      "entry": {
+        "child": "new"
+      }
+    }
+  }
+}

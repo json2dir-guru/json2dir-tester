@@ -1,0 +1,42 @@
+{
+  "description": "A successful run prints nothing on standard output",
+  "section": "7",
+  "level": "cli",
+  "source": "json2dir-bimbo tests/test_json2dir.py::Json2DirTests::test_example",
+  "only": [
+    "json2dir-bimbo"
+  ],
+  "input": {
+    "diary.txt": "Dear diary 💌, today I compiled my situationship to LLVM. He failed the verifier. 💅💀\n",
+    "walk-in-closet": {
+      "outfit.txt": "pink.exe 🎀✨\n",
+      "emotional-baggage": {}
+    },
+    "ex": [
+      "link",
+      "walk-in-closet/outfit.txt"
+    ],
+    "slay.sh": [
+      "script",
+      "#!/bin/sh\nprintf '%s\\n' 'no thoughts, just directory trees 💅📁✨'\n"
+    ]
+  },
+  "expect": {
+    "tree": {
+      "diary.txt": "Dear diary 💌, today I compiled my situationship to LLVM. He failed the verifier. 💅💀\n",
+      "walk-in-closet": {
+        "outfit.txt": "pink.exe 🎀✨\n",
+        "emotional-baggage": {}
+      },
+      "ex": [
+        "link",
+        "walk-in-closet/outfit.txt"
+      ],
+      "slay.sh": [
+        "script",
+        "#!/bin/sh\nprintf '%s\\n' 'no thoughts, just directory trees 💅📁✨'\n"
+      ]
+    },
+    "stdout_empty": true
+  }
+}

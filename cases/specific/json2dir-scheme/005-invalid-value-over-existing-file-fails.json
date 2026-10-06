@@ -1,0 +1,23 @@
+{
+  "description": "An invalid value for a name that exists as a file fails (source also asserts the old file was unlinked)",
+  "section": "4.5",
+  "level": "overwrite",
+  "source": "json2dir-scheme tests/test_cli.py::test_invalid_entry_still_unlinks_existing_file",
+  "only": [
+    "json2dir-scheme"
+  ],
+  "setup": {
+    "foo": [
+      "mode",
+      "0700",
+      "old content"
+    ]
+  },
+  "input": {
+    "foo": false
+  },
+  "expect": {
+    "error": true,
+    "stderr_contains": "expected a JSON value"
+  }
+}

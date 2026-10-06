@@ -1,0 +1,15 @@
+{
+  "description": "A script array with a null payload is rejected",
+  "section": "4.4",
+  "level": "core",
+  "source": "json2dir-ats tests/test_cli.py::Contract::test_invalid_entries[array [\"script\", null]]",
+  "input": {
+    "file": [
+      "script",
+      null
+    ]
+  },
+  "expect": {
+    "error": true
+  }
+}

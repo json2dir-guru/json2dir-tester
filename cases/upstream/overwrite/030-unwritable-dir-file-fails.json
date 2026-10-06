@@ -1,0 +1,22 @@
+{
+  "description": "Creating a file inside an existing read-only directory fails",
+  "section": "10",
+  "level": "overwrite",
+  "source": "json2dir-scheme tests/test_cli.py::test_permission_errors[dir 0500, file child]",
+  "requires_non_root": true,
+  "setup": {
+    "foo": [
+      "dirmode",
+      "0500",
+      {}
+    ]
+  },
+  "input": {
+    "foo": {
+      "bar": "x"
+    }
+  },
+  "expect": {
+    "error": true
+  }
+}

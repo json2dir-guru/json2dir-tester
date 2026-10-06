@@ -1,0 +1,16 @@
+{
+  "description": "A name with trailing separators and a trailing dot component, dir//./, creates the entry named by its trimmed name",
+  "section": "4.2.1",
+  "level": "core",
+  "source": "json2dir-nix tests/cli.py::CliTests::test_duplicate_keys_and_components",
+  "input_text": "{\"a\":\"first\",\"a\":\"last\",\"dir//./\":{\"file\":\"text\"}}",
+  "expect": {
+    "tree": {
+      "a": "last",
+      "dir": {
+        "file": "text"
+      }
+    },
+    "accept_error": true
+  }
+}

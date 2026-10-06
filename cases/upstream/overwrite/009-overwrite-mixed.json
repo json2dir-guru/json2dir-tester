@@ -1,0 +1,33 @@
+{
+  "description": "Directory replaces file, merge into directory and file replaces symlink in one run",
+  "section": "5",
+  "level": "overwrite",
+  "source": "json2dir-agda tests/test_cli.py::test_replacement_and_merge; json2dir-F- tests/test_cli.py::CliTests::test_replacement_and_directory_merge",
+  "setup": {
+    "a": "old",
+    "dir": {
+      "old": "keep"
+    },
+    "link": [
+      "link",
+      "a"
+    ]
+  },
+  "input": {
+    "a": {},
+    "dir": {
+      "new": "add"
+    },
+    "link": "plain"
+  },
+  "expect": {
+    "tree": {
+      "a": {},
+      "dir": {
+        "old": "keep",
+        "new": "add"
+      },
+      "link": "plain"
+    }
+  }
+}

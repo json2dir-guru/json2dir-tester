@@ -1,0 +1,20 @@
+{
+  "description": "A file replaces a dangling symlink and the missing link target is not created",
+  "section": "5.3",
+  "level": "overwrite",
+  "source": "json2dir-nix tests/cli.py::CliTests::test_dangling_symlink_replacement",
+  "setup": {
+    "file": [
+      "link",
+      "missing"
+    ]
+  },
+  "input": {
+    "file": "new"
+  },
+  "expect": {
+    "tree": {
+      "file": "new"
+    }
+  }
+}

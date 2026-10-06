@@ -1,0 +1,15 @@
+{
+  "description": "String member 'file/' is rejected",
+  "section": "4.2.1",
+  "level": "core",
+  "source": "json2dir-agda tests/test_cli.py::test_normalized_names_keep_original_io_spelling",
+  "only": [
+    "json2dir-agda"
+  ],
+  "input": {
+    "file/": "x"
+  },
+  "expect": {
+    "error": true
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "description": "Malformed JSON '{\"a\": 01}' is rejected",
+  "section": "3",
+  "level": "core",
+  "source": "json2dir-scheme tests/test_cli.py::test_invalid_json_has_no_side_effects['{\"a\": 01}']",
+  "input_text": "{\"a\": 01}",
+  "expect": {
+    "error": true
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "description": "Members given in non-sorted order produce the same nested tree",
+  "section": "6",
+  "level": "core",
+  "source": "json2dir-ats tests/test_cli.py::Contract::test_sorted_last_duplicate_wins[nested order]",
+  "input_text": "{\"z\": {\"z\": \"x\", \"a\": \"y\"}, \"a\": \"first\"}",
+  "expect": {
+    "tree": {
+      "z": {
+        "z": "x",
+        "a": "y"
+      },
+      "a": "first"
+    }
+  }
+}

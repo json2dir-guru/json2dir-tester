@@ -1,0 +1,10 @@
+{
+  "description": "Malformed JSON '{\"a\": \"x\" \"b\": \"y\"}' is rejected",
+  "section": "3",
+  "level": "core",
+  "source": "json2dir-scheme tests/test_cli.py::test_invalid_json_has_no_side_effects['{\"a\": \"x\" \"b\": \"y\"}']",
+  "input_text": "{\"a\": \"x\" \"b\": \"y\"}",
+  "expect": {
+    "error": true
+  }
+}

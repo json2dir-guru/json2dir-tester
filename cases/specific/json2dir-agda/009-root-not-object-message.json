@@ -1,0 +1,14 @@
+{
+  "description": "A non-object root is reported with the reference diagnostic",
+  "section": "4.1",
+  "level": "core",
+  "source": "json2dir-agda tests/test_cli.py::test_top_level",
+  "only": [
+    "json2dir-agda"
+  ],
+  "input_text": "false",
+  "expect": {
+    "error": true,
+    "stderr_contains": "expected provided JSON to be an object"
+  }
+}

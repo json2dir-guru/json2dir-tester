@@ -1,0 +1,24 @@
+{
+  "description": "Creating entries inside an existing directory that is not writable fails",
+  "section": "10",
+  "level": "overwrite",
+  "source": "json2dir src/tests.rs::test #11 (MakeUnwritableDir; target dir moved one level down as 'd')",
+  "requires_non_root": true,
+  "setup": {
+    "d": [
+      "dirmode",
+      "0555",
+      {}
+    ]
+  },
+  "input": {
+    "d": {
+      "foo": {
+        "bar": "baz"
+      }
+    }
+  },
+  "expect": {
+    "error": true
+  }
+}

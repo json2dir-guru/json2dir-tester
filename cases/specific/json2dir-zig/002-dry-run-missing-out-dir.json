@@ -1,0 +1,23 @@
+{
+  "description": "--dry-run with --no-clobber and a nonexistent -o directory succeeds and creates nothing",
+  "section": "7",
+  "level": "cli",
+  "source": "json2dir-zig src/manifest.zig test \"dry-run below a nonexistent parent treats everything as new\"",
+  "only": [
+    "json2dir-zig"
+  ],
+  "args": [
+    "-o",
+    "missing",
+    "--dry-run",
+    "--no-clobber"
+  ],
+  "input": {
+    "newdir": {
+      "x": "y"
+    }
+  },
+  "expect": {
+    "tree": {}
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "description": "Malformed JSON (literal false suffix) is rejected",
+  "section": "3",
+  "level": "core",
+  "source": "json2dir-llvm-IR tests/test_json2dir.py::test_invalid_json_never_writes",
+  "input_text": "{\"a\":falseX}",
+  "expect": {
+    "error": true
+  }
+}

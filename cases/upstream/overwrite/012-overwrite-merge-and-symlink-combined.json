@@ -1,0 +1,38 @@
+{
+  "description": "Merge into a directory, replace a file, replace a symlink without following it and turn a file into a directory, all in one document",
+  "section": "5",
+  "level": "overwrite",
+  "source": "json2dir-bimbo tests/test_json2dir.py::Json2DirTests::test_overwrite_merge_and_symlink_replacement",
+  "setup": {
+    "dir": {
+      "keep": "keep"
+    },
+    "regular": "old",
+    "target": "untouched",
+    "link": [
+      "link",
+      "target"
+    ],
+    "become_dir": "old"
+  },
+  "input": {
+    "dir": {
+      "new": "new"
+    },
+    "regular": "new",
+    "link": "replacement",
+    "become_dir": {}
+  },
+  "expect": {
+    "tree": {
+      "dir": {
+        "keep": "keep",
+        "new": "new"
+      },
+      "regular": "new",
+      "target": "untouched",
+      "link": "replacement",
+      "become_dir": {}
+    }
+  }
+}

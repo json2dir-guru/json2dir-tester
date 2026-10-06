@@ -1,0 +1,10 @@
+{
+  "description": "Malformed JSON (non hex unicode escape) is rejected",
+  "section": "3",
+  "level": "core",
+  "source": "json2dir-agda tests/test_cli.py::test_invalid_json_has_no_effects; json2dir-F- tests/test_cli.py::CliTests::test_invalid_json",
+  "input_text": "{\"x\":\"\\u0xx0\"}",
+  "expect": {
+    "error": true
+  }
+}

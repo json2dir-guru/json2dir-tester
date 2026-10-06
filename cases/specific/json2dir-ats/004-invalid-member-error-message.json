@@ -1,0 +1,14 @@
+{
+  "description": "An invalid member fails with 'expected a JSON value' (source also asserts only \"a\" was created)",
+  "section": "6",
+  "level": "core",
+  "source": "json2dir-ats tests/test_cli.py::Contract::test_sorted_last_duplicate_wins[partial on error]",
+  "only": [
+    "json2dir-ats"
+  ],
+  "input_text": "{\"z\": \"after\", \"m\": 0, \"a\": \"before\"}",
+  "expect": {
+    "error": true,
+    "stderr_contains": "expected a JSON value"
+  }
+}

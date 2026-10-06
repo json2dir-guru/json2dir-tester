@@ -1,0 +1,24 @@
+{
+  "description": "Merging an empty object into an existing directory without search permission fails (implementation enters it)",
+  "section": "5.1",
+  "level": "overwrite",
+  "source": "json2dir-scheme tests/test_cli.py::test_permission_errors[dir 0600, {}]",
+  "only": [
+    "json2dir-scheme"
+  ],
+  "requires_non_root": true,
+  "setup": {
+    "foo": [
+      "dirmode",
+      "0600",
+      {}
+    ]
+  },
+  "input": {
+    "foo": {}
+  },
+  "expect": {
+    "error": true,
+    "stderr_contains": "couldn't set the current dir"
+  }
+}

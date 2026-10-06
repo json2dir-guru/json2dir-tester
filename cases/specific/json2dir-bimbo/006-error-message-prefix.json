@@ -1,0 +1,14 @@
+{
+  "description": "Diagnostics for invalid input start with Error:",
+  "section": "7",
+  "level": "cli",
+  "source": "json2dir-bimbo tests/test_json2dir.py::Json2DirTests::test_invalid_inputs",
+  "only": [
+    "json2dir-bimbo"
+  ],
+  "input_text": "f",
+  "expect": {
+    "error": true,
+    "stderr_contains": "Error:"
+  }
+}

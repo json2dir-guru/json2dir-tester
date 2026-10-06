@@ -1,0 +1,17 @@
+{
+  "description": "Given --help, the reference fails and prints a usage message",
+  "section": "7",
+  "level": "cli",
+  "source": "json2dir scripts/helpers/test-cli (usage)",
+  "only": [
+    "json2dir"
+  ],
+  "args": [
+    "--help"
+  ],
+  "input": {},
+  "expect": {
+    "error": true,
+    "stderr_contains": "usage"
+  }
+}

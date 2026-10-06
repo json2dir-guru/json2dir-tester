@@ -1,0 +1,15 @@
+{
+  "description": "A name containing NUL is rejected for a object value too (an existing entry at the truncated name is present)",
+  "section": "4.2.1",
+  "level": "core",
+  "source": "json2dir-scheme tests/test_cli.py::test_nul_in_filename_or_link_target_is_a_clean_error[name \"bad\\0name\", value {}]",
+  "setup": {
+    "bad": "must not be unlinked"
+  },
+  "input": {
+    "bad\u0000name": {}
+  },
+  "expect": {
+    "error": true
+  }
+}

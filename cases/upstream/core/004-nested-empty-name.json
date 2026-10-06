@@ -1,0 +1,16 @@
+{
+  "description": "An empty name two levels deep is rejected",
+  "section": "4.2.1",
+  "level": "core",
+  "source": "json2dir src/tests.rs::test #12",
+  "input": {
+    "foo": {
+      "bar": {
+        "": "error"
+      }
+    }
+  },
+  "expect": {
+    "error": true
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "description": "Under umask 077, replacing a 0644 file and a 0755 script yields 0600 and 0711 (old modes are not kept)",
+  "section": "5.2",
+  "level": "overwrite",
+  "source": "json2dir-F- tests/test_cli.py::CliTests::test_modes_respect_umask",
+  "umask": "077",
+  "setup": {
+    "file": [
+      "mode",
+      "0644",
+      "x"
+    ],
+    "script": [
+      "mode",
+      "0755",
+      "x"
+    ]
+  },
+  "input": {
+    "file": "x",
+    "script": [
+      "script",
+      "x"
+    ]
+  },
+  "expect": {
+    "tree": {
+      "file": [
+        "mode",
+        "0600",
+        "x"
+      ],
+      "script": [
+        "mode",
+        "0711",
+        "x"
+      ]
+    }
+  }
+}

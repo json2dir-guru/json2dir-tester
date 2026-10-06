@@ -1,0 +1,8 @@
+{
+  "name": "json2dir-objc",
+  "description": "Objective-C on the bare GNU libobjc runtime (own root class, no Foundation), one file",
+  "repo": "https://github.com/json2dir-guru/json2dir-objc",
+  "source": "projects/json2dir-objc",
+  "build": "mkdir -p {src}/out && {runtimes}/objc-gcc11/objcc -O2 -Wall -o {src}/out/json2dir {src}/json2dir.m",
+  "command": "{src}/out/json2dir"
+}

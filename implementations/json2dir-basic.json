@@ -1,0 +1,8 @@
+{
+  "name": "json2dir-basic",
+  "description": "BASIC (FreeBASIC), one file, hand-written JSON parser, libc calls for the file system",
+  "repo": "https://github.com/json2dir-guru/json2dir-basic",
+  "source": "projects/json2dir-basic",
+  "build": "mkdir -p {src}/out && {runtimes}/freebasic-1.10.1/bin/fbc -O 2 {src}/json2dir.bas -x {src}/out/json2dir",
+  "command": "{src}/out/json2dir"
+}

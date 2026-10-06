@@ -1,0 +1,8 @@
+{
+  "name": "json2dir-systemverilog",
+  "description": "SystemVerilog testbench (Icarus Verilog 11, -g2012) emitting a shell script, plus a POSIX sh launcher",
+  "repo": "https://github.com/json2dir-guru/json2dir-systemverilog",
+  "source": "projects/json2dir-systemverilog",
+  "build": "mkdir -p {src}/out && {runtimes}/iverilog-11.0/iverilog -g2012 -o {src}/out/json2dir.vvp {src}/json2dir.sv",
+  "command": "JSON2DIR_VVP={runtimes}/iverilog-11.0/vvp {src}/json2dir"
+}

@@ -1,0 +1,8 @@
+{
+  "name": "json2dir-asm",
+  "description": "x86-64 Linux assembly (MASM syntax, JWasm), raw syscalls, hand-written ELF header, no libc",
+  "repo": "https://github.com/json2dir-guru/json2dir-asm",
+  "source": "projects/json2dir-asm",
+  "build": "mkdir -p {src}/out && {runtimes}/jwasm-2.21/jwasm -q -bin -Fo={src}/out/json2dir.bin {src}/json2dir.asm && mv -f {src}/out/json2dir.bin {src}/out/json2dir && chmod +x {src}/out/json2dir",
+  "command": "{src}/out/json2dir"
+}

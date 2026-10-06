@@ -1,0 +1,8 @@
+{
+  "name": "json2dir-jscript",
+  "description": "Classic Windows JScript (ES3) on Wine's cscript, hand-written JSON parser, one file; links and scripts rejected (RFC section 10)",
+  "repo": "https://github.com/json2dir-guru/json2dir-jscript",
+  "source": "projects/json2dir-jscript",
+  "command": "{runtimes}/wine-6.0.3/wine cscript //nologo Z:{src}/json2dir.js",
+  "timeout": 60
+}

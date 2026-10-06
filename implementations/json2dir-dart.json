@@ -1,0 +1,8 @@
+{
+  "name": "json2dir-dart",
+  "description": "Dart, one file, AOT-compiled with dart compile exe; libc via dart:ffi",
+  "repo": "https://github.com/json2dir-guru/json2dir-dart",
+  "source": "projects/json2dir-dart",
+  "build": "mkdir -p {src}/out && PUB_CACHE={runtimes}/dart-sdk-3.13.5/pub-cache {runtimes}/dart-sdk-3.13.5/dart-sdk/bin/dart compile exe {src}/bin/json2dir.dart -o {src}/out/json2dir",
+  "command": "{src}/out/json2dir"
+}

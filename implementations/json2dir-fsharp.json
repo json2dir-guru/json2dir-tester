@@ -1,0 +1,8 @@
+{
+  "name": "json2dir-fsharp",
+  "description": "F# compiled with .NET 8 Native AOT, hand-written JSON parser",
+  "repo": "https://github.com/json2dir-guru/json2dir-fsharp",
+  "source": "projects/json2dir-fsharp",
+  "build": "export DOTNET_ROOT={runtimes}/dotnet-8.0.425 NUGET_PACKAGES={runtimes}/dotnet-8.0.425/nuget-packages DOTNET_CLI_HOME={runtimes}/dotnet-8.0.425/home DOTNET_CLI_TELEMETRY_OPTOUT=1 DOTNET_NOLOGO=1 DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1\n# Native AOT links with the system clang and zlib.\n{runtimes}/dotnet-8.0.425/dotnet publish -c Release -r linux-x64 --nologo -v quiet -o {src}/out {src}/json2dir.fsproj",
+  "command": "{src}/out/json2dir"
+}

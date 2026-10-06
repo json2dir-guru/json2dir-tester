@@ -1,0 +1,9 @@
+{
+  "name": "json2dir-kotlin",
+  "description": "Kotlin (JVM), one source file, stdlib + JDK only with a hand-written JSON parser",
+  "repo": "https://github.com/json2dir-guru/json2dir-kotlin",
+  "source": "projects/json2dir-kotlin",
+  "build": "JAVA_HOME={runtimes}/jdk-21.0.12.1 bash {runtimes}/kotlinc-2.4.20/kotlinc/bin/kotlinc {src}/json2dir.kt -include-runtime -d {src}/out/json2dir.jar",
+  "command": "LC_ALL=C.UTF-8 {runtimes}/jdk-21.0.12.1/bin/java -XX:TieredStopAtLevel=1 -XX:+UseSerialGC -jar {src}/out/json2dir.jar",
+  "timeout": 20
+}

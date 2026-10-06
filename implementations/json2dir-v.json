@@ -1,0 +1,8 @@
+{
+  "name": "json2dir-v",
+  "description": "V, one source file, os module plus libc via C interop, hand-written JSON parser",
+  "repo": "https://github.com/json2dir-guru/json2dir-v",
+  "source": "projects/json2dir-v",
+  "build": "VMODULES={runtimes}/v-0.5.2/.vmodules VCACHE={runtimes}/v-0.5.2/.vcache {runtimes}/v-0.5.2/v -prod -o {src}/out/json2dir {src}/json2dir.v",
+  "command": "{src}/out/json2dir"
+}

@@ -1,0 +1,8 @@
+{
+  "name": "json2dir-jsonscript",
+  "description": "json2dir written as a JSONScript program, run by the jsonscript-js interpreter on Node.js",
+  "repo": "https://github.com/json2dir-guru/json2dir-jsonscript",
+  "source": "projects/json2dir-jsonscript",
+  "build": "export PATH={runtimes}/node-v24.21.0/bin:$PATH\nnpm ci --no-fund --no-audit",
+  "command": "{runtimes}/node-v24.21.0/bin/node {src}/run.js"
+}

@@ -1,0 +1,8 @@
+{
+  "name": "json2dir-freepascal",
+  "description": "Free Pascal 3.2.2, RTL only (BaseUnix syscalls), hand-written JSON parser",
+  "repo": "https://github.com/json2dir-guru/json2dir-freepascal",
+  "source": "projects/json2dir-freepascal",
+  "build": "mkdir -p {src}/out && {runtimes}/fpc-3.2.2/lib/fpc/3.2.2/ppcx64 -n -O2 -Xs -v0 -Fu{runtimes}/fpc-3.2.2/lib/fpc/3.2.2/units/x86_64-linux/rtl -FU{src}/out -o{src}/out/json2dir {src}/json2dir.pas",
+  "command": "{src}/out/json2dir"
+}

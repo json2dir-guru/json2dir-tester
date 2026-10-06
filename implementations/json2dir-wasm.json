@@ -1,0 +1,8 @@
+{
+  "name": "json2dir-wasm",
+  "description": "Hand-written WebAssembly text (WASI preview1) run by Bun, with a hand-written JSON parser",
+  "repo": "https://github.com/json2dir-guru/json2dir-wasm",
+  "source": "projects/json2dir-wasm",
+  "build": "mkdir -p {src}/out && {runtimes}/wabt-1.0.42/bin/wat2wasm -o {src}/out/json2dir.wasm {src}/json2dir.wat",
+  "command": "{runtimes}/bun-1.4.2/bun {src}/run.js"
+}

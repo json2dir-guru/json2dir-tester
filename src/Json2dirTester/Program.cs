@@ -12,7 +12,7 @@ const string Usage = """
       --suite NAME      only cases from cases/NAME (repeatable)
       --level NAME      only cases of this level, e.g. core (repeatable)
       --filter TEXT     only cases whose name contains TEXT
-      --timeout SEC     time limit per case (default 10)
+      --timeout SEC     time limit per case (default: the implementation's "timeout", else 10)
       --json FILE       also write results as JSON
       --verbose         print stderr of failing cases
       --cases DIR       load cases from DIR instead of cases/
@@ -29,7 +29,7 @@ var positional = new List<string>();
 var suites = new List<string>();
 var levels = new List<string>();
 string? filter = null, jsonPath = null, sources = null, runtimes = null, casesDir = null;
-var timeout = TimeSpan.FromSeconds(10);
+TimeSpan? timeout = null;
 bool all = false, verbose = false;
 
 try
@@ -139,7 +139,7 @@ int RunAll(List<Implementation> impls, Workspace ws)
         var results = new List<CaseResult>();
         foreach (var c in cases.Where(c => c.AppliesTo(impl.Name)))
         {
-            var r = Runner.Run(c, command, timeout);
+            var r = Runner.Run(c, command, timeout ?? TimeSpan.FromSeconds(impl.Timeout ?? 10));
             results.Add(r);
             if (r.Status == Status.Pass)
             {

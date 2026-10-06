@@ -50,9 +50,12 @@ Each implementation is a file in [`implementations/`](implementations):
 `build` and `command` are `/bin/sh` snippets. `{src}` is the source checkout (`<sources>/<name>`), `{runtimes}` the toolchain directory.
 `command` runs inside the empty target directory with the document on stdin; `{input}` and `{output}` expand to the input file and the target directory for implementations that want them.
 
-| Implementation | Toolchain setup |
+| Implementation | Toolchain |
 | --- | --- |
-| `json2dir` | rustup into `runtimes/rust-linux`: `RUSTUP_HOME=…/rust-linux/rustup CARGO_HOME=…/rust-linux/cargo sh rustup-init.sh -y --no-modify-path --profile minimal --default-toolchain none` |
+| `json2dir` | Rust via rustup in `runtimes/rust-linux`: `RUSTUP_HOME=…/rust-linux/rustup CARGO_HOME=…/rust-linux/cargo sh rustup-init.sh -y --no-modify-path --profile minimal --default-toolchain none` (the repo pins nightly) |
+| `json2dir-zig` | Zig 0.16.0 tarball unpacked to `runtimes/zig-0.16.0`. The build cache lives in `/tmp`: Zig's cache needs renames that `/mnt/c` does not support |
+| `json2dir-scheme` | Guile 3.0.7 from Ubuntu jammy `.deb`s unpacked with `dpkg -x` into `runtimes/guile-3.0.7`, started through the `runtimes/guile-3.0.7/guile` wrapper |
+| `json2dir-cs`, `json2dir-msbuild` | .NET 10 SDK (the one in WSL). Built with `UseAppHost=false`: Ubuntu's dotnet has no apphost for its distro RID |
 
 ## Test cases
 

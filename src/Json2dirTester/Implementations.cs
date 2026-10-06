@@ -6,10 +6,12 @@ namespace Json2dirTester;
 /// An implementation under test, described by implementations/&lt;name&gt;.json.
 /// <c>build</c> and <c>command</c> are /bin/sh snippets; {src} and {runtimes} expand to shell-quoted paths.
 /// <c>command</c> also takes {input} and {output}, like the conformance runner.
+/// <c>timeout</c> is the default time limit per case in seconds, for slow implementations.
+/// <c>source</c> overrides where the checkout lives, relative to the workspace (default: &lt;sources&gt;/&lt;name&gt;).
 /// </summary>
-sealed record Implementation(string Name, string Description, string Repo, string? Build, string Command)
+sealed record Implementation(string Name, string Description, string Repo, string? Build, string Command, double? Timeout = null, string? Source = null)
 {
-    public string SourceDir(Workspace ws) => Path.Combine(ws.Sources, Name);
+    public string SourceDir(Workspace ws) => Source is null ? Path.Combine(ws.Sources, Name) : Path.GetFullPath(Path.Combine(ws.Root, Source));
 
     public string Expand(string template, Workspace ws) => template
         .Replace("{src}", Shell.Quote(SourceDir(ws)))
@@ -37,7 +39,7 @@ static class Implementations
 /// Paths the tester works with. Sources of the implementations live in "others/" and
 /// toolchains in "runtimes/" of the json2dir_MANY workspace, two levels above the repository.
 /// </summary>
-sealed record Workspace(string Repo, string Sources, string Runtimes)
+sealed record Workspace(string Repo, string Root, string Sources, string Runtimes)
 {
     public string Cases => Path.Combine(Repo, "cases");
     public string ImplementationsDir => Path.Combine(Repo, "implementations");
@@ -49,6 +51,7 @@ sealed record Workspace(string Repo, string Sources, string Runtimes)
         var workspace = Path.GetFullPath(Path.Combine(repo, "..", ".."));
         return new Workspace(
             repo,
+            workspace,
             Path.GetFullPath(sources ?? Path.Combine(workspace, "others")),
             Path.GetFullPath(runtimes ?? Path.Combine(workspace, "runtimes")));
     }

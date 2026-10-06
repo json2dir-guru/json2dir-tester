@@ -1,0 +1,7 @@
+{
+  "name": "json2dir-js",
+  "description": "Plain JavaScript on Node.js, one file",
+  "repo": "https://github.com/json2dir-guru/json2dir-js",
+  "source": "projects/json2dir-js",
+  "command": "{runtimes}/node-v24.21.0/bin/node {src}/json2dir.js"
+}

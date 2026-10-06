@@ -1,0 +1,8 @@
+{
+  "name": "json2dir-ts",
+  "description": "TypeScript on Node.js, validated into a typed tree first",
+  "repo": "https://github.com/json2dir-guru/json2dir-ts",
+  "source": "projects/json2dir-ts",
+  "build": "export PATH={runtimes}/node-v24.21.0/bin:$PATH\nnpm ci --no-fund --no-audit && npm run build",
+  "command": "{runtimes}/node-v24.21.0/bin/node {src}/dist/main.js"
+}

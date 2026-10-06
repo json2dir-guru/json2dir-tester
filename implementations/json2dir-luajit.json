@@ -1,0 +1,7 @@
+{
+  "name": "json2dir-luajit",
+  "description": "Pure LuaJIT, one file: hand-written JSON parser, libc via the built-in FFI",
+  "repo": "https://github.com/json2dir-guru/json2dir-luajit",
+  "source": "projects/json2dir-luajit",
+  "command": "{runtimes}/luajit-2.1.1788856981/bin/luajit-2.1.1788856981 {src}/json2dir.lua"
+}

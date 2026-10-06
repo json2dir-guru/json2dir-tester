@@ -1,0 +1,7 @@
+{
+  "name": "json2dir-ruby",
+  "description": "Plain Ruby, stdlib only, one file",
+  "repo": "https://github.com/json2dir-guru/json2dir-ruby",
+  "source": "projects/json2dir-ruby",
+  "command": "{runtimes}/ruby-3.0.2/ruby {src}/json2dir.rb"
+}

@@ -1,0 +1,7 @@
+{
+  "name": "json2dir-zsh",
+  "description": "Pure zsh (builtins plus zsh/system, zsh/files, zsh/stat modules), one file",
+  "repo": "https://github.com/json2dir-guru/json2dir-zsh",
+  "source": "projects/json2dir-zsh",
+  "command": "{runtimes}/zsh-5.8.1/zsh {src}/json2dir.zsh"
+}

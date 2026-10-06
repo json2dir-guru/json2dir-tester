@@ -1,0 +1,8 @@
+{
+  "name": "json2dir-elisp",
+  "description": "Pure Emacs Lisp (Emacs 27 batch, native json-parse-string), one file",
+  "repo": "https://github.com/json2dir-guru/json2dir-elisp",
+  "source": "projects/json2dir-elisp",
+  "command": "{runtimes}/emacs-27.1/emacs -Q --script {src}/json2dir.el --",
+  "timeout": 20
+}

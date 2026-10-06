@@ -1,0 +1,8 @@
+{
+  "name": "json2dir-pwsh",
+  "description": "Pure PowerShell 7 with a hand-written JSON parser, one file",
+  "repo": "https://github.com/json2dir-guru/json2dir-pwsh",
+  "source": "projects/json2dir-pwsh",
+  "command": "{runtimes}/pwsh-7.6.6/pwsh -NoProfile -NonInteractive -File {src}/json2dir.ps1",
+  "timeout": 30
+}

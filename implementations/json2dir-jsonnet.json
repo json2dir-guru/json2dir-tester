@@ -1,0 +1,7 @@
+{
+  "name": "json2dir-jsonnet",
+  "description": "Jsonnet evaluator (go-jsonnet, std only) emitting a shell script, plus a POSIX sh launcher",
+  "repo": "https://github.com/json2dir-guru/json2dir-jsonnet",
+  "source": "projects/json2dir-jsonnet",
+  "command": "JSON2DIR_JSONNET={runtimes}/jsonnet-0.22.0/jsonnet {src}/json2dir"
+}

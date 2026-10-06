@@ -1,0 +1,7 @@
+{
+  "name": "json2dir-cmake",
+  "description": "Pure CMake script mode (cmake -P), one file, hand-written JSON parser",
+  "repo": "https://github.com/json2dir-guru/json2dir-cmake",
+  "source": "projects/json2dir-cmake",
+  "command": "{runtimes}/cmake-4.4.4/bin/cmake -P {src}/json2dir.cmake"
+}

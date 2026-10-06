@@ -1,0 +1,8 @@
+{
+  "name": "json2dir-c89",
+  "description": "ANSI C (C89) + POSIX in one file, gcc -std=c89 -pedantic-errors, hand-written UTF-8 check and JSON parser",
+  "repo": "https://github.com/json2dir-guru/json2dir-c89",
+  "source": "projects/json2dir-c89",
+  "build": "mkdir -p {src}/out && gcc -std=c89 -pedantic-errors -Wall -Wextra -O2 -o {src}/out/json2dir {src}/json2dir.c",
+  "command": "{src}/out/json2dir"
+}

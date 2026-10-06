@@ -1,0 +1,8 @@
+{
+  "name": "json2dir-cforall",
+  "description": "Cforall (C-for-all), one file, built with cfa from source",
+  "repo": "https://github.com/json2dir-guru/json2dir-cforall",
+  "source": "projects/json2dir-cforall",
+  "build": "mkdir -p {src}/out && {runtimes}/cforall-1.0.0/bin/cfa -nodebug -O2 {src}/json2dir.cfa -o {src}/out/json2dir",
+  "command": "{src}/out/json2dir"
+}

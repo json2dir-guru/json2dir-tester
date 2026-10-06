@@ -1,0 +1,8 @@
+{
+  "name": "json2dir-modula2",
+  "description": "Modula-2 (GNU Modula-2, PIM) with hand-written JSON parser and libc bindings",
+  "repo": "https://github.com/json2dir-guru/json2dir-modula2",
+  "source": "projects/json2dir-modula2",
+  "build": "mkdir -p {src}/out && cd {src}/out && {runtimes}/gm2-12.3.0/gm2 -static -O2 -I{src} -fobject-path={src}/out {src}/json2dir.mod -o {src}/out/json2dir -lm",
+  "command": "{src}/out/json2dir"
+}

@@ -1,0 +1,8 @@
+{
+  "name": "json2dir-holyc",
+  "description": "HolyC compiled with holyc-lang (hcc) to a native Linux binary, one file",
+  "repo": "https://github.com/json2dir-guru/json2dir-holyc",
+  "source": "projects/json2dir-holyc",
+  "build": "mkdir -p {src}/out && {runtimes}/holyc-0.0.15/bin/hcc {src}/json2dir.HC -o {src}/out/json2dir",
+  "command": "{src}/out/json2dir"
+}

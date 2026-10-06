@@ -1,0 +1,8 @@
+{
+  "name": "json2dir-mojo",
+  "description": "Mojo (Modular), one file, stdlib only, native binary",
+  "repo": "https://github.com/json2dir-guru/json2dir-mojo",
+  "source": "projects/json2dir-mojo",
+  "build": ". {runtimes}/pixi-0.81.0/mojo-env.sh && mojo build {src}/json2dir.mojo -o {src}/out/json2dir",
+  "command": "{src}/out/json2dir"
+}

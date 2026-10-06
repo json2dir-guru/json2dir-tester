@@ -1,0 +1,8 @@
+{
+  "name": "json2dir-compcert",
+  "description": "C99 + POSIX in one file, compiled with CompCert 3.12 (ccomp -O), hand-written UTF-8 check and JSON parser",
+  "repo": "https://github.com/json2dir-guru/json2dir-compcert",
+  "source": "projects/json2dir-compcert",
+  "build": "mkdir -p {src}/out && {runtimes}/compcert-3.12/ccomp -O -o {src}/out/json2dir {src}/json2dir.c",
+  "command": "{src}/out/json2dir"
+}

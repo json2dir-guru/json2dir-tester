@@ -1,0 +1,8 @@
+{
+  "name": "json2dir-commonlisp",
+  "description": "Common Lisp on SBCL with sb-posix, saved as an executable core",
+  "repo": "https://github.com/json2dir-guru/json2dir-commonlisp",
+  "source": "projects/json2dir-commonlisp",
+  "build": "mkdir -p {src}/out && cd {src} && SBCL_HOME={runtimes}/sbcl-2.5.8/lib/sbcl {runtimes}/sbcl-2.5.8/bin/sbcl --noinform --non-interactive --no-sysinit --no-userinit --eval '(with-compilation-unit () (load \"json2dir.lisp\"))' --eval '(sb-ext:save-lisp-and-die \"out/json2dir\" :executable t :toplevel (function json2dir:main) :save-runtime-options t)'",
+  "command": "{src}/out/json2dir"
+}

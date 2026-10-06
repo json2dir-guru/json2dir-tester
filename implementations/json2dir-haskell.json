@@ -1,0 +1,8 @@
+{
+  "name": "json2dir-haskell",
+  "description": "Haskell (GHC 9.6, base/bytestring/containers/unix only), hand-written strict JSON parser",
+  "repo": "https://github.com/json2dir-guru/json2dir-haskell",
+  "source": "projects/json2dir-haskell",
+  "build": "mkdir -p {src}/out && {runtimes}/ghcup/.ghcup/bin/ghc -O -L{runtimes}/ghcup/libgmp-dev/usr/lib/x86_64-linux-gnu -outputdir /tmp/json2dir-hs-build -o {src}/out/json2dir {src}/json2dir.hs",
+  "command": "{src}/out/json2dir"
+}

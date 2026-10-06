@@ -1,0 +1,8 @@
+{
+  "name": "json2dir-gnuc",
+  "description": "GNU C (gcc -std=gnu17) in one file: nested functions, statement expressions, cleanup attributes, case ranges, computed goto; POSIX *at() calls, hand-written UTF-8 check and JSON parser",
+  "repo": "https://github.com/json2dir-guru/json2dir-gnuc",
+  "source": "projects/json2dir-gnuc",
+  "build": "mkdir -p {src}/out && gcc -std=gnu17 -O2 -Wall -o {src}/out/json2dir {src}/json2dir.c",
+  "command": "{src}/out/json2dir"
+}

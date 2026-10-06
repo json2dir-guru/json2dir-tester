@@ -1,0 +1,8 @@
+{
+  "name": "json2dir-cpp",
+  "description": "Modern C++ (C++20) in one file, standard library + POSIX, hand-written UTF-8 check and JSON parser",
+  "repo": "https://github.com/json2dir-guru/json2dir-cpp",
+  "source": "projects/json2dir-cpp",
+  "build": "mkdir -p {src}/out && g++ -std=c++20 -O2 -Wall -o {src}/out/json2dir {src}/json2dir.cpp",
+  "command": "{src}/out/json2dir"
+}

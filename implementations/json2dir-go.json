@@ -1,0 +1,8 @@
+{
+  "name": "json2dir-go",
+  "description": "Go, one file, standard library only, hand-written JSON parser",
+  "repo": "https://github.com/json2dir-guru/json2dir-go",
+  "source": "projects/json2dir-go",
+  "build": "cd {src} && GOROOT={runtimes}/go-1.27.1/go GOPATH={runtimes}/go-1.27.1/gopath GOCACHE={runtimes}/go-1.27.1/cache GOMODCACHE={runtimes}/go-1.27.1/modcache GOTOOLCHAIN=local {runtimes}/go-1.27.1/go/bin/go build -o {src}/out/json2dir .",
+  "command": "{src}/out/json2dir"
+}

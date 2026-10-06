@@ -1,0 +1,8 @@
+{
+  "name": "json2dir-cilk",
+  "description": "Cilk (OpenCilk 2.1) + POSIX in one file: parallel validation with cilk_for and a reducer, parallel subdirectory filling with cilk_spawn, hand-written UTF-8 check and JSON parser",
+  "repo": "https://github.com/json2dir-guru/json2dir-cilk",
+  "source": "projects/json2dir-cilk",
+  "build": "mkdir -p {src}/out && {runtimes}/opencilk-2.1.0/bin/clang -fopencilk -O2 -Wall -Wextra -static -o {src}/out/json2dir {src}/json2dir.c",
+  "command": "{src}/out/json2dir"
+}

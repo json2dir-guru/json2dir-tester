@@ -1,0 +1,9 @@
+{
+  "name": "json2dir-purescript",
+  "description": "PureScript compiled to JavaScript (spago bundle), run on Node.js; core libraries only, hand-written JSON parser and strict UTF-8 decoder, tiny node:fs FFI",
+  "repo": "https://github.com/json2dir-guru/json2dir-purescript",
+  "source": "projects/json2dir-purescript",
+  "build": "cd {src} && export PATH={runtimes}/purescript-0.15.16/purescript:{runtimes}/node-v24.21.0/bin:$PATH npm_config_cache={runtimes}/purescript-0.15.16/npm-cache XDG_CACHE_HOME={runtimes}/purescript-0.15.16/cache && { [ -d node_modules ] || npm ci --no-audit --no-fund; } && npx spago bundle",
+  "command": "{runtimes}/node-v24.21.0/bin/node {src}/out/json2dir.js",
+  "timeout": 20
+}

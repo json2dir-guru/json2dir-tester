@@ -8,6 +8,7 @@ const string Usage = """
       json2dir-tester build (NAME... | --all)
       json2dir-tester run (NAME... | --all) [options]
       json2dir-tester serve [--dir DIR] [--bind ADDR] [--port N]
+      json2dir-tester export [--dir DIR] [--out DIR]
 
     Run options:
       --suite NAME      only cases from cases/NAME (repeatable)
@@ -23,6 +24,10 @@ const string Usage = """
       --bind ADDR       address to listen on (default: 127.0.0.1)
       --port N          port (default: 8080)
 
+    Export options (static copy of the dashboard: index.html + results.json):
+      --dir DIR         campaign directory (default: prelim)
+      --out DIR         output directory (default: site)
+
     Global options:
       --sources DIR     where implementation sources live (default: <workspace>/others)
       --runtimes DIR    where toolchains live (default: <workspace>/runtimes)
@@ -34,7 +39,7 @@ const string Usage = """
 var positional = new List<string>();
 var suites = new List<string>();
 var levels = new List<string>();
-string? filter = null, jsonPath = null, sources = null, runtimes = null, casesDir = null, serveDir = null;
+string? filter = null, jsonPath = null, sources = null, runtimes = null, casesDir = null, serveDir = null, outDir = null;
 var bind = "127.0.0.1";
 var port = 8080;
 TimeSpan? timeout = null;
@@ -60,6 +65,7 @@ try
             case "--dir": serveDir = Path.GetFullPath(Next()); break;
             case "--bind": bind = Next(); break;
             case "--port": port = int.Parse(Next()); break;
+            case "--out": outDir = Path.GetFullPath(Next()); break;
             case "-h" or "--help": Console.WriteLine(Usage); return 0;
             case var a when a.StartsWith("--"): throw new ArgumentException($"unknown option {a}");
             default: positional.Add(args[i]); break;
@@ -96,6 +102,8 @@ try
             return RunAll(Select(), ws);
         case "serve":
             return Serve.Run(ws, known, serveDir ?? Path.Combine(ws.Repo, "prelim"), bind, port);
+        case "export":
+            return Serve.Export(ws, known, serveDir ?? Path.Combine(ws.Repo, "prelim"), outDir ?? Path.Combine(ws.Repo, "site"));
         default:
             throw new ArgumentException($"unknown command '{positional[0]}'");
     }

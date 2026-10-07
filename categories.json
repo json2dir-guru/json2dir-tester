@@ -93,7 +93,8 @@
       "ksh",
       "pwsh",
       "sed",
-      "awk"
+      "awk",
+      "nuon2dir"
     ],
     "Functional": [
       "haskell",

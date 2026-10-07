@@ -7,6 +7,7 @@ const string Usage = """
       json2dir-tester list
       json2dir-tester build (NAME... | --all)
       json2dir-tester run (NAME... | --all) [options]
+      json2dir-tester serve [--dir DIR] [--bind ADDR] [--port N]
 
     Run options:
       --suite NAME      only cases from cases/NAME (repeatable)
@@ -16,6 +17,11 @@ const string Usage = """
       --json FILE       also write results as JSON
       --verbose         print stderr of failing cases
       --cases DIR       load cases from DIR instead of cases/
+
+    Serve options (live dashboard over a campaign directory with groupN.lst/.txt logs):
+      --dir DIR         campaign directory (default: prelim)
+      --bind ADDR       address to listen on (default: 127.0.0.1)
+      --port N          port (default: 8080)
 
     Global options:
       --sources DIR     where implementation sources live (default: <workspace>/others)
@@ -28,7 +34,9 @@ const string Usage = """
 var positional = new List<string>();
 var suites = new List<string>();
 var levels = new List<string>();
-string? filter = null, jsonPath = null, sources = null, runtimes = null, casesDir = null;
+string? filter = null, jsonPath = null, sources = null, runtimes = null, casesDir = null, serveDir = null;
+var bind = "127.0.0.1";
+var port = 8080;
 TimeSpan? timeout = null;
 bool all = false, verbose = false;
 
@@ -49,6 +57,9 @@ try
             case "--sources": sources = Next(); break;
             case "--runtimes": runtimes = Next(); break;
             case "--cases": casesDir = Path.GetFullPath(Next()); break;
+            case "--dir": serveDir = Path.GetFullPath(Next()); break;
+            case "--bind": bind = Next(); break;
+            case "--port": port = int.Parse(Next()); break;
             case "-h" or "--help": Console.WriteLine(Usage); return 0;
             case var a when a.StartsWith("--"): throw new ArgumentException($"unknown option {a}");
             default: positional.Add(args[i]); break;
@@ -83,6 +94,8 @@ try
         case "run":
             RequireLinux();
             return RunAll(Select(), ws);
+        case "serve":
+            return Serve.Run(ws, known, serveDir ?? Path.Combine(ws.Repo, "prelim"), bind, port);
         default:
             throw new ArgumentException($"unknown command '{positional[0]}'");
     }

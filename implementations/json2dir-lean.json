@@ -1,0 +1,7 @@
+{
+  "name": "json2dir-lean",
+  "description": "Lean 4 port with proofs for key parsing and value classification",
+  "repo": "https://github.com/tsalkenov/json2dir-lean",
+  "build": "PATH={runtimes}/lean-4.30.0/bin:$PATH lake build",
+  "command": "{src}/.lake/build/bin/json2dir"
+}

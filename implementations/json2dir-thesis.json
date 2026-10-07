@@ -1,0 +1,6 @@
+{
+  "name": "json2dir-thesis",
+  "description": "The converter written in Typst; bundle export emits a shell program that a small launcher runs",
+  "repo": "https://github.com/TheMaxMur/json2dir-thesis",
+  "command": "PATH={runtimes}/typst-0.15.1:$PATH {src}/bin/json2dir"
+}

@@ -1,0 +1,7 @@
+{
+  "name": "json2dir-uiua",
+  "description": "The whole CLI in one json2dir.ua: JSON decoding, validation and file creation in Uiua, with &ffi calls into libc",
+  "repo": "https://github.com/TheMaxMur/json2dir-uiua",
+  "build": "# Interpreter: cargo install uiua --version 0.19.1 --locked --no-default-features --features binary,ffi --root runtimes/uiua-0.19.1\n{runtimes}/uiua-0.19.1/bin/uiua --version",
+  "command": "UIUA_RECURSION_LIMIT=1000 UIUA={runtimes}/uiua-0.19.1/bin/uiua {src}/bin/json2dir"
+}

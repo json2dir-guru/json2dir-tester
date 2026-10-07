@@ -1,0 +1,8 @@
+{
+  "name": "json2dir-erlang",
+  "description": "Erlang/OTP escript, kernel/stdlib only, hand-written binary-matching JSON parser",
+  "repo": "https://github.com/json2dir-guru/json2dir-erlang",
+  "source": "projects/json2dir-erlang",
+  "command": "{runtimes}/erlang-28.5.0.7/bin/escript {src}/json2dir.erl",
+  "timeout": 20
+}

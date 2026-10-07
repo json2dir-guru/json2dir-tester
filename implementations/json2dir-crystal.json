@@ -1,0 +1,8 @@
+{
+  "name": "json2dir-crystal",
+  "description": "Crystal, one file, standard library only, hand-written JSON parser",
+  "repo": "https://github.com/json2dir-guru/json2dir-crystal",
+  "source": "projects/json2dir-crystal",
+  "build": "CRYSTAL_CACHE_DIR=/tmp/crystal-cache-json2dir-crystal {runtimes}/crystal-1.21.1/bin/crystal build --release --no-color -o {src}/out/json2dir {src}/json2dir.cr",
+  "command": "{src}/out/json2dir"
+}

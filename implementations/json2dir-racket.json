@@ -1,0 +1,8 @@
+{
+  "name": "json2dir-racket",
+  "description": "Racket (racket/base only), hand-written JSON parser over bytes, compiled .zo",
+  "repo": "https://github.com/json2dir-guru/json2dir-racket",
+  "source": "projects/json2dir-racket",
+  "build": "cd {src} && {runtimes}/racket-9.3/bin/racket -l racket/base -l compiler/cm -e '(managed-compile-zo \"json2dir.rkt\")'",
+  "command": "{runtimes}/racket-9.3/bin/racket {src}/json2dir.rkt"
+}

@@ -1,0 +1,7 @@
+{
+  "name": "json2dir-bash",
+  "description": "Pure bash evaluator (builtins only, hand-written UTF-8 check and JSON parser) emitting a shell script, plus a POSIX sh launcher",
+  "repo": "https://github.com/json2dir-guru/json2dir-bash",
+  "source": "projects/json2dir-bash",
+  "command": "JSON2DIR_BASH={runtimes}/bash-5.1.16/root/bin/bash {src}/json2dir"
+}

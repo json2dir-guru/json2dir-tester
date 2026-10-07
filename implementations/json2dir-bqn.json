@@ -1,0 +1,7 @@
+{
+  "name": "json2dir-bqn",
+  "description": "BQN on CBQN, array-style UTF-8/JSON validation, •file plus •FFI to libc",
+  "repo": "https://github.com/json2dir-guru/json2dir-bqn",
+  "source": "projects/json2dir-bqn",
+  "command": "{runtimes}/cbqn-c893d3e7/BQN {src}/json2dir.bqn"
+}

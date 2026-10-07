@@ -1,0 +1,8 @@
+{
+  "name": "json2dir-braincopter",
+  "description": "json2dir in Braincopter (launcher approach)",
+  "repo": "https://github.com/json2dir-guru/json2dir-braincopter",
+  "source": "projects/json2dir-braincopter",
+  "command": "JSON2DIR_BRAINCOPTER={runtimes}/braincopter-lodev-2011/braincopter {src}/json2dir",
+  "timeout": 60
+}

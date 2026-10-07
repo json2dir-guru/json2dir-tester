@@ -1,0 +1,7 @@
+{
+  "name": "json2dir-janet",
+  "description": "Janet, core library only, one file",
+  "repo": "https://github.com/json2dir-guru/json2dir-janet",
+  "source": "projects/json2dir-janet",
+  "command": "{runtimes}/janet-1.42.1/bin/janet {src}/json2dir.janet"
+}

@@ -1,0 +1,7 @@
+{
+  "name": "json2dir-neovim",
+  "description": "Lua inside Neovim (nvim -l), vim.uv for all I/O, hand-written JSON parser",
+  "repo": "https://github.com/json2dir-guru/json2dir-neovim",
+  "source": "projects/json2dir-neovim",
+  "command": "{runtimes}/nvim-0.12.5/bin/nvim --clean --headless -l {src}/json2dir.lua"
+}

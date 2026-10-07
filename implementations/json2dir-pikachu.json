@@ -1,0 +1,8 @@
+{
+  "name": "json2dir-pikachu",
+  "description": "json2dir in Pikachu (launcher approach)",
+  "repo": "https://github.com/json2dir-guru/json2dir-pikachu",
+  "source": "projects/json2dir-pikachu",
+  "command": "JSON2DIR_PIKALANG={runtimes}/pikalang-ipchi-ee784e9/pikalang {src}/json2dir",
+  "timeout": 120
+}

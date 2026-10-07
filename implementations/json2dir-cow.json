@@ -1,0 +1,8 @@
+{
+  "name": "json2dir-cow",
+  "description": "json2dir in COW (launcher approach)",
+  "repo": "https://github.com/json2dir-guru/json2dir-cow",
+  "source": "projects/json2dir-cow",
+  "command": "JSON2DIR_COW={runtimes}/cow-e9503d0/cow {src}/json2dir",
+  "timeout": 300
+}

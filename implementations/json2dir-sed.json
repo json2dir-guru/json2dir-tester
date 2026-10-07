@@ -1,0 +1,7 @@
+{
+  "name": "json2dir-sed",
+  "description": "json2dir in sed (launcher approach)",
+  "repo": "https://github.com/json2dir-guru/json2dir-sed",
+  "source": "projects/json2dir-sed",
+  "command": "JSON2DIR_SED={runtimes}/sed-4.8/bin/sed {src}/json2dir"
+}

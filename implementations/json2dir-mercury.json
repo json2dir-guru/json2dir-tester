@@ -1,0 +1,8 @@
+{
+  "name": "json2dir-mercury",
+  "description": "Mercury (stdlib + foreign_proc C), hand-written UTF-8 check and JSON parser, hlc.gc grade",
+  "repo": "https://github.com/json2dir-guru/json2dir-mercury",
+  "source": "projects/json2dir-mercury",
+  "build": "mkdir -p {src}/out && cp {src}/json2dir.m {src}/out/ && cd {src}/out && PATH={runtimes}/mercury-22.01.8/bin:$PATH mmc --grade hlc.gc --make json2dir",
+  "command": "{src}/out/json2dir"
+}

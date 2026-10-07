@@ -1,0 +1,8 @@
+{
+  "name": "json2dir-algol60",
+  "description": "ALGOL 60 evaluator (GNU MARST 2.8 translated to C, gcc) emitting a shell script, plus a POSIX sh launcher",
+  "repo": "https://github.com/json2dir-guru/json2dir-algol60",
+  "source": "projects/json2dir-algol60",
+  "build": "sh {src}/build.sh {runtimes}/marst-2.8",
+  "command": "JSON2DIR_EVAL={src}/out/json2dir-eval {src}/json2dir"
+}

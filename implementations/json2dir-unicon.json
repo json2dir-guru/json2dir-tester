@@ -1,0 +1,8 @@
+{
+  "name": "json2dir-unicon",
+  "description": "Unicon (Icon), one file; JSON parser written with string scanning",
+  "repo": "https://github.com/json2dir-guru/json2dir-unicon",
+  "source": "projects/json2dir-unicon",
+  "build": "mkdir -p {src}/out && PATH={runtimes}/unicon-13.2/bin:$PATH unicon -s -o {src}/out/json2dir {src}/json2dir.icn",
+  "command": "{src}/out/json2dir"
+}

@@ -1,0 +1,7 @@
+{
+  "name": "json2dir-whitespace",
+  "description": "json2dir in Whitespace (launcher approach): evaluator generated from a Forth-like source via a Whitespace assembler, run by whitespacers (wsc), emitting a shell script, plus a POSIX sh launcher",
+  "repo": "https://github.com/json2dir-guru/json2dir-whitespace",
+  "source": "projects/json2dir-whitespace",
+  "command": "JSON2DIR_WSC={runtimes}/whitespacers-1.3.0/bin/wsc {src}/json2dir"
+}

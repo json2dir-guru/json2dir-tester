@@ -1,0 +1,7 @@
+{
+  "name": "json2dir-rexx",
+  "description": "Open Object Rexx 5, classic REXX style with RexxUtil and rxunixsys, one file",
+  "repo": "https://github.com/json2dir-guru/json2dir-rexx",
+  "source": "projects/json2dir-rexx",
+  "command": "{runtimes}/oorexx-5.2.0/rexx {src}/json2dir.rex"
+}

@@ -1,0 +1,7 @@
+{
+  "name": "json2dir-jq",
+  "description": "jq evaluator (hand-written strict UTF-8 check and JSON parser in jq, raw input) emitting a shell script, plus a POSIX sh launcher",
+  "repo": "https://github.com/json2dir-guru/json2dir-jq",
+  "source": "projects/json2dir-jq",
+  "command": "JSON2DIR_JQ={runtimes}/jq-1.8.1/jq {src}/json2dir"
+}

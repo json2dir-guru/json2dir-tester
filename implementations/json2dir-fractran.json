@@ -1,0 +1,8 @@
+{
+  "name": "json2dir-fractran",
+  "description": "FRACTRAN program (fractions compiled from a register-machine source by a Python compiler, run by pimlu's cycle-detecting Lean interpreter) emitting a shell script, plus a POSIX sh launcher that only encodes/decodes the numbers",
+  "repo": "https://github.com/json2dir-guru/json2dir-fractran",
+  "source": "projects/json2dir-fractran",
+  "command": "JSON2DIR_FRACTRAN={runtimes}/fractran-lean-6742361/bin/fractran {src}/json2dir",
+  "timeout": 120
+}

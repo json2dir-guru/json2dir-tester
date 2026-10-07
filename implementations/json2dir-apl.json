@@ -1,0 +1,7 @@
+{
+  "name": "json2dir-apl",
+  "description": "GNU APL evaluator (array-style UTF-8 check, hand-written JSON parser) emitting a shell script, plus a POSIX sh launcher",
+  "repo": "https://github.com/json2dir-guru/json2dir-apl",
+  "source": "projects/json2dir-apl",
+  "command": "JSON2DIR_APL={runtimes}/gnu-apl-2.0/bin/apl {src}/json2dir"
+}

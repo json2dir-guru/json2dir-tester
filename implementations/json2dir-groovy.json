@@ -1,0 +1,9 @@
+{
+  "name": "json2dir-groovy",
+  "description": "Groovy 5 (@CompileStatic, compiled with groovyc), one source file, Groovy + JDK only with a hand-written JSON parser",
+  "repo": "https://github.com/json2dir-guru/json2dir-groovy",
+  "source": "projects/json2dir-groovy",
+  "build": "JAVA_HOME={runtimes}/jdk-21.0.12.1 sh {runtimes}/groovy-5.1.3/bin/groovyc -d {src}/out {src}/json2dir.groovy",
+  "command": "LC_ALL=C.UTF-8 {runtimes}/jdk-21.0.12.1/bin/java -XX:TieredStopAtLevel=1 -XX:+UseSerialGC -cp {runtimes}/groovy-5.1.3/lib/groovy-5.1.3.jar:{src}/out Json2dir",
+  "timeout": 30
+}

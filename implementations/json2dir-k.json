@@ -1,0 +1,7 @@
+{
+  "name": "json2dir-k",
+  "description": "ngn/k evaluator (array-style UTF-8 check and JSON parser) emitting a shell script, plus a POSIX sh launcher",
+  "repo": "https://github.com/json2dir-guru/json2dir-k",
+  "source": "projects/json2dir-k",
+  "command": "JSON2DIR_K={runtimes}/ngnk-b9eeb91/k {src}/json2dir"
+}

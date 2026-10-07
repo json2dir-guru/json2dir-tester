@@ -1,0 +1,9 @@
+{
+  "name": "json2dir-arnoldc",
+  "description": "json2dir in ArnoldC (launcher approach)",
+  "repo": "https://github.com/json2dir-guru/json2dir-arnoldc",
+  "source": "projects/json2dir-arnoldc",
+  "build": "mkdir -p {src}/out && cp {src}/json2dir.arnoldc {src}/out/ && cd {src}/out && {runtimes}/jdk-21.0.12.1/bin/java -jar {runtimes}/arnoldc-0.1/ArnoldC.jar json2dir.arnoldc",
+  "command": "JSON2DIR_JAVA={runtimes}/jdk-21.0.12.1/bin/java {src}/json2dir",
+  "timeout": 60
+}

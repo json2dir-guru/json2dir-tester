@@ -1,0 +1,7 @@
+{
+  "name": "json2dir-octave-pure",
+  "description": "MATLAB language on GNU Octave without Java: rejects scripts and tilde-expanded link targets",
+  "repo": "https://github.com/json2dir-guru/json2dir-octave-pure",
+  "source": "projects/json2dir-octave-pure",
+  "command": "r={runtimes}/octave-6.4.0; L=$r/usr/lib/x86_64-linux-gnu; LD_LIBRARY_PATH=$L:$L/octave/6.4.0:$L/openblas-serial:$r/usr/lib OCTAVE_HOME=$r/usr JAVA_HOME=/nonexistent LC_ALL=C.UTF-8 \"$r/usr/bin/octave-cli\" --no-gui --norc --quiet --no-window-system --no-init-path -p \"$r/usr/share/octave/6.4.0/m/plot/util\" {src}/json2dir.m"
+}

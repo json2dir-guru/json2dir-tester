@@ -1,0 +1,8 @@
+{
+  "name": "json2dir-vala",
+  "description": "Vala with GLib and posix.vapi only, one file, hand-written JSON parser",
+  "repo": "https://github.com/json2dir-guru/json2dir-vala",
+  "source": "projects/json2dir-vala",
+  "build": "mkdir -p {src}/out && {runtimes}/vala-0.56.0/valac --pkg posix -X -w -o {src}/out/json2dir {src}/json2dir.vala",
+  "command": "{src}/out/json2dir"
+}

@@ -1,0 +1,8 @@
+{
+  "name": "json2dir-chef",
+  "description": "Chef recipe (generated from a stack-machine source by a Python generator, run by Acme::Chef 1.03 on Perl) emitting a shell script, plus a POSIX sh launcher",
+  "repo": "https://github.com/json2dir-guru/json2dir-chef",
+  "source": "projects/json2dir-chef",
+  "command": "JSON2DIR_CHEF={runtimes}/acme-chef-1.03/bin/chef {src}/json2dir",
+  "timeout": 120
+}

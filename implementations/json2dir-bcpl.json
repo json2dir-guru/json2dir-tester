@@ -1,0 +1,8 @@
+{
+  "name": "json2dir-bcpl",
+  "description": "json2dir in BCPL (launcher approach): Martin Richards' Cintcode BCPL evaluator emitting a shell script, plus a POSIX sh launcher",
+  "repo": "https://github.com/json2dir-guru/json2dir-bcpl",
+  "source": "projects/json2dir-bcpl",
+  "build": "mkdir -p {src}/out && cd {src} && BCPLROOT={runtimes}/bcpl-2026-07-08/BCPL/cintcode BCPLPATH={runtimes}/bcpl-2026-07-08/BCPL/cintcode/cin BCPLHDRS={runtimes}/bcpl-2026-07-08/BCPL/cintcode/g {runtimes}/bcpl-2026-07-08/BCPL/cintcode/bin/cintsys -q -c 'bcpl json2dir.b to out/json2dir' < /dev/null",
+  "command": "JSON2DIR_BCPL={runtimes}/bcpl-2026-07-08/BCPL/cintcode {src}/json2dir"
+}

@@ -1,0 +1,8 @@
+{
+  "name": "json2dir-taxi",
+  "description": "Taxi program (generated from a stack-VM source by a Python assembler, run by the reference Taxi interpreter) emitting a shell script, plus a POSIX sh launcher that frames stdin as decimal bytes",
+  "repo": "https://github.com/json2dir-guru/json2dir-taxi",
+  "source": "projects/json2dir-taxi",
+  "command": "JSON2DIR_TAXI={runtimes}/taxi-1.7/taxi {src}/json2dir",
+  "timeout": 120
+}

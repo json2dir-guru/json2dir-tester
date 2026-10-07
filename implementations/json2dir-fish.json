@@ -1,0 +1,7 @@
+{
+  "name": "json2dir-fish",
+  "description": "json2dir in ><> (Fish) (launcher approach)",
+  "repo": "https://github.com/json2dir-guru/json2dir-fish",
+  "source": "projects/json2dir-fish",
+  "command": "JSON2DIR_FISH={runtimes}/fishr-baded03/bin/fishr {src}/json2dir"
+}

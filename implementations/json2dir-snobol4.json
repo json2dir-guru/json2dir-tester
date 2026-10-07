@@ -1,0 +1,7 @@
+{
+  "name": "json2dir-snobol4",
+  "description": "SNOBOL4 evaluator (CSNOBOL4 2.3.4, recursive patterns) emitting a shell script, plus a POSIX sh launcher",
+  "repo": "https://github.com/json2dir-guru/json2dir-snobol4",
+  "source": "projects/json2dir-snobol4",
+  "command": "JSON2DIR_SNOBOL4={runtimes}/snobol4-2.3.4/bin/snobol4 {src}/json2dir"
+}

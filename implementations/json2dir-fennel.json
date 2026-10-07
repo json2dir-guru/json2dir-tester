@@ -1,0 +1,8 @@
+{
+  "name": "json2dir-fennel",
+  "description": "Fennel compiled to Lua, run on LuaJIT: hand-written JSON parser, libc via the built-in FFI",
+  "repo": "https://github.com/json2dir-guru/json2dir-fennel",
+  "source": "projects/json2dir-fennel",
+  "build": "mkdir -p {src}/out && {runtimes}/fennel-1.6.1/fennel --compile {src}/json2dir.fnl > {src}/out/json2dir.lua.tmp && mv -f {src}/out/json2dir.lua.tmp {src}/out/json2dir.lua",
+  "command": "{runtimes}/luajit-2.1.1788856981/bin/luajit-2.1.1788856981 {src}/out/json2dir.lua"
+}

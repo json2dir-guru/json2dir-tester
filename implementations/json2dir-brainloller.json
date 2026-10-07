@@ -1,0 +1,8 @@
+{
+  "name": "json2dir-brainloller",
+  "description": "json2dir in Brainloller (launcher approach)",
+  "repo": "https://github.com/json2dir-guru/json2dir-brainloller",
+  "source": "projects/json2dir-brainloller",
+  "command": "JSON2DIR_BL=\"{runtimes}/brainfunk-cece326/bfk --lang=loller\" {src}/json2dir",
+  "timeout": 60
+}

@@ -1,0 +1,8 @@
+{
+  "name": "json2dir-ook",
+  "description": "json2dir in Ook! (launcher approach)",
+  "repo": "https://github.com/json2dir-guru/json2dir-ook",
+  "source": "projects/json2dir-ook",
+  "command": "JSON2DIR_OOK=\"{runtimes}/ook-tritium-525d346/ook -ook -r\" {src}/json2dir",
+  "timeout": 120
+}

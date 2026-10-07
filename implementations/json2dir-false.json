@@ -1,0 +1,7 @@
+{
+  "name": "json2dir-false",
+  "description": "json2dir in FALSE (launcher approach)",
+  "repo": "https://github.com/json2dir-guru/json2dir-false",
+  "source": "projects/json2dir-false",
+  "command": "JSON2DIR_FALSE={runtimes}/false-1.2b/false {src}/json2dir"
+}

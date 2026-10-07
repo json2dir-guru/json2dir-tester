@@ -1,0 +1,8 @@
+{
+  "name": "json2dir-hare",
+  "description": "Hare, one file, standard library only, hand-written JSON parser",
+  "repo": "https://github.com/json2dir-guru/json2dir-hare",
+  "source": "projects/json2dir-hare",
+  "build": "mkdir -p {src}/out && cd {src} && PATH={runtimes}/hare-0.26.0/bin:$PATH HARECACHE=/tmp/harecache-json2dir-hare {runtimes}/hare-0.26.0/bin/hare build -o {src}/out/json2dir {src}/json2dir.ha",
+  "command": "{src}/out/json2dir"
+}

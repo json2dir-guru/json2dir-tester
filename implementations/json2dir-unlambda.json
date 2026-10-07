@@ -1,0 +1,7 @@
+{
+  "name": "json2dir-unlambda",
+  "description": "Unlambda program (s k i c d v + I/O, run by David Madore's official OCaml interpreter) compiled by a Python bracket-abstraction compiler from a small lambda-calculus language, plus a POSIX sh launcher",
+  "repo": "https://github.com/json2dir-guru/json2dir-unlambda",
+  "source": "projects/json2dir-unlambda",
+  "command": "JSON2DIR_UNLAMBDA={runtimes}/unlambda-2.0.0/bin/unlambda {src}/json2dir"
+}

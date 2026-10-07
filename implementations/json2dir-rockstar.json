@@ -1,0 +1,7 @@
+{
+  "name": "json2dir-rockstar",
+  "description": "Rockstar 2.0 power ballad (Starship 2.0.31) emitting a shell script, plus a POSIX sh launcher",
+  "repo": "https://github.com/json2dir-guru/json2dir-rockstar",
+  "source": "projects/json2dir-rockstar",
+  "command": "JSON2DIR_ROCKSTAR={runtimes}/rockstar-2.0.31/rockstar-linux-x64-binary/rockstar {src}/json2dir"
+}

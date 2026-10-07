@@ -1,0 +1,8 @@
+{
+  "name": "json2dir-pony",
+  "description": "Pony with its standard library and a hand-written JSON parser, one file",
+  "repo": "https://github.com/json2dir-guru/json2dir-pony",
+  "source": "projects/json2dir-pony",
+  "build": "{runtimes}/ponyc-0.65.0/bin/ponyc -o {src}/out -b json2dir {src}",
+  "command": "{src}/out/json2dir"
+}

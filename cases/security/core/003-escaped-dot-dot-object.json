@@ -1,0 +1,10 @@
+{
+  "description": "An object under an escaped \"..\" name is rejected and writes nothing outside",
+  "section": "4.2.1",
+  "level": "core",
+  "source": "json2dir-tester security suite (escaped names)",
+  "input_text": "{\"..\": {\"escaped\": \"pwned\"}}",
+  "expect": {
+    "error": true
+  }
+}

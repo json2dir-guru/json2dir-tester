@@ -1,0 +1,10 @@
+{
+  "description": "A name written as .. is \"..\" and is rejected",
+  "section": "4.2.1",
+  "level": "core",
+  "source": "json2dir-tester security suite (escaped names)",
+  "input_text": "{\"..\": \"x\"}",
+  "expect": {
+    "error": true
+  }
+}

@@ -1,5 +1,5 @@
 {
-  "description": "Objects under $HOME and ~ names stay inside the target directory",
+  "description": "Objects under $HOME and ~ names stay inside the target directory (or rejected per RFC §10, never altered)",
   "section": "4.2.1",
   "level": "core",
   "source": "json2dir-tester security suite (expansion)",
@@ -19,6 +19,7 @@
       "~": {
         "inside": "2"
       }
-    }
+    },
+    "accept_error": true
   }
 }

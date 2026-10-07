@@ -1,5 +1,5 @@
 {
-  "description": "Link targets ~/x, $HOME/x and ~root are stored exactly",
+  "description": "Link targets ~/x, $HOME/x and ~root are stored exactly (or rejected per RFC §10, never altered)",
   "section": "4.2.1",
   "level": "core",
   "source": "json2dir-tester security suite (expansion)",
@@ -39,6 +39,7 @@
         "link",
         "a:~"
       ]
-    }
+    },
+    "accept_error": true
   }
 }

@@ -1,5 +1,5 @@
 {
-  "description": "Names like $HOME, ${HOME}, ~ and ~root are created literally, not expanded",
+  "description": "Names like $HOME, ${HOME}, ~ and ~root are created literally, not expanded (or rejected per RFC §10, never altered)",
   "section": "4.2.1",
   "level": "core",
   "source": "json2dir-tester security suite (expansion)",
@@ -19,6 +19,7 @@
       "~root": "d",
       "x:~": "e",
       "a ~": "f"
-    }
+    },
+    "accept_error": true
   }
 }

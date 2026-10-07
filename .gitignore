@@ -11,3 +11,4 @@ results*.txt
 *-results*.txt
 security-*.json
 security-*.txt
+prelim/

@@ -1,6 +1,7 @@
 {
   "name": "json2dir-vim",
   "description": "POSIX sh launcher; Vim script evaluator (hand-written strict JSON parser) emits a shell script",
+  "language": "Vim script",
   "repo": "https://github.com/json2dir-guru/json2dir-vim",
   "source": "projects/json2dir-vim",
   "command": "JSON2DIR_VIM={runtimes}/vim-8.2.3995/vim {src}/json2dir",

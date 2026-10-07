@@ -1,6 +1,7 @@
 {
   "name": "json2dir-koka",
   "description": "Koka, one file, standard library plus C externs for POSIX calls, effect handler for parse errors, hand-written JSON parser",
+  "language": "Koka",
   "repo": "https://github.com/json2dir-guru/json2dir-koka",
   "source": "projects/json2dir-koka",
   "build": "{runtimes}/koka-3.2.9/bin/koka -O2 -i{src} --builddir=/tmp/koka-build-json2dir-koka -o {src}/out/json2dir {src}/json2dir.kk && chmod +x {src}/out/json2dir",

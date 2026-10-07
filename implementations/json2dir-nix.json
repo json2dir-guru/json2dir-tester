@@ -1,6 +1,7 @@
 {
   "name": "json2dir-nix",
   "description": "JSON parsing, validation and traversal in lib.nix using only Nix builtins; a small shell launcher runs the generated filesystem operations (nix via nix-portable)",
+  "language": "Nix",
   "repo": "https://github.com/TheMaxMur/json2dir-nix",
   "build": "# nix-portable keeps one store per user; warm up root's and nobody's (permission cases run as nobody).\n{runtimes}/nix-portable/bin/nix --version && setpriv --reuid=nobody --regid=nogroup --clear-groups {runtimes}/nix-portable/bin/nix --version",
   "command": "JSON2DIR_NIX={runtimes}/nix-portable/bin/nix sh {src}/json2dir",

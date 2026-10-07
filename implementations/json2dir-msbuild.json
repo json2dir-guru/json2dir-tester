@@ -1,6 +1,7 @@
 {
   "name": "json2dir-msbuild",
   "description": "A single MSBuild project file, no C#",
+  "language": "MSBuild",
   "repo": "https://github.com/daniilvaino/json2dir-msbuild",
   "command": "DOTNET_CLI_TELEMETRY_OPTOUT=1 DOTNET_NOLOGO=1 MSBUILDENABLEALLPROPERTYFUNCTIONS=1 dotnet msbuild {src}/json2dir.proj -nologo -noAutoResponse -nodeReuse:false -verbosity:quiet",
   "timeout": 60

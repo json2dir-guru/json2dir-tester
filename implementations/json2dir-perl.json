@@ -1,6 +1,7 @@
 {
   "name": "json2dir-perl",
   "description": "Perl 5, core only, hand-written JSON parser, one file",
+  "language": "Perl",
   "repo": "https://github.com/json2dir-guru/json2dir-perl",
   "source": "projects/json2dir-perl",
   "command": "{runtimes}/perl-5.44.0/bin/perl {src}/json2dir.pl"

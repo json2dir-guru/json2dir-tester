@@ -1,6 +1,7 @@
 {
   "name": "json2dir-aheui",
   "description": "Aheui evaluator (Hangul grid generated from a Forth-like source by a Python generator, run by rpaheui) emitting a shell script, plus a POSIX sh launcher",
+  "language": "Aheui",
   "repo": "https://github.com/json2dir-guru/json2dir-aheui",
   "source": "projects/json2dir-aheui",
   "command": "JSON2DIR_AHEUI={runtimes}/rpaheui-1.2.5/bin/rpaheui-c {src}/json2dir",

@@ -1,6 +1,7 @@
 {
   "name": "json2dir-octave",
   "description": "MATLAB language on GNU Octave, one file, hand-written JSON parser",
+  "language": "MATLAB/Octave",
   "repo": "https://github.com/json2dir-guru/json2dir-octave",
   "source": "projects/json2dir-octave",
   "command": "{runtimes}/octave-6.4.0/octave --no-init-path -p {runtimes}/octave-6.4.0/usr/share/octave/6.4.0/m/plot/util {src}/json2dir.m"

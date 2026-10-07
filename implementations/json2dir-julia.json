@@ -1,6 +1,7 @@
 {
   "name": "json2dir-julia",
   "description": "Julia (Base only, hand-written JSON parser), one file",
+  "language": "Julia",
   "repo": "https://github.com/json2dir-guru/json2dir-julia",
   "source": "projects/json2dir-julia",
   "command": "JULIA_DEPOT_PATH={runtimes}/julia-1.13.1/depot {runtimes}/julia-1.13.1/bin/julia --startup-file=no --history-file=no --compile=min -O0 {src}/json2dir.jl",

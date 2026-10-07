@@ -1,6 +1,7 @@
 {
   "name": "json2dir-luatex",
   "description": "LuaTeX evaluator (json2dir.tex run with --safer, hand-written JSON parser in directlua) emits a shell script that a POSIX sh launcher runs",
+  "language": "LuaTeX",
   "repo": "https://github.com/json2dir-guru/json2dir-luatex",
   "source": "projects/json2dir-luatex",
   "command": "JSON2DIR_LUATEX={runtimes}/luatex-1.14.0/luatex sh {src}/json2dir",

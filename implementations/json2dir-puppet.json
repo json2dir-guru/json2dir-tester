@@ -1,6 +1,7 @@
 {
   "name": "json2dir-puppet",
   "description": "Puppet language manifest (hand-written JSON parser, file resources) run by puppet apply (openvox-agent 8.29.0), plus a POSIX sh launcher",
+  "language": "Puppet",
   "repo": "https://github.com/json2dir-guru/json2dir-puppet",
   "source": "projects/json2dir-puppet",
   "command": "JSON2DIR_PUPPET={runtimes}/openvox-agent-8.29.0/puppet {src}/json2dir",

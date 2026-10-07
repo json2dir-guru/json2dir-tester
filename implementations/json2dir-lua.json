@@ -1,6 +1,7 @@
 {
   "name": "json2dir-lua",
   "description": "json2dir in Lua 5.4 (launcher approach)",
+  "language": "Lua 5.4",
   "repo": "https://github.com/json2dir-guru/json2dir-lua",
   "source": "projects/json2dir-lua",
   "command": "JSON2DIR_LUA={runtimes}/lua-5.4.9/bin/lua {src}/json2dir"

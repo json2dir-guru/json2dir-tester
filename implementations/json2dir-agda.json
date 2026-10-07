@@ -1,6 +1,7 @@
 {
   "name": "json2dir-agda",
   "description": "Agda port compiled via the GHC backend, with checked safety proofs for the name checker and classifier",
+  "language": "Agda",
   "repo": "https://github.com/TheMaxMur/json2dir-agda",
   "build": "# Prebuilt static Agda 2.8.0 (runtimes/agda-2.8.0) + GHC 9.6.7 (runtimes/ghcup) + ieee754 in runtimes/agda-2.8.0/cabal/store; the wrapper sets Agda_datadir/PATH/package-db. make also type-checks Proofs.agda.\nmake AGDA={runtimes}/agda-2.8.0/agda",
   "command": "{src}/json2dir"

@@ -1,6 +1,7 @@
 {
   "name": "json2dir-eiffel",
   "description": "Eiffel (Gobo gec) with Design by Contract, kernel library only, hand-written JSON parser, POSIX calls via external \"C\"",
+  "language": "Eiffel",
   "repo": "https://github.com/json2dir-guru/json2dir-eiffel",
   "source": "projects/json2dir-eiffel",
   "build": "mkdir -p {src}/out && cd {src}/out && GOBO={runtimes}/gobo-26.09 {runtimes}/gobo-26.09/bin/gec ../json2dir.ecf",

@@ -1,6 +1,7 @@
 {
   "name": "json2dir-ats",
   "description": "ATS2 port with linear types and explicit freeing, no GC",
+  "language": "ATS2",
   "repo": "https://github.com/TheMaxMur/json2dir-ats",
   "build": "PATH={runtimes}/ats2-int-0.4.2/bin:$PATH PATSHOME={runtimes}/ats2-int-0.4.2 make PATSCC={runtimes}/ats2-int-0.4.2/bin/patscc PATSHOME={runtimes}/ats2-int-0.4.2",
   "command": "{src}/build/json2dir"

@@ -1,6 +1,7 @@
 {
   "name": "json2dir-clojure",
   "description": "json2dir in Clojure: clojure.core and JDK interop only, hand-written JSON parser, AOT-compiled",
+  "language": "Clojure",
   "repo": "https://github.com/json2dir-guru/json2dir-clojure",
   "source": "projects/json2dir-clojure",
   "build": "mkdir -p {src}/out && {runtimes}/jdk-21.0.12.1/bin/java -Dclojure.compile.path={src}/out -cp {runtimes}/clojure-1.12.6/clojure-1.12.6.jar:{runtimes}/clojure-1.12.6/spec.alpha-0.5.238.jar:{runtimes}/clojure-1.12.6/core.specs.alpha-0.4.74.jar:{src}/src:{src}/out clojure.main -e \"(compile 'json2dir.core)\"",

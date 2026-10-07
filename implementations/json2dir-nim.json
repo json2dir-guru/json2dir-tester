@@ -1,6 +1,7 @@
 {
   "name": "json2dir-nim",
   "description": "Nim, one file, standard library only, hand-written JSON parser",
+  "language": "Nim",
   "repo": "https://github.com/json2dir-guru/json2dir-nim",
   "source": "projects/json2dir-nim",
   "build": "{runtimes}/nim-2.2.12/bin/nim c -d:release --hints:off --nimcache:/tmp/nimcache-json2dir-nim -o:{src}/out/json2dir {src}/json2dir.nim",

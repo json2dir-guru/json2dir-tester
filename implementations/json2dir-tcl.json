@@ -1,6 +1,7 @@
 {
   "name": "json2dir-tcl",
   "description": "Core Tcl 8.6, one file, hand-written JSON parser",
+  "language": "Tcl",
   "repo": "https://github.com/json2dir-guru/json2dir-tcl",
   "source": "projects/json2dir-tcl",
   "command": "{runtimes}/tcl-8.6/tclsh {src}/json2dir.tcl"

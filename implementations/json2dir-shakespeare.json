@@ -1,6 +1,7 @@
 {
   "name": "json2dir-shakespeare",
   "description": "Shakespeare Programming Language play (spl2c 1.2.1 + cc) emitting a shell script, plus a POSIX sh launcher",
+  "language": "the Shakespeare Programming Language",
   "repo": "https://github.com/json2dir-guru/json2dir-shakespeare",
   "source": "projects/json2dir-shakespeare",
   "build": "mkdir -p {src}/out && {runtimes}/spl-1.2.1/bin/spl2c < {src}/json2dir.spl > {src}/out/json2dir.c && cc -O1 -w -fcommon -I{runtimes}/spl-1.2.1/include {src}/out/json2dir.c {runtimes}/spl-1.2.1/lib/libspl.a -lm -o {src}/out/json2dir",

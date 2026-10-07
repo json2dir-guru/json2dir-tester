@@ -1,6 +1,7 @@
 {
   "name": "json2dir-why3",
   "description": "json2dir in WhyML (Why3, extracted to OCaml)",
+  "language": "WhyML (Why3, extracted to OCaml)",
   "repo": "https://github.com/json2dir-guru/json2dir-why3",
   "source": "projects/json2dir-why3",
   "build": "sh {src}/build.sh {runtimes}",

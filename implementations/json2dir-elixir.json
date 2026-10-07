@@ -1,6 +1,7 @@
 {
   "name": "json2dir-elixir",
   "description": "Elixir on the BEAM (Erlang/OTP), Elixir + OTP stdlib only, hand-written JSON parser",
+  "language": "Elixir",
   "repo": "https://github.com/json2dir-guru/json2dir-elixir",
   "source": "projects/json2dir-elixir",
   "command": "PATH={runtimes}/erlang-28.5.0.7/bin:$PATH {runtimes}/elixir-1.20.4/bin/elixir {src}/json2dir.exs",

@@ -1,6 +1,7 @@
 {
   "name": "json2dir-hs",
   "description": "Handwritten one-file Haskell take with aeson and directory; looser than the RFC",
+  "language": "Haskell",
   "repo": "https://github.com/KovalevDima/json2dir-hs",
   "build": "# GHC 9.6.7 from runtimes/ghcup, static cabal-install 3.14.2.0 in runtimes/cabal-3.14.2.0, Hackage index+store in runtimes/cabal-store.\n# -j1: parallel downloads into drvfs lose tarballs. LIBRARY_PATH: a libgmp.so symlink so Template Haskell deps link (the libgmp-dev .a is non-PIC).\nR={runtimes}; export PATH=\"$R/ghcup/.ghcup/bin:$PATH\" CABAL_DIR=\"$R/cabal-store\" LIBRARY_PATH=\"$R/cabal-3.14.2.0/gmp-lib\"; mkdir -p \"$R/json2dir-hs-bin\" && \"$R/cabal-3.14.2.0/cabal\" install -j1 --builddir /tmp/json2dir-hs-kovalev-build --installdir \"$R/json2dir-hs-bin\" --install-method=copy --overwrite-policy=always exe:json2dir-hs",
   "command": "{runtimes}/json2dir-hs-bin/json2dir-hs"

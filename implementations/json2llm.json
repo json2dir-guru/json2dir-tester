@@ -1,6 +1,7 @@
 {
   "name": "json2llm",
   "description": "Go; a language model compiles the plan, run here with the deterministic local backend (-b local)",
+  "language": "Go + LLM",
   "repo": "https://github.com/lcensies/json2llm",
   "build": "GOROOT={runtimes}/go-1.27.1/go GOPATH={runtimes}/go-1.27.1/gopath GOCACHE={runtimes}/go-1.27.1/cache GOMODCACHE={runtimes}/go-1.27.1/modcache GOTOOLCHAIN=local {runtimes}/go-1.27.1/go/bin/go build -o {src}/out/json2llm .",
   "command": "{src}/out/json2llm -b local"

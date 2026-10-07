@@ -1,6 +1,7 @@
 {
   "name": "json2dir-rocq",
   "description": "Rocq 8.15 (Coq): UTF-8, JSON parser and validation proved in Rocq, extracted to OCaml; OCaml driver does I/O only",
+  "language": "Rocq (extracted to OCaml)",
   "repo": "https://github.com/json2dir-guru/json2dir-rocq",
   "source": "projects/json2dir-rocq",
   "build": "mkdir -p {src}/out && cd {src}/src && {runtimes}/coq-8.15.0/coqc -Q . J2D Json2dir.v && {runtimes}/coq-8.15.0/coqc -Q . J2D Extract.v && cd ../out && cp ../src/main.ml . && {runtimes}/ocaml-4.13.1/ocamlopt -w -a unix.cmxa json2dir_core.mli json2dir_core.ml main.ml -o json2dir",

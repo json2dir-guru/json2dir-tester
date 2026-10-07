@@ -1,6 +1,7 @@
 {
   "name": "json2dir-dafny",
   "description": "Dafny compiled to C# (.NET 8): verified parser, UTF-8 and name validation, thin C# I/O externs",
+  "language": "Dafny",
   "repo": "https://github.com/json2dir-guru/json2dir-dafny",
   "source": "projects/json2dir-dafny",
   "build": "export DOTNET_ROOT={runtimes}/dotnet-8.0.425 PATH={runtimes}/dotnet-8.0.425:$PATH NUGET_PACKAGES={runtimes}/dafny-4.11.0/nuget-packages DOTNET_CLI_HOME={runtimes}/dafny-4.11.0/home DOTNET_CLI_TELEMETRY_OPTOUT=1 DOTNET_NOLOGO=1 DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1\n{runtimes}/dafny-4.11.0/dafny/dafny build --target:cs {src}/json2dir.dfy {src}/Externs.cs -o {src}/out/json2dir",

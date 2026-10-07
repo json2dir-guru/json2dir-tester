@@ -1,6 +1,7 @@
 {
   "name": "json2dir-vhdl",
   "description": "VHDL-2008 testbench (GHDL 1.0, mcode) emitting a shell script, plus a POSIX sh launcher",
+  "language": "VHDL",
   "repo": "https://github.com/json2dir-guru/json2dir-vhdl",
   "source": "projects/json2dir-vhdl",
   "build": "mkdir -p {src}/out && {runtimes}/ghdl-1.0.0/ghdl -a --std=08 --workdir={src}/out {src}/json2dir.vhd && {runtimes}/ghdl-1.0.0/ghdl -e --std=08 --workdir={src}/out json2dir",

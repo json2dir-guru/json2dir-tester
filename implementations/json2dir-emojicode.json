@@ -1,6 +1,7 @@
 {
   "name": "json2dir-emojicode",
   "description": "Emojicode 1.0 beta 2, one source file plus a tiny native package (lstat, O_EXCL create, fchmod), hand-written UTF-8 check and JSON parser",
+  "language": "Emojicode",
   "repo": "https://github.com/json2dir-guru/json2dir-emojicode",
   "source": "projects/json2dir-emojicode",
   "build": "sh {src}/build.sh {runtimes}/emojicode-1.0-beta.2",

@@ -1,6 +1,7 @@
 {
   "name": "json2dir-smalltalk",
   "description": "GNU Smalltalk (gst 3.2.5), core classes only, one file",
+  "language": "Smalltalk",
   "repo": "https://github.com/json2dir-guru/json2dir-smalltalk",
   "source": "projects/json2dir-smalltalk",
   "command": "{runtimes}/gst-3.2.5/gst -q -f {src}/json2dir.st"

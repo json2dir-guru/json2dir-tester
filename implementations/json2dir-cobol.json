@@ -1,6 +1,7 @@
 {
   "name": "json2dir-cobol",
   "description": "GnuCOBOL (free format), hand-written JSON parser, libc via CALL, one file",
+  "language": "COBOL",
   "repo": "https://github.com/json2dir-guru/json2dir-cobol",
   "source": "projects/json2dir-cobol",
   "build": "mkdir -p {src}/out && {runtimes}/gnucobol-3.1.2/cobc -x -O {src}/json2dir.cob -o {src}/out/json2dir",

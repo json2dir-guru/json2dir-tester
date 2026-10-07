@@ -1,6 +1,7 @@
 {
   "name": "json2dir-ksh",
   "description": "Pure ksh93 (93u+m): shell built-ins plus ksh93's own libcmd mkdir/ln/chmod/rm, one file",
+  "language": "ksh93",
   "repo": "https://github.com/json2dir-guru/json2dir-ksh",
   "source": "projects/json2dir-ksh",
   "command": "{runtimes}/ksh93-1.0.10/ksh {src}/json2dir.ksh"

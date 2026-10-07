@@ -1,6 +1,7 @@
 {
   "name": "json2dir-c17",
   "description": "ISO C17 + POSIX in one file (_Generic, _Static_assert, anonymous unions, char32_t), gcc -std=c17 -pedantic-errors, hand-written UTF-8 check and JSON parser",
+  "language": "C17",
   "repo": "https://github.com/json2dir-guru/json2dir-c17",
   "source": "projects/json2dir-c17",
   "build": "mkdir -p {src}/out && gcc -std=c17 -pedantic-errors -Wall -Wextra -O2 -o {src}/out/json2dir {src}/json2dir.c",

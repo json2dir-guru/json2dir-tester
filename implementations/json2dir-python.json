@@ -1,6 +1,7 @@
 {
   "name": "json2dir-python",
   "description": "Python 3 standard library only, one file",
+  "language": "Python",
   "repo": "https://github.com/json2dir-guru/json2dir-python",
   "source": "projects/json2dir-python",
   "command": "{runtimes}/python-3.13.16/bin/python3 -I {src}/json2dir.py"

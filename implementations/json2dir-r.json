@@ -1,6 +1,7 @@
 {
   "name": "json2dir-r",
   "description": "Base R, one file, hand-written JSON parser",
+  "language": "R",
   "repo": "https://github.com/json2dir-guru/json2dir-r",
   "source": "projects/json2dir-r",
   "command": "LC_ALL=C.UTF-8 {runtimes}/r-4.1.2/Rscript {src}/json2dir.R",

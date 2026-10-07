@@ -1,6 +1,7 @@
 {
   "name": "json2dir-scheme",
   "description": "Guile Scheme port",
+  "language": "Guile Scheme",
   "repo": "https://github.com/TheMaxMur/json2dir-scheme",
   "command": "GUILE={runtimes}/guile-3.0.7/guile {src}/json2dir"
 }

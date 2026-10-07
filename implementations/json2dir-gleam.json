@@ -1,6 +1,7 @@
 {
   "name": "json2dir-gleam",
   "description": "Gleam on the BEAM (Erlang/OTP), gleam_stdlib only, hand-written JSON parser",
+  "language": "Gleam",
   "repo": "https://github.com/json2dir-guru/json2dir-gleam",
   "source": "projects/json2dir-gleam",
   "build": "cd {src} && XDG_CACHE_HOME={runtimes}/gleam-1.19.0/cache PATH={runtimes}/erlang-28.5.0.7/bin:$PATH {runtimes}/gleam-1.19.0/gleam export erlang-shipment",

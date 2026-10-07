@@ -1,6 +1,7 @@
 {
   "name": "json2dir-chez",
   "description": "Chez Scheme 10.4.1, one file, hand-written parser, FFI to libc",
+  "language": "Chez Scheme",
   "repo": "https://github.com/json2dir-guru/json2dir-chez",
   "source": "projects/json2dir-chez",
   "build": "cd {src} && echo '(compile-program \"json2dir.ss\")' | {runtimes}/chez-10.4.1/bin/scheme -q",

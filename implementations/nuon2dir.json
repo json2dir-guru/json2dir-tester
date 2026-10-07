@@ -1,6 +1,7 @@
 {
   "name": "nuon2dir",
   "description": "Nushell module that turns a native record into a directory tree; its strict-JSON stdin wrapper",
+  "language": "Nushell",
   "repo": "https://github.com/monadix/nuon2dir",
   "command": "{runtimes}/nushell-0.115.1/nu --no-config-file --stdin {src}/bin/json2dir"
 }

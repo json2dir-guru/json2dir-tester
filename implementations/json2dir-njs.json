@@ -1,6 +1,7 @@
 {
   "name": "json2dir-njs",
   "description": "nginx njs handler building the tree through requests to its own WebDAV location",
+  "language": "nginx njs + WebDAV",
   "repo": "https://github.com/json2dir-guru/json2dir-njs",
   "source": "projects/json2dir-njs",
   "command": "NGINX_ROOT={runtimes}/nginx-1.31.6 /bin/sh {src}/json2dir"

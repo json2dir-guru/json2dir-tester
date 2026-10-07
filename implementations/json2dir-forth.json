@@ -1,6 +1,7 @@
 {
   "name": "json2dir-forth",
   "description": "Forth on Gforth 0.7.3, hand-written UTF-8 check and JSON parser, POSIX calls via Gforth's C interface",
+  "language": "Forth",
   "repo": "https://github.com/json2dir-guru/json2dir-forth",
   "source": "projects/json2dir-forth",
   "command": "{runtimes}/gforth-0.7.3/gforth {src}/json2dir.fs -e bye"

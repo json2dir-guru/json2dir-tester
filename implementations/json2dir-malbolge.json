@@ -1,9 +1,11 @@
 {
   "name": "json2dir-malbolge",
   "description": "C compiled to Malbolge Unshackled (ELVM 8cc -> HeLL -> LMFAO), run by the reference fixed-width-20 interpreter (Unshackled-20), emitting a shell script, plus a POSIX sh launcher; extremely slow",
+  "language": "Malbolge Unshackled",
   "repo": "https://github.com/json2dir-guru/json2dir-malbolge",
   "source": "projects/json2dir-malbolge",
   "build": "xz -dc {src}/json2dir.mal.xz > {src}/json2dir.mal",
   "command": "JSON2DIR_MU={runtimes}/malbolge-unshackled-20/Unshackled-20 {src}/json2dir",
-  "timeout": 2400
+  "timeout": 2400,
+  "suites": ["conformance"]
 }

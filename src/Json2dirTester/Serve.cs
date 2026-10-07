@@ -17,7 +17,7 @@ static class Serve
     sealed record Failure(string Case, string Reason);
 
     /// <summary>Static facts about an implementation, shown and filtered on the page.</summary>
-    sealed record Meta(int Total, string[] Kinds, string Verification, string Origin, string Approach, string Description, string Repo);
+    sealed record Meta(int Total, string[] Kinds, string Verification, string Origin, string Approach, string Description, string Repo, string Language);
 
     sealed class ImplStatus
     {
@@ -34,6 +34,7 @@ static class Serve
         public string Approach { get; init; } = "";
         public string Description { get; init; } = "";
         public string Repo { get; init; } = "";
+        public string Language { get; init; } = "";
         public string? Last { get; set; }
         public List<Failure> Failures { get; } = [];
     }
@@ -48,7 +49,7 @@ static class Serve
     {
         var cases = Cases.Load(ws.Cases);
         var categories = LoadCategories(Path.Combine(ws.Repo, "categories.json"));
-        return known.ToDictionary(i => i.Name, i => Describe(i, cases.Count(c => c.AppliesTo(i.Name)), categories));
+        return known.ToDictionary(i => i.Name, i => Describe(i, cases.Count(c => c.AppliesTo(i.Name) && i.InSuites(c)), categories));
     }
 
     /// <summary>
@@ -143,11 +144,11 @@ static class Serve
 
     static ImplStatus Create(string name, string group, Dictionary<string, Meta> meta)
     {
-        var m = meta.GetValueOrDefault(name) ?? new Meta(0, [], "", "", "", "", "");
+        var m = meta.GetValueOrDefault(name) ?? new Meta(0, [], "", "", "", "", "", "");
         return new ImplStatus
         {
             Name = name, Group = group, Total = m.Total, Kinds = m.Kinds, Verification = m.Verification,
-            Origin = m.Origin, Approach = m.Approach, Description = m.Description, Repo = m.Repo,
+            Origin = m.Origin, Approach = m.Approach, Description = m.Description, Repo = m.Repo, Language = m.Language,
         };
     }
 
@@ -181,7 +182,8 @@ static class Serve
             impl.Repo.Contains("/json2dir-guru/") ? "json2dir-guru" : "Third-party",
             launcher ? "Launcher (emits shell)" : "Native",
             d,
-            impl.Repo);
+            impl.Repo,
+            impl.Language ?? shortName);
     }
 
     static void Parse(string log, Dictionary<string, ImplStatus> byName, bool groupDone)
@@ -278,7 +280,7 @@ static class Serve
         let sortKey='state';try{sortKey=localStorage.getItem('sort')||'state'}catch(e){}
         const pct=x=>x.passed+x.failed?100*x.failed/(x.passed+x.failed):0;
         const order={running:0,queued:1,done:2};
-        const cmp={name:(a,b)=>a.name.localeCompare(b.name),state:(a,b)=>order[a.state]-order[b.state]||a.name.localeCompare(b.name),
+        const cmp={name:(a,b)=>a.language.localeCompare(b.language)||a.name.localeCompare(b.name),state:(a,b)=>order[a.state]-order[b.state]||a.name.localeCompare(b.name),
           passed:(a,b)=>b.passed-a.passed,failed:(a,b)=>b.failed-a.failed||pct(b)-pct(a),pct:(a,b)=>pct(b)-pct(a)||b.failed-a.failed};
         function esc(s){return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
         async function tick(){
@@ -301,7 +303,7 @@ static class Serve
             for(const x of d.impls){
               P+=x.passed;F+=x.failed;T+=x.total;if(x.state==='done')done++;if(x.state==='running')run++;
               const t=Math.max(x.total,1),pp=100*x.passed/t,fp=100*x.failed/t;
-              h+=`<tr class="row" onclick="tog('${x.name}')"><td title="${esc(x.description)}">${x.repo?`<a href="${esc(x.repo)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${esc(x.name.replace('json2dir-',''))}</a>`:esc(x.name.replace('json2dir-',''))}<div class="tag">${esc(x.kinds.join(' · '))}${x.verification!=='None'?' · '+esc(x.verification):''}</div></td>
+              h+=`<tr class="row" onclick="tog('${x.name}')"><td title="${esc(x.description)}">${esc(x.language)} (${x.repo?`<a href="${esc(x.repo)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${esc(x.name)}</a>`:esc(x.name)})<div class="tag">${esc(x.kinds.join(' · '))}${x.verification!=='None'?' · '+esc(x.verification):''}</div></td>
               <td><span class="st ${x.state}">${x.state}</span></td>
               <td><div class="bar"><i class="p" style="width:${pp}%"></i><i class="f" style="width:${fp}%"></i></div>
               <span class="mut num">${x.passed+x.failed+x.skipped}/${x.total}</span></td>

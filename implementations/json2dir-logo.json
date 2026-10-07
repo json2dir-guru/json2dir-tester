@@ -1,6 +1,7 @@
 {
   "name": "json2dir-logo",
   "description": "UCBLogo 6.2.2 (Berkeley Logo, text-mode build) evaluator emitting a shell script, plus a POSIX sh launcher",
+  "language": "Logo",
   "repo": "https://github.com/json2dir-guru/json2dir-logo",
   "source": "projects/json2dir-logo",
   "command": "JSON2DIR_LOGO={runtimes}/ucblogo-6.2.2/ucblogo {src}/json2dir"

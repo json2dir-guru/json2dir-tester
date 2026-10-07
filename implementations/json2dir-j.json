@@ -1,6 +1,7 @@
 {
   "name": "json2dir-j",
   "description": "J (jsoftware J9), base library only; hand-written JSON parser, libc via 15!:0",
+  "language": "J",
   "repo": "https://github.com/json2dir-guru/json2dir-j",
   "source": "projects/json2dir-j",
   "command": "{runtimes}/j9-9.6.14/bin/jconsole {src}/json2dir.ijs"

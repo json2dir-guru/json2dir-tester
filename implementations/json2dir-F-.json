@@ -1,6 +1,7 @@
 {
   "name": "json2dir-F-",
   "description": "The whole CLI written in F* and extracted to OCaml; Lean spec theorems ported as F* lemmas checked with Z3",
+  "language": "F*",
   "repo": "https://github.com/TheMaxMur/json2dir-F-",
   "build": "# F* v2026.09.27 release (bundles z3) + OCaml 5.3.0 opam switch (findlib, batteries, stdint, zarith, ppx_deriving, ppx_deriving_yojson); env.sh sets OPAMROOT/FSTAR_HOME. `make` runs F* verification, extraction and ocamlopt.\n. {runtimes}/opam-fstar/env.sh && make",
   "command": "{src}/json2dir"

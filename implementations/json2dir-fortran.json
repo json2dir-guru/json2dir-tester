@@ -1,6 +1,7 @@
 {
   "name": "json2dir-fortran",
   "description": "Modern Fortran (2008+) with ISO_C_BINDING, one file",
+  "language": "Fortran",
   "repo": "https://github.com/json2dir-guru/json2dir-fortran",
   "source": "projects/json2dir-fortran",
   "build": "mkdir -p {src}/out && {runtimes}/gfortran-11/gfortran -std=f2008 -O2 -static-libgfortran -J {src}/out {src}/json2dir.f90 -o {src}/out/json2dir",

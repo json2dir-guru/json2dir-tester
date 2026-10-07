@@ -1,6 +1,7 @@
 {
   "name": "json2dir-idris2",
   "description": "Idris 2 0.8.0 on Chez Scheme: total UTF-8 check, JSON parser and validation; names carry a proof that they are simple; libc via the FFI",
+  "language": "Idris 2",
   "repo": "https://github.com/json2dir-guru/json2dir-idris2",
   "source": "projects/json2dir-idris2",
   "build": "cd {src} && {runtimes}/idris2-0.8.0/idris2 --source-dir src --build-dir /tmp/idris2-json2dir -o json2dir src/Main.idr",

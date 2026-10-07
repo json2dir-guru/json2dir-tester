@@ -1,6 +1,7 @@
 {
   "name": "json2dir-brainfuck",
   "description": "json2dir in Brainfuck (launcher approach)",
+  "language": "Brainfuck",
   "repo": "https://github.com/json2dir-guru/json2dir-brainfuck",
   "source": "projects/json2dir-brainfuck",
   "command": "JSON2DIR_BF=\"{runtimes}/tritium-525d346/bfi -b -n\" {src}/json2dir"

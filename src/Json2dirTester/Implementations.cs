@@ -8,14 +8,18 @@ namespace Json2dirTester;
 /// <c>command</c> also takes {input} and {output}, like the conformance runner.
 /// <c>timeout</c> is the default time limit per case in seconds, for slow implementations.
 /// <c>source</c> overrides where the checkout lives, relative to the workspace (default: &lt;sources&gt;/&lt;name&gt;).
+/// <c>language</c> is the display name of the language; <c>suites</c> limits a run to those suites (default: all).
 /// </summary>
-sealed record Implementation(string Name, string Description, string Repo, string? Build, string Command, double? Timeout = null, string? Source = null)
+sealed record Implementation(string Name, string Description, string Repo, string? Build, string Command, double? Timeout = null, string? Source = null, string? Language = null, string[]? Suites = null)
 {
     public string SourceDir(Workspace ws) => Source is null ? Path.Combine(ws.Sources, Name) : Path.GetFullPath(Path.Combine(ws.Root, Source));
 
     public string Expand(string template, Workspace ws) => template
         .Replace("{src}", Shell.Quote(SourceDir(ws)))
         .Replace("{runtimes}", Shell.Quote(ws.Runtimes));
+
+    /// <summary>Whether a case belongs to the suites this implementation is run on (all, when "suites" is absent).</summary>
+    public bool InSuites(Case c) => Suites is null || Suites.Contains(c.Name.Split('/')[0]);
 }
 
 static class Implementations

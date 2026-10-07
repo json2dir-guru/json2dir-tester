@@ -1,6 +1,7 @@
 {
   "name": "json2dir-raku",
   "description": "Raku (Rakudo on MoarVM), core only: JSON grammar, IO::Path",
+  "language": "Raku",
   "repo": "https://github.com/json2dir-guru/json2dir-raku",
   "source": "projects/json2dir-raku",
   "command": "{runtimes}/rakudo-2026.09-01/bin/rakudo {src}/json2dir.raku"

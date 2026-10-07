@@ -1,6 +1,7 @@
 {
   "name": "json2dir-scala",
   "description": "Scala 3 (JVM), one source file, stdlib + JDK only with a hand-written JSON parser",
+  "language": "Scala",
   "repo": "https://github.com/json2dir-guru/json2dir-scala",
   "source": "projects/json2dir-scala",
   "build": "JAVA_HOME={runtimes}/jdk-21.0.12.1 {runtimes}/scala3-3.9.0/bin/scalac -d {src}/out {src}/json2dir.scala",

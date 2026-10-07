@@ -1,6 +1,7 @@
 {
   "name": "json2dir-cil",
   "description": "Hand-written CIL (.NET IL assembly), assembled with ilasm, hand-written JSON parser",
+  "language": "hand-written CIL (ilasm)",
   "repo": "https://github.com/json2dir-guru/json2dir-cil",
   "source": "projects/json2dir-cil",
   "build": "mkdir -p {src}/out && {runtimes}/ilasm-8.0.0/pkg/runtimes/linux-x64/native/ilasm -dll -quiet -output={src}/out/json2dir.dll {src}/json2dir.il && cp {src}/json2dir.runtimeconfig.json {src}/out/",

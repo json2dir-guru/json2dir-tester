@@ -1,6 +1,7 @@
 {
   "name": "json2dir-vbs",
   "description": "VBScript on Wine's cscript, hand-written JSON parser and UTF-8 decoder, one file; links and scripts rejected (RFC section 10); never replaces or reuses existing entries (Wine cannot detect symlinks)",
+  "language": "VBScript (Wine)",
   "repo": "https://github.com/json2dir-guru/json2dir-vbs",
   "source": "projects/json2dir-vbs",
   "command": "{runtimes}/wine-6.0.3/wine cscript //nologo Z:{src}/json2dir.vbs",

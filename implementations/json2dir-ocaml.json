@@ -1,6 +1,7 @@
 {
   "name": "json2dir-ocaml",
   "description": "OCaml (stdlib + Unix), hand-written JSON parser, native build",
+  "language": "OCaml",
   "repo": "https://github.com/json2dir-guru/json2dir-ocaml",
   "source": "projects/json2dir-ocaml",
   "build": "mkdir -p {src}/out && cd {src} && {runtimes}/ocaml-4.13.1/ocamlopt unix.cmxa json2dir.ml -o out/json2dir",

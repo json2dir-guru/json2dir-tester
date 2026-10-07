@@ -1,6 +1,7 @@
 {
   "name": "json2dir-sqlite",
   "description": "SQL for the SQLite shell: JSON1 functions, recursive CTEs and the shell's fileio functions",
+  "language": "SQL (SQLite)",
   "repo": "https://github.com/json2dir-guru/json2dir-sqlite",
   "source": "projects/json2dir-sqlite",
   "command": "{runtimes}/sqlite-3.53.4/sqlite3 -bail :memory: \".read {src}/json2dir.sql\""

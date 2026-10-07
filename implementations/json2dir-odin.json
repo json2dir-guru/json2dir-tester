@@ -1,6 +1,7 @@
 {
   "name": "json2dir-odin",
   "description": "Odin, core library only, hand-written JSON parser and raw Linux syscalls",
+  "language": "Odin",
   "repo": "https://github.com/json2dir-guru/json2dir-odin",
   "source": "projects/json2dir-odin",
   "build": "mkdir -p {src}/out && cd {src} && {runtimes}/odin-dev-2026-10/odin build . -o:speed -out:{src}/out/json2dir",

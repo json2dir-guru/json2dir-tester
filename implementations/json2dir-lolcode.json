@@ -1,6 +1,7 @@
 {
   "name": "json2dir-lolcode",
   "description": "LOLCODE 1.3 (lci 0.11.2) evaluator emitting a shell script, plus a POSIX sh launcher",
+  "language": "LOLCODE",
   "repo": "https://github.com/json2dir-guru/json2dir-lolcode",
   "source": "projects/json2dir-lolcode",
   "command": "JSON2DIR_LCI={runtimes}/lci-0.11.2/bin/lci {src}/json2dir"

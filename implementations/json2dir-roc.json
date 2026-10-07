@@ -1,6 +1,7 @@
 {
   "name": "json2dir-roc",
   "description": "Roc (new compiler nightly) on the basic-cli platform, hand-written UTF-8 check and JSON parser; links and scripts rejected (basic-cli cannot create them)",
+  "language": "Roc",
   "repo": "https://github.com/json2dir-guru/json2dir-roc",
   "source": "projects/json2dir-roc",
   "build": "mkdir -p {src}/out && cd {src} && XDG_CACHE_HOME={runtimes}/roc-nightly-2026-10-06-c34079d/cache {runtimes}/roc-nightly-2026-10-06-c34079d/roc build --opt=speed --output={src}/out/json2dir main.roc",

@@ -1,6 +1,7 @@
 {
   "name": "json2dir",
   "description": "Reference implementation (Rust)",
+  "language": "Rust",
   "repo": "https://github.com/alurm/json2dir",
   "build": "export RUSTUP_HOME={runtimes}/rust-linux/rustup CARGO_HOME={runtimes}/rust-linux/cargo\n\"$CARGO_HOME/bin/cargo\" build --release",
   "command": "{src}/target/release/json2dir"

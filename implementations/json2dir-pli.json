@@ -1,6 +1,7 @@
 {
   "name": "json2dir-pli",
   "description": "PL/I (Iron Spring PL/I 1.4.1), hand-written UTF-8 check and JSON parser, Linux system calls via the PL/I runtime, no libc",
+  "language": "PL/I",
   "repo": "https://github.com/json2dir-guru/json2dir-pli",
   "source": "projects/json2dir-pli",
   "build": "sh {src}/build.sh {runtimes}/ironspring-pli-1.4.1/pli-1.4.1",

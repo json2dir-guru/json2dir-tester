@@ -1,6 +1,7 @@
 {
   "name": "json2dir-ada",
   "description": "Ada (GNAT), standard library only, hand-written JSON parser, POSIX calls via pragma Import",
+  "language": "Ada",
   "repo": "https://github.com/json2dir-guru/json2dir-ada",
   "source": "projects/json2dir-ada",
   "build": "mkdir -p {src}/out && cd {src} && PATH={runtimes}/gnat-16.1.0-1/bin:$PATH gnatmake -q -O2 -D out json2dir.adb -o out/json2dir",

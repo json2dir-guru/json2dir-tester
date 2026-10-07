@@ -1,6 +1,7 @@
 {
   "name": "json2dir-xslt",
   "description": "XSLT 3.0 stylesheet (Saxon-HE 12.10 on JDK 21) emitting a shell script, plus a POSIX sh launcher",
+  "language": "XSLT 3.0",
   "repo": "https://github.com/json2dir-guru/json2dir-xslt",
   "source": "projects/json2dir-xslt",
   "command": "JSON2DIR_JAVA={runtimes}/jdk-21.0.12.1/bin/java JSON2DIR_SAXON={runtimes}/saxon-he-12.10/saxon-he-12.10.jar {src}/json2dir"

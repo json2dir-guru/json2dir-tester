@@ -1,6 +1,7 @@
 {
   "name": "json2dir-cs",
   "description": "The whole tool as a single C# expression",
+  "language": "C#",
   "repo": "https://github.com/daniilvaino/json2dir-cs",
   "build": "export DOTNET_CLI_TELEMETRY_OPTOUT=1 DOTNET_NOLOGO=1\n# Ubuntu's dotnet has no apphost for its distro RID; the tool runs through `dotnet json2dir.dll` anyway.\ndotnet build -c Release --nologo -v quiet -p:UseAppHost=false json2dir",
   "command": "DOTNET_CLI_TELEMETRY_OPTOUT=1 dotnet {src}/json2dir/bin/Release/net10.0/json2dir.dll"

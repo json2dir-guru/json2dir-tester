@@ -1,6 +1,7 @@
 {
   "name": "json2dir-kotlin",
   "description": "Kotlin (JVM), one source file, stdlib + JDK only with a hand-written JSON parser",
+  "language": "Kotlin",
   "repo": "https://github.com/json2dir-guru/json2dir-kotlin",
   "source": "projects/json2dir-kotlin",
   "build": "JAVA_HOME={runtimes}/jdk-21.0.12.1 bash {runtimes}/kotlinc-2.4.20/kotlinc/bin/kotlinc {src}/json2dir.kt -include-runtime -d {src}/out/json2dir.jar",

@@ -1,6 +1,7 @@
 {
   "name": "json2dir-php",
   "description": "Core PHP 8.1 (built-in json_decode), one file",
+  "language": "PHP",
   "repo": "https://github.com/json2dir-guru/json2dir-php",
   "source": "projects/json2dir-php",
   "command": "{runtimes}/php-8.1.2/php {src}/json2dir.php"

@@ -158,7 +158,8 @@ int RunAll(List<Implementation> impls, Workspace ws)
         Console.WriteLine(Paint($"== {impl.Name} — {impl.Description}", "1"));
         var command = impl.Expand(impl.Command, ws);
         var results = new List<CaseResult>();
-        foreach (var c in cases.Where(c => c.AppliesTo(impl.Name)))
+        // An implementation may limit itself to some suites (e.g. one too slow for more); --suite overrides that.
+        foreach (var c in cases.Where(c => c.AppliesTo(impl.Name) && (suites.Count > 0 || impl.InSuites(c))))
         {
             var r = Runner.Run(c, command, timeout ?? TimeSpan.FromSeconds(impl.Timeout ?? 10));
             results.Add(r);

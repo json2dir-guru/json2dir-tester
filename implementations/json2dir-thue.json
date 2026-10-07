@@ -1,6 +1,7 @@
 {
   "name": "json2dir-thue",
   "description": "Thue program (deterministic semi-Thue system generated from a state-machine description by a Python compiler, run by fixedpoint/thue) emitting a shell script, plus a POSIX sh launcher",
+  "language": "Thue",
   "repo": "https://github.com/json2dir-guru/json2dir-thue",
   "source": "projects/json2dir-thue",
   "command": "JSON2DIR_THUE={runtimes}/thue-0.0.1/thue {src}/json2dir",

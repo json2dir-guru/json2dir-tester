@@ -1,6 +1,7 @@
 {
   "name": "json2dir-kr",
   "description": "K&R C (pre-ANSI, 1978 style: old-style definitions, no prototypes/void/const/enum) in one file, built with gcc -std=gnu89, hand-written UTF-8 check and JSON parser",
+  "language": "K&R C",
   "repo": "https://github.com/json2dir-guru/json2dir-kr",
   "source": "projects/json2dir-kr",
   "build": "mkdir -p {src}/out && gcc -std=gnu89 -fno-builtin -O2 -o {src}/out/json2dir {src}/json2dir.c",

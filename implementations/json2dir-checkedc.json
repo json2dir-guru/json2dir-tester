@@ -1,6 +1,7 @@
 {
   "name": "json2dir-checkedc",
   "description": "Checked C (checked pointers with bounds, CHECKED_SCOPE on) + POSIX in one file, compiled with Checked C clang 12.0.2, hand-written UTF-8 check and JSON parser",
+  "language": "Checked C",
   "repo": "https://github.com/json2dir-guru/json2dir-checkedc",
   "source": "projects/json2dir-checkedc",
   "build": "mkdir -p {src}/out && {runtimes}/checkedc-12.0.2/bin/clang -O2 -o {src}/out/json2dir {src}/json2dir.c",

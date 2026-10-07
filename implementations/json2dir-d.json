@@ -1,6 +1,7 @@
 {
   "name": "json2dir-d",
   "description": "D (DMD), one source file, druntime/Phobos only with a hand-written JSON parser",
+  "language": "D",
   "repo": "https://github.com/json2dir-guru/json2dir-d",
   "source": "projects/json2dir-d",
   "build": "{runtimes}/dmd-2.113.0/linux/bin64/dmd -O -of={src}/out/json2dir -od=/tmp/json2dir-d-obj {src}/json2dir.d",

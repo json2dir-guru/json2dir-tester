@@ -1,6 +1,7 @@
 {
   "name": "json2dir-prolog",
   "description": "SWI-Prolog, one file, hand-written DCG JSON parser",
+  "language": "Prolog",
   "repo": "https://github.com/json2dir-guru/json2dir-prolog",
   "source": "projects/json2dir-prolog",
   "command": "{runtimes}/swipl-8.4.2/swipl {src}/json2dir.pl"

@@ -1,6 +1,7 @@
 {
   "name": "json2dir-zig",
   "description": "Zig rewrite focused on safety",
+  "language": "Zig",
   "repo": "https://github.com/71g3pf4c3/json2dir-zig",
   "build": "# The zig cache needs rename semantics that /mnt/c (drvfs) lacks, so it lives in WSL's /tmp.\n{runtimes}/zig-0.16.0/zig build -Doptimize=ReleaseSafe --cache-dir /tmp/json2dir-zig-cache --global-cache-dir /tmp/zig-global-cache",
   "command": "{src}/zig-out/bin/json2dir"

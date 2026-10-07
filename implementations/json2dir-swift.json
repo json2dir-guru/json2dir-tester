@@ -1,6 +1,7 @@
 {
   "name": "json2dir-swift",
   "description": "Swift, one file, standard library + Glibc only (no Foundation), hand-written JSON parser",
+  "language": "Swift",
   "repo": "https://github.com/json2dir-guru/json2dir-swift",
   "source": "projects/json2dir-swift",
   "build": "{runtimes}/swift-6.4.0/usr/bin/swiftc -O -static-stdlib {src}/json2dir.swift -o {src}/out/json2dir",

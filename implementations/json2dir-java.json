@@ -1,6 +1,7 @@
 {
   "name": "json2dir-java",
   "description": "Java 21, one source file, JDK only with a hand-written JSON parser",
+  "language": "Java",
   "repo": "https://github.com/json2dir-guru/json2dir-java",
   "source": "projects/json2dir-java",
   "build": "{runtimes}/jdk-21.0.12.1/bin/javac -d {src}/out {src}/Json2dir.java",

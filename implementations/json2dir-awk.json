@@ -1,6 +1,7 @@
 {
   "name": "json2dir-awk",
   "description": "GNU awk evaluator (plain gawk, byte mode) emitting a shell script, plus a POSIX sh launcher",
+  "language": "AWK",
   "repo": "https://github.com/json2dir-guru/json2dir-awk",
   "source": "projects/json2dir-awk",
   "command": "JSON2DIR_GAWK={runtimes}/gawk-5.1.0/gawk {src}/json2dir"

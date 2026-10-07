@@ -1,6 +1,7 @@
 {
   "name": "json2dir-sml",
   "description": "Standard ML (Basis Library + Posix only), hand-written strict JSON parser, MLton native build",
+  "language": "Standard ML",
   "repo": "https://github.com/json2dir-guru/json2dir-sml",
   "source": "projects/json2dir-sml",
   "build": "mkdir -p {src}/out && {runtimes}/mlton-20241230/mlton -output {src}/out/json2dir {src}/json2dir.sml",

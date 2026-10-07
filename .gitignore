@@ -7,3 +7,7 @@ results*.json
 # Raw test dumps from other projects; not ours to redistribute
 tests-dirty/
 results*.txt
+*-results*.json
+*-results*.txt
+security-*.json
+security-*.txt

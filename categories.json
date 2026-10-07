@@ -211,6 +211,9 @@
       "fennel",
       "janet",
       "elisp"
+    ],
+    "Formal specification": [
+      "tla"
     ]
   },
   "verification": {
@@ -231,6 +234,9 @@
       "checkedc",
       "ats",
       "ts"
+    ],
+    "Model checking (bounded)": [
+      "tla"
     ]
   }
 }

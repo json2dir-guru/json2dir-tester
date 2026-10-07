@@ -1,0 +1,9 @@
+{
+  "name": "json2dir-tla",
+  "description": "TLA+ (standard modules only) evaluated by TLC, emitting a shell script via a POSIX sh launcher; name safety, plan well-formedness, UTF-8 and parser invariants model-checked with TLC",
+  "language": "TLA+",
+  "repo": "https://github.com/json2dir-guru/json2dir-tla",
+  "source": "projects/json2dir-tla",
+  "command": "JSON2DIR_JAVA={runtimes}/jdk-21.0.12.1/bin/java JSON2DIR_TLA2TOOLS={runtimes}/tla2tools-1.8.0/tla2tools.jar {src}/json2dir",
+  "timeout": 60
+}

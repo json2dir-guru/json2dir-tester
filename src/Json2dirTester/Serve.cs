@@ -262,9 +262,8 @@ static class Serve
         <table><thead><tr><th data-k="name">Implementation</th><th data-k="state">State</th><th>Progress</th><th class="num" data-k="passed">✓</th><th class="num" data-k="failed">✗</th><th class="num" data-k="pct">✗ %</th><th class="hide">Last case</th></tr></thead><tbody id="tb"></tbody></table>
         <script>
         const open=new Set();
-        const DIMS=[['kinds','Тип языка'],['verification','Верификация'],['origin','Чья'],['approach','Подход'],['result','Результат']];
-        const result=x=>x.state!=='done'?'Ещё идёт':x.failed===0?'Всё прошло':x.failed===1?'Одно падение':x.failed<=20?'2–20 падений':'Больше 20';
-        const val=(x,k)=>k==='result'?[result(x)]:[].concat(x[k]);
+        const DIMS=[['kinds','Тип языка'],['verification','Верификация'],['origin','Чья'],['approach','Подход']];
+        const val=(x,k)=>[].concat(x[k]);
         let filt={};try{filt=JSON.parse(localStorage.getItem('filt')||'{}')}catch(e){}
         let last=null,sig='';
         function buildFilters(impls){

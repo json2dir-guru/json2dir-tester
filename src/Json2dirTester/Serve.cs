@@ -17,7 +17,7 @@ static class Serve
     sealed record Failure(string Case, string Reason);
 
     /// <summary>Static facts about an implementation, shown and filtered on the page.</summary>
-    sealed record Meta(int Total, string Kind, string Verification, string Origin, string Approach, string Description);
+    sealed record Meta(int Total, string[] Kinds, string Verification, string Origin, string Approach, string Description);
 
     sealed class ImplStatus
     {
@@ -28,7 +28,7 @@ static class Serve
         public int Failed { get; set; }
         public int Skipped { get; set; }
         public int Total { get; init; }
-        public string Kind { get; init; } = "";
+        public string[] Kinds { get; init; } = [];
         public string Verification { get; init; } = "";
         public string Origin { get; init; } = "";
         public string Approach { get; init; } = "";
@@ -122,37 +122,41 @@ static class Serve
 
     static ImplStatus Create(string name, string group, Dictionary<string, Meta> meta)
     {
-        var m = meta.GetValueOrDefault(name) ?? new Meta(0, "", "", "", "", "");
+        var m = meta.GetValueOrDefault(name) ?? new Meta(0, [], "", "", "", "");
         return new ImplStatus
         {
-            Name = name, Group = group, Total = m.Total, Kind = m.Kind, Verification = m.Verification,
+            Name = name, Group = group, Total = m.Total, Kinds = m.Kinds, Verification = m.Verification,
             Origin = m.Origin, Approach = m.Approach, Description = m.Description,
         };
     }
 
-    /// <summary>categories.json: { dimension: { category: [short names] } }; short name = name without "json2dir-".</summary>
-    static Dictionary<string, Dictionary<string, string>> LoadCategories(string path)
+    /// <summary>
+    /// categories.json: { dimension: { category: [short names] } }; short name = name without "json2dir-".
+    /// An implementation may sit in several categories of one dimension (F# is both Functional and JVM / .NET).
+    /// </summary>
+    static Dictionary<string, Dictionary<string, string[]>> LoadCategories(string path)
     {
-        var result = new Dictionary<string, Dictionary<string, string>>();
+        var result = new Dictionary<string, Dictionary<string, string[]>>();
         if (!File.Exists(path))
             return result;
         var doc = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, string[]>>>(File.ReadAllText(path)) ?? [];
         foreach (var (dimension, groups) in doc)
-            result[dimension] = groups.SelectMany(g => g.Value.Select(n => (n, g.Key))).ToDictionary(x => x.n, x => x.Key);
+            result[dimension] = groups.SelectMany(g => g.Value.Select(n => (n, g.Key)))
+                .GroupBy(x => x.n).ToDictionary(x => x.Key, x => x.Select(y => y.Key).ToArray());
         return result;
     }
 
-    static Meta Describe(Implementation impl, int total, Dictionary<string, Dictionary<string, string>> categories)
+    static Meta Describe(Implementation impl, int total, Dictionary<string, Dictionary<string, string[]>> categories)
     {
         var shortName = impl.Name.StartsWith("json2dir-") ? impl.Name["json2dir-".Length..] : impl.Name;
-        string Category(string dimension, string fallback) =>
-            categories.GetValueOrDefault(dimension)?.GetValueOrDefault(shortName) ?? fallback;
+        string[] Category(string dimension, string fallback) =>
+            categories.GetValueOrDefault(dimension)?.GetValueOrDefault(shortName) ?? [fallback];
         var d = impl.Description;
         var launcher = d.Contains("launcher", StringComparison.OrdinalIgnoreCase) || d.Contains("shell script") || d.Contains("shell program");
         return new Meta(
             total,
             Category("kind", "Other"),
-            Category("verification", "None"),
+            Category("verification", "None")[0],
             impl.Repo.Contains("/json2dir-guru/") ? "json2dir-guru" : "Third-party",
             launcher ? "Launcher (emits shell)" : "Native",
             d);
@@ -233,20 +237,20 @@ static class Serve
         <table><thead><tr><th data-k="name">Implementation</th><th data-k="state">State</th><th>Progress</th><th class="num" data-k="passed">✓</th><th class="num" data-k="failed">✗</th><th class="num" data-k="pct">✗ %</th><th class="hide">Last case</th></tr></thead><tbody id="tb"></tbody></table>
         <script>
         const open=new Set();
-        const DIMS=[['kind','Тип языка'],['verification','Верификация'],['origin','Чья'],['approach','Подход'],['result','Результат']];
+        const DIMS=[['kinds','Тип языка'],['verification','Верификация'],['origin','Чья'],['approach','Подход'],['result','Результат']];
         const result=x=>x.state!=='done'?'Ещё идёт':x.failed===0?'Всё прошло':x.failed===1?'Одно падение':x.failed<=20?'2–20 падений':'Больше 20';
-        const val=(x,k)=>k==='result'?result(x):x[k];
+        const val=(x,k)=>k==='result'?[result(x)]:[].concat(x[k]);
         let filt={};try{filt=JSON.parse(localStorage.getItem('filt')||'{}')}catch(e){}
         let last=null,sig='';
         function buildFilters(impls){
           const box=document.getElementById('flt');
           box.innerHTML=DIMS.map(([k,label])=>{
-            const vals=[...new Set(impls.map(x=>val(x,k)))].sort();
+            const vals=[...new Set(impls.flatMap(x=>val(x,k)))].sort();
             return `<label>${label}<select data-f="${k}"><option value="">все</option>${vals.map(v=>`<option${filt[k]===v?' selected':''}>${esc(v)}</option>`).join('')}</select></label>`;
           }).join('');
           box.querySelectorAll('select').forEach(s=>s.onchange=()=>{filt[s.dataset.f]=s.value;try{localStorage.setItem('filt',JSON.stringify(filt))}catch(e){}render()});
         }
-        const pass=x=>DIMS.every(([k])=>!filt[k]||val(x,k)===filt[k]);
+        const pass=x=>DIMS.every(([k])=>!filt[k]||val(x,k).includes(filt[k]));
         let sortKey='state';try{sortKey=localStorage.getItem('sort')||'state'}catch(e){}
         const pct=x=>x.passed+x.failed?100*x.failed/(x.passed+x.failed):0;
         const order={running:0,queued:1,done:2};
@@ -256,7 +260,7 @@ static class Serve
         async function tick(){
           try{
             last=await (await fetch('/status',{cache:'no-store'})).json();
-            const s=JSON.stringify(DIMS.map(([k])=>[...new Set(last.impls.map(x=>val(x,k)))].sort()));
+            const s=JSON.stringify(DIMS.map(([k])=>[...new Set(last.impls.flatMap(x=>val(x,k)))].sort()));
             if(s!==sig){sig=s;buildFilters(last.impls)}
             render();
           }catch(e){}
@@ -272,7 +276,7 @@ static class Serve
             for(const x of d.impls){
               P+=x.passed;F+=x.failed;T+=x.total;if(x.state==='done')done++;if(x.state==='running')run++;
               const t=Math.max(x.total,1),pp=100*x.passed/t,fp=100*x.failed/t;
-              h+=`<tr class="row" onclick="tog('${x.name}')"><td title="${esc(x.description)}">${esc(x.name.replace('json2dir-',''))}<div class="tag">${esc(x.kind)}${x.verification!=='None'?' · '+esc(x.verification):''}</div></td>
+              h+=`<tr class="row" onclick="tog('${x.name}')"><td title="${esc(x.description)}">${esc(x.name.replace('json2dir-',''))}<div class="tag">${esc(x.kinds.join(' · '))}${x.verification!=='None'?' · '+esc(x.verification):''}</div></td>
               <td><span class="st ${x.state}">${x.state}</span></td>
               <td><div class="bar"><i class="p" style="width:${pp}%"></i><i class="f" style="width:${fp}%"></i></div>
               <span class="mut num">${x.passed+x.failed+x.skipped}/${x.total}</span></td>

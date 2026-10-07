@@ -37,7 +37,8 @@
       "ats",
       "vala",
       "pony",
-      "emojicode"
+      "emojicode",
+      "dart"
     ],
     "Assembly / IR": [
       "asm",
@@ -45,17 +46,20 @@
       "cil",
       "wasm"
     ],
-    "JVM / .NET": [
-      "aot",
-      "cs",
-      "fsharp",
-      "vbnet",
+    "JVM": [
       "java",
       "kotlin",
       "scala",
       "groovy",
-      "clojure",
-      "dart"
+      "clojure"
+    ],
+    ".NET": [
+      "aot",
+      "cs",
+      "fsharp",
+      "vbnet",
+      "cil",
+      "dafny"
     ],
     "Scripting": [
       "python",

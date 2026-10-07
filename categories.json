@@ -1,0 +1,23 @@
+{
+  "kind": {
+    "C family": ["c17", "c23", "c89", "kr", "gnuc", "cforall", "checkedc", "cilk", "compcert", "cpp", "objc", "holyc"],
+    "Systems / compiled": ["json2dir", "zig", "odin", "hare", "v", "d", "nim", "crystal", "swift", "mojo", "fortran", "freepascal", "modula2", "ada", "pli", "cobol", "basic", "go", "json2llm", "ats", "vala", "pony", "emojicode"],
+    "Assembly / IR": ["asm", "llvm-IR", "cil", "wasm"],
+    "JVM / .NET": ["aot", "cs", "fsharp", "vbnet", "java", "kotlin", "scala", "groovy", "clojure", "dart"],
+    "Scripting": ["python", "ruby", "perl", "php", "js", "ts", "lua", "luajit", "fennel", "janet", "tcl", "raku", "r", "julia", "octave", "octave-pure", "elisp", "neovim", "vim", "rexx", "smalltalk", "njs", "jscript", "vbs"],
+    "Shell": ["bash", "zsh", "ksh", "pwsh", "sed", "awk"],
+    "Functional": ["haskell", "hs", "ocaml", "sml", "elixir", "erlang", "gleam", "koka", "roc", "racket", "chez", "scheme", "commonlisp", "purescript"],
+    "Proof / dependent types": ["rocq", "dafny", "why3", "idris2", "lean", "agda", "F-"],
+    "Logic": ["prolog", "mercury"],
+    "Array": ["apl", "j", "k", "bqn", "uiua"],
+    "Historic": ["algol60", "algol68", "bcpl", "snobol4", "unicon", "logo", "forth", "eiffel"],
+    "DSL / tool": ["ansible", "puppet", "nix", "jsonnet", "jq", "xslt", "sqlite", "cmake", "msbuild", "luatex", "thesis", "jsonscript"],
+    "Hardware description": ["vhdl", "systemverilog"],
+    "Esoteric": ["aheui", "arnoldc", "befunge", "braincopter", "brainfuck", "brainloller", "chef", "cow", "false", "fish", "fractran", "hexagony", "intercal", "lolcode", "malbolge", "ook", "piet", "pikachu", "rockstar", "shakespeare", "subleq", "taxi", "thue", "unlambda", "velato", "whitespace", "bimbo", "ludka"]
+  },
+  "verification": {
+    "Machine-checked proofs": ["rocq", "dafny", "why3", "idris2", "lean", "agda", "F-"],
+    "Verified compiler": ["compcert"],
+    "Contracts / checked types": ["eiffel", "checkedc", "ats", "ts"]
+  }
+}

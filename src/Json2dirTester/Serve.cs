@@ -16,6 +16,9 @@ static class Serve
 {
     sealed record Failure(string Case, string Reason);
 
+    /// <summary>Static facts about an implementation, shown and filtered on the page.</summary>
+    sealed record Meta(int Total, string Kind, string Verification, string Origin, string Approach, string Description);
+
     sealed class ImplStatus
     {
         public string Name { get; init; } = "";
@@ -25,6 +28,11 @@ static class Serve
         public int Failed { get; set; }
         public int Skipped { get; set; }
         public int Total { get; init; }
+        public string Kind { get; init; } = "";
+        public string Verification { get; init; } = "";
+        public string Origin { get; init; } = "";
+        public string Approach { get; init; } = "";
+        public string Description { get; init; } = "";
         public string? Last { get; set; }
         public List<Failure> Failures { get; } = [];
     }
@@ -38,18 +46,19 @@ static class Serve
     public static int Run(Workspace ws, List<Implementation> known, string dir, string bind, int port)
     {
         var cases = Cases.Load(ws.Cases);
-        var totals = known.ToDictionary(i => i.Name, i => cases.Count(c => c.AppliesTo(i.Name)));
+        var categories = LoadCategories(Path.Combine(ws.Repo, "categories.json"));
+        var meta = known.ToDictionary(i => i.Name, i => Describe(i, cases.Count(c => c.AppliesTo(i.Name)), categories));
         var listener = new TcpListener(IPAddress.Parse(bind), port);
         listener.Start();
         Console.WriteLine($"serving {dir} on http://{bind}:{port}/  (Ctrl+C to stop)");
         while (true)
         {
             var client = listener.AcceptTcpClient();
-            _ = Task.Run(() => Handle(client, dir, totals));
+            _ = Task.Run(() => Handle(client, dir, meta));
         }
     }
 
-    static void Handle(TcpClient client, string dir, Dictionary<string, int> totals)
+    static void Handle(TcpClient client, string dir, Dictionary<string, Meta> meta)
     {
         using var _ = client;
         try
@@ -61,7 +70,7 @@ static class Serve
             var path = requestLine.Split(' ').ElementAtOrDefault(1) ?? "/";
 
             var (type, body) = path.StartsWith("/status")
-                ? ("application/json", JsonSerializer.Serialize(Status(dir, totals), JsonOptions))
+                ? ("application/json", JsonSerializer.Serialize(Status(dir, meta), JsonOptions))
                 : ("text/html; charset=utf-8", Page);
             var bytes = Encoding.UTF8.GetBytes(body);
             var header = $"HTTP/1.1 200 OK\r\nContent-Type: {type}\r\nContent-Length: {bytes.Length}\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n";
@@ -74,7 +83,7 @@ static class Serve
         }
     }
 
-    static object Status(string dir, Dictionary<string, int> totals)
+    static object Status(string dir, Dictionary<string, Meta> meta)
     {
         var impls = new List<ImplStatus>();
         foreach (var lst in Directory.EnumerateFiles(dir, "*.lst").Order(StringComparer.Ordinal))
@@ -85,7 +94,7 @@ static class Serve
             var byName = new Dictionary<string, ImplStatus>();
             foreach (var name in File.ReadAllLines(lst).Where(l => l.Length > 0))
             {
-                var s = new ImplStatus { Name = name, Group = group, Total = totals.GetValueOrDefault(name) };
+                var s = Create(name, group, meta);
                 byName[name] = s;
                 impls.Add(s);
             }
@@ -99,9 +108,9 @@ static class Serve
             if (File.Exists(Path.ChangeExtension(log, ".lst")) || stem is "info" or "finished")
                 continue;
             var name = "json2dir-" + stem;
-            if (!totals.ContainsKey(name) || impls.Any(i => i.Name == name))
+            if (!meta.ContainsKey(name) || impls.Any(i => i.Name == name))
                 continue;
-            var s = new ImplStatus { Name = name, Group = stem, Total = totals[name] };
+            var s = Create(name, stem, meta);
             impls.Add(s);
             Parse(log, new() { [name] = s }, File.Exists(Path.ChangeExtension(log, ".done")));
         }
@@ -109,6 +118,44 @@ static class Serve
         var info = File.Exists(Path.Combine(dir, "info.txt")) ? File.ReadAllText(Path.Combine(dir, "info.txt")).Trim() : "";
         var finished = File.Exists(Path.Combine(dir, "finished.txt")) ? File.ReadAllText(Path.Combine(dir, "finished.txt")).Trim() : null;
         return new { info, finished, now = DateTime.Now.ToString("HH:mm:ss"), impls };
+    }
+
+    static ImplStatus Create(string name, string group, Dictionary<string, Meta> meta)
+    {
+        var m = meta.GetValueOrDefault(name) ?? new Meta(0, "", "", "", "", "");
+        return new ImplStatus
+        {
+            Name = name, Group = group, Total = m.Total, Kind = m.Kind, Verification = m.Verification,
+            Origin = m.Origin, Approach = m.Approach, Description = m.Description,
+        };
+    }
+
+    /// <summary>categories.json: { dimension: { category: [short names] } }; short name = name without "json2dir-".</summary>
+    static Dictionary<string, Dictionary<string, string>> LoadCategories(string path)
+    {
+        var result = new Dictionary<string, Dictionary<string, string>>();
+        if (!File.Exists(path))
+            return result;
+        var doc = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, string[]>>>(File.ReadAllText(path)) ?? [];
+        foreach (var (dimension, groups) in doc)
+            result[dimension] = groups.SelectMany(g => g.Value.Select(n => (n, g.Key))).ToDictionary(x => x.n, x => x.Key);
+        return result;
+    }
+
+    static Meta Describe(Implementation impl, int total, Dictionary<string, Dictionary<string, string>> categories)
+    {
+        var shortName = impl.Name.StartsWith("json2dir-") ? impl.Name["json2dir-".Length..] : impl.Name;
+        string Category(string dimension, string fallback) =>
+            categories.GetValueOrDefault(dimension)?.GetValueOrDefault(shortName) ?? fallback;
+        var d = impl.Description;
+        var launcher = d.Contains("launcher", StringComparison.OrdinalIgnoreCase) || d.Contains("shell script") || d.Contains("shell program");
+        return new Meta(
+            total,
+            Category("kind", "Other"),
+            Category("verification", "None"),
+            impl.Repo.Contains("/json2dir-guru/") ? "json2dir-guru" : "Third-party",
+            launcher ? "Launcher (emits shell)" : "Native",
+            d);
     }
 
     static void Parse(string log, Dictionary<string, ImplStatus> byName, bool groupDone)
@@ -175,13 +222,31 @@ static class Serve
         .st{font-size:12px;padding:1px 6px;border-radius:9px;border:1px solid var(--line)}
         .running{color:var(--run)} .done{color:var(--ok)} .queued{color:var(--mut)} .num{font-variant-numeric:tabular-nums;white-space:nowrap}
         .fails{font-size:12px;color:var(--mut);white-space:pre-wrap;word-break:break-word} .bad{color:var(--bad)}
+        .flt{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0 0} .flt label{display:flex;flex-direction:column;font-size:12px;color:var(--mut);gap:2px}
+        .flt select{font:inherit;font-size:13px;padding:4px 6px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--fg);max-width:220px}
+        .tag{font-size:11px;color:var(--mut)}
         @media (max-width:640px){.hide{display:none}}
         </style></head><body>
         <h1>json2dir-tester — live</h1><div class="mut" id="meta"></div>
+        <div class="flt" id="flt"></div>
         <div class="sum" id="sum"></div>
         <table><thead><tr><th data-k="name">Implementation</th><th data-k="state">State</th><th>Progress</th><th class="num" data-k="passed">✓</th><th class="num" data-k="failed">✗</th><th class="num" data-k="pct">✗ %</th><th class="hide">Last case</th></tr></thead><tbody id="tb"></tbody></table>
         <script>
         const open=new Set();
+        const DIMS=[['kind','Тип языка'],['verification','Верификация'],['origin','Чья'],['approach','Подход'],['result','Результат']];
+        const result=x=>x.state!=='done'?'Ещё идёт':x.failed===0?'Всё прошло':x.failed===1?'Одно падение':x.failed<=20?'2–20 падений':'Больше 20';
+        const val=(x,k)=>k==='result'?result(x):x[k];
+        let filt={};try{filt=JSON.parse(localStorage.getItem('filt')||'{}')}catch(e){}
+        let last=null,sig='';
+        function buildFilters(impls){
+          const box=document.getElementById('flt');
+          box.innerHTML=DIMS.map(([k,label])=>{
+            const vals=[...new Set(impls.map(x=>val(x,k)))].sort();
+            return `<label>${label}<select data-f="${k}"><option value="">все</option>${vals.map(v=>`<option${filt[k]===v?' selected':''}>${esc(v)}</option>`).join('')}</select></label>`;
+          }).join('');
+          box.querySelectorAll('select').forEach(s=>s.onchange=()=>{filt[s.dataset.f]=s.value;try{localStorage.setItem('filt',JSON.stringify(filt))}catch(e){}render()});
+        }
+        const pass=x=>DIMS.every(([k])=>!filt[k]||val(x,k)===filt[k]);
         let sortKey='state';try{sortKey=localStorage.getItem('sort')||'state'}catch(e){}
         const pct=x=>x.passed+x.failed?100*x.failed/(x.passed+x.failed):0;
         const order={running:0,queued:1,done:2};
@@ -190,7 +255,16 @@ static class Serve
         function esc(s){return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
         async function tick(){
           try{
-            const d=await (await fetch('/status',{cache:'no-store'})).json();
+            last=await (await fetch('/status',{cache:'no-store'})).json();
+            const s=JSON.stringify(DIMS.map(([k])=>[...new Set(last.impls.map(x=>val(x,k)))].sort()));
+            if(s!==sig){sig=s;buildFilters(last.impls)}
+            render();
+          }catch(e){}
+        }
+        function render(){
+          if(!last)return;
+          {
+            const d={...last,impls:last.impls.filter(pass)};
             d.impls.sort(cmp[sortKey]||cmp.state);
             document.querySelectorAll('th[data-k]').forEach(t=>t.classList.toggle('on',t.dataset.k===sortKey));
             let P=0,F=0,T=0,done=0,run=0;
@@ -198,7 +272,7 @@ static class Serve
             for(const x of d.impls){
               P+=x.passed;F+=x.failed;T+=x.total;if(x.state==='done')done++;if(x.state==='running')run++;
               const t=Math.max(x.total,1),pp=100*x.passed/t,fp=100*x.failed/t;
-              h+=`<tr class="row" onclick="tog('${x.name}')"><td>${esc(x.name.replace('json2dir-',''))}</td>
+              h+=`<tr class="row" onclick="tog('${x.name}')"><td title="${esc(x.description)}">${esc(x.name.replace('json2dir-',''))}<div class="tag">${esc(x.kind)}${x.verification!=='None'?' · '+esc(x.verification):''}</div></td>
               <td><span class="st ${x.state}">${x.state}</span></td>
               <td><div class="bar"><i class="p" style="width:${pp}%"></i><i class="f" style="width:${fp}%"></i></div>
               <span class="mut num">${x.passed+x.failed+x.skipped}/${x.total}</span></td>
@@ -209,8 +283,8 @@ static class Serve
             }
             document.getElementById('tb').innerHTML=h;
             document.getElementById('meta').textContent=`${d.info}  ·  обновлено ${d.now}`+(d.finished?`  ·  завершено ${d.finished}`:'');
-            document.getElementById('sum').innerHTML=`<span>реализаций: <b>${d.impls.length}</b></span><span class="done">готово: <b>${done}</b></span><span class="running">идёт: <b>${run}</b></span><span>✓ <b>${P}</b></span><span class="bad">✗ <b>${F}</b></span><span class="mut">кейсов всего: ${T}</span>`;
-          }catch(e){}
+            document.getElementById('sum').innerHTML=`<span>реализаций: <b>${d.impls.length}</b>${d.impls.length!==last.impls.length?' из '+last.impls.length:''}</span><span class="done">готово: <b>${done}</b></span><span class="running">идёт: <b>${run}</b></span><span>✓ <b>${P}</b></span><span class="bad">✗ <b>${F}</b></span><span class="mut">кейсов всего: ${T}</span>`;
+          }
         }
         document.querySelectorAll('th[data-k]').forEach(t=>t.onclick=()=>{sortKey=t.dataset.k;try{localStorage.setItem('sort',sortKey)}catch(e){}tick()});
         function tog(n){open.has(n)?open.delete(n):open.add(n);tick()}

@@ -57,6 +57,11 @@ static class Runner
             if (CheckOutput(c, result) is { } outputProblem)
                 return new(c, Status.Fail, outputProblem, result.Stderr);
 
+            // 126/127: the shell could not run the command at all (missing build, wrong path).
+            // That is a broken setup, not a rejection, so it must not pass expect-error cases.
+            if (result.ExitCode is 126 or 127)
+                return new(c, Status.Fail, $"command could not be run (exit status {result.ExitCode}): {Shell.Tail(result.Stderr)}", result.Stderr);
+
             if (result.ExitCode != 0)
             {
                 if (c.ExpectError || c.AcceptError)

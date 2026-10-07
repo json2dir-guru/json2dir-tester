@@ -1,0 +1,9 @@
+{
+  "name": "json2dir-syscall",
+  "description": "Linux kernel module: writing '<base-path> NUL <json>' to /sys/kernel/json2dir/data builds the tree in kernel space. Run sandboxed: each case boots linux-7.2.9 under QEMU (TCG) with the target directory shared over 9p; never loaded into the host kernel",
+  "language": "C (kernel module)",
+  "repo": "https://github.com/Noiidor/json2dir-syscall",
+  "build": "# Kernel bzImage + external-module build tree come from {runtimes}/linux-7.2.9/build-kernel.sh.\nmake KDIR={runtimes}/linux-7.2.9/build && {runtimes}/json2dir-syscall-vm/mkbase.sh json2dir.ko",
+  "command": "{runtimes}/json2dir-syscall-vm/run.sh",
+  "timeout": 60
+}

@@ -12,7 +12,8 @@
       "compcert",
       "cpp",
       "objc",
-      "holyc"
+      "holyc",
+      "syscall"
     ],
     "Systems / compiled": [
       "json2dir",

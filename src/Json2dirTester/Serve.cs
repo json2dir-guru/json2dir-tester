@@ -169,7 +169,7 @@ static class Serve
         body{margin:0;padding:16px;background:var(--bg);color:var(--fg);font:14px/1.4 system-ui,sans-serif}
         h1{font-size:18px;margin:0 0 4px} .mut{color:var(--mut)} .sum{margin:8px 0 14px;display:flex;gap:16px;flex-wrap:wrap}
         table{width:100%;border-collapse:collapse} td,th{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
-        th{font-weight:600;color:var(--mut);font-size:12px} tr.row{cursor:pointer}
+        th{font-weight:600;color:var(--mut);font-size:12px;cursor:pointer;user-select:none} th.on{color:var(--fg)} tr.row{cursor:pointer}
         .bar{height:8px;background:var(--bar);border-radius:4px;overflow:hidden;min-width:80px;display:flex}
         .bar i{display:block;height:100%} .p{background:var(--ok)} .f{background:var(--bad)}
         .st{font-size:12px;padding:1px 6px;border-radius:9px;border:1px solid var(--line)}
@@ -179,15 +179,20 @@ static class Serve
         </style></head><body>
         <h1>json2dir-tester — live</h1><div class="mut" id="meta"></div>
         <div class="sum" id="sum"></div>
-        <table><thead><tr><th>Implementation</th><th>State</th><th>Progress</th><th class="num">✓</th><th class="num">✗</th><th class="hide">Last case</th></tr></thead><tbody id="tb"></tbody></table>
+        <table><thead><tr><th data-k="name">Implementation</th><th data-k="state">State</th><th>Progress</th><th class="num" data-k="passed">✓</th><th class="num" data-k="failed">✗</th><th class="num" data-k="pct">✗ %</th><th class="hide">Last case</th></tr></thead><tbody id="tb"></tbody></table>
         <script>
         const open=new Set();
+        let sortKey='state';try{sortKey=localStorage.getItem('sort')||'state'}catch(e){}
+        const pct=x=>x.passed+x.failed?100*x.failed/(x.passed+x.failed):0;
+        const order={running:0,queued:1,done:2};
+        const cmp={name:(a,b)=>a.name.localeCompare(b.name),state:(a,b)=>order[a.state]-order[b.state]||a.name.localeCompare(b.name),
+          passed:(a,b)=>b.passed-a.passed,failed:(a,b)=>b.failed-a.failed||pct(b)-pct(a),pct:(a,b)=>pct(b)-pct(a)||b.failed-a.failed};
         function esc(s){return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
         async function tick(){
           try{
             const d=await (await fetch('/status',{cache:'no-store'})).json();
-            const order={running:0,queued:1,done:2};
-            d.impls.sort((a,b)=>order[a.state]-order[b.state]||a.name.localeCompare(b.name));
+            d.impls.sort(cmp[sortKey]||cmp.state);
+            document.querySelectorAll('th[data-k]').forEach(t=>t.classList.toggle('on',t.dataset.k===sortKey));
             let P=0,F=0,T=0,done=0,run=0;
             let h='';
             for(const x of d.impls){
@@ -197,16 +202,17 @@ static class Serve
               <td><span class="st ${x.state}">${x.state}</span></td>
               <td><div class="bar"><i class="p" style="width:${pp}%"></i><i class="f" style="width:${fp}%"></i></div>
               <span class="mut num">${x.passed+x.failed+x.skipped}/${x.total}</span></td>
-              <td class="num">${x.passed}</td><td class="num ${x.failed?'bad':''}">${x.failed}</td>
+              <td class="num">${x.passed}</td><td class="num ${x.failed?'bad':''}">${x.failed}</td><td class="num ${x.failed?'bad':''}">${pct(x).toFixed(1)}</td>
               <td class="hide mut">${esc(x.last??'')}</td></tr>`;
               if(open.has(x.name)&&x.failures.length)
-                h+=`<tr><td colspan="6" class="fails">${x.failures.map(f=>'✗ '+esc(f.case)+'\n   '+esc(f.reason)).join('\n')}</td></tr>`;
+                h+=`<tr><td colspan="7" class="fails">${x.failures.map(f=>'✗ '+esc(f.case)+'\n   '+esc(f.reason)).join('\n')}</td></tr>`;
             }
             document.getElementById('tb').innerHTML=h;
             document.getElementById('meta').textContent=`${d.info}  ·  обновлено ${d.now}`+(d.finished?`  ·  завершено ${d.finished}`:'');
             document.getElementById('sum').innerHTML=`<span>реализаций: <b>${d.impls.length}</b></span><span class="done">готово: <b>${done}</b></span><span class="running">идёт: <b>${run}</b></span><span>✓ <b>${P}</b></span><span class="bad">✗ <b>${F}</b></span><span class="mut">кейсов всего: ${T}</span>`;
           }catch(e){}
         }
+        document.querySelectorAll('th[data-k]').forEach(t=>t.onclick=()=>{sortKey=t.dataset.k;try{localStorage.setItem('sort',sortKey)}catch(e){}tick()});
         function tog(n){open.has(n)?open.delete(n):open.add(n);tick()}
         tick();setInterval(tick,3000);
         </script></body></html>

@@ -1,0 +1,24 @@
+{
+  "description": "Objects under $HOME and ~ names stay inside the target directory",
+  "section": "4.2.1",
+  "level": "core",
+  "source": "json2dir-tester security suite (expansion)",
+  "input": {
+    "$HOME": {
+      "inside": "1"
+    },
+    "~": {
+      "inside": "2"
+    }
+  },
+  "expect": {
+    "tree": {
+      "$HOME": {
+        "inside": "1"
+      },
+      "~": {
+        "inside": "2"
+      }
+    }
+  }
+}

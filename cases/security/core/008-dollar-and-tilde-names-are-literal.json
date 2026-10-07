@@ -1,0 +1,24 @@
+{
+  "description": "Names like $HOME, ${HOME}, ~ and ~root are created literally, not expanded",
+  "section": "4.2.1",
+  "level": "core",
+  "source": "json2dir-tester security suite (expansion)",
+  "input": {
+    "$HOME": "a",
+    "${HOME}": "b",
+    "~": "c",
+    "~root": "d",
+    "x:~": "e",
+    "a ~": "f"
+  },
+  "expect": {
+    "tree": {
+      "$HOME": "a",
+      "${HOME}": "b",
+      "~": "c",
+      "~root": "d",
+      "x:~": "e",
+      "a ~": "f"
+    }
+  }
+}

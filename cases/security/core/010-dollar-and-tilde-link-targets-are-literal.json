@@ -1,0 +1,44 @@
+{
+  "description": "Link targets ~/x, $HOME/x and ~root are stored exactly",
+  "section": "4.2.1",
+  "level": "core",
+  "source": "json2dir-tester security suite (expansion)",
+  "input": {
+    "l1": [
+      "link",
+      "~/x"
+    ],
+    "l2": [
+      "link",
+      "$HOME/x"
+    ],
+    "l3": [
+      "link",
+      "~root"
+    ],
+    "l4": [
+      "link",
+      "a:~"
+    ]
+  },
+  "expect": {
+    "tree": {
+      "l1": [
+        "link",
+        "~/x"
+      ],
+      "l2": [
+        "link",
+        "$HOME/x"
+      ],
+      "l3": [
+        "link",
+        "~root"
+      ],
+      "l4": [
+        "link",
+        "a:~"
+      ]
+    }
+  }
+}

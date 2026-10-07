@@ -1,0 +1,55 @@
+name: Benchmarks
+
+on:
+  workflow_dispatch:
+    inputs:
+      filter:
+        description: Optional workload substring (empty runs the complete suite)
+        default: ''
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: benchmarks
+  cancel-in-progress: false
+
+jobs:
+  campaign:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    env:
+      CAMPAIGN: .bench/campaign
+      WORKLOAD_FILTER: ${{ inputs.filter }}
+      DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: cachix/install-nix-action@v31
+      - name: Provision locked sources and toolchains
+        run: |
+          python3 benchmarks/prepare.py --dir "$CAMPAIGN"
+          echo "$PWD/$CAMPAIGN/work/runtimes/tools/bin" >> "$GITHUB_PATH"
+      - name: Check runner and fixtures
+        run: |
+          python3 -m unittest discover -s benchmarks -v
+          dotnet run --project tests/Benchmarks -c Release
+          dotnet build src/Json2dirTester -c Release --nologo
+      - name: Run sequential campaign
+        run: |
+          status=0
+          ./run.sh bench --all --dir "$CAMPAIGN" --filter "$WORKLOAD_FILTER" || status=$?
+          ./run.sh bench-export --dir "$CAMPAIGN" --out .bench/export
+          exit "$status"
+      - name: Upload campaign and publication data
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: json2dir-benchmark-${{ github.run_id }}
+          include-hidden-files: true
+          retention-days: 90
+          path: |
+            .bench/campaign/lock.json
+            .bench/campaign/campaign.json
+            .bench/campaign/samples.json
+            .bench/export/

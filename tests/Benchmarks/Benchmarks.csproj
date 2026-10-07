@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <NoWarn>$(NoWarn);CA1416</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../src/Json2dirTester/Bench*.cs" Link="%(Filename)%(Extension)" />
+    <Compile Include="../../src/Json2dirTester/Shell.cs" Link="Shell.cs" />
+    <Compile Include="../../src/Json2dirTester/Implementations.cs" Link="Implementations.cs" />
+    <Compile Include="../../src/Json2dirTester/Runner.cs" Link="Runner.cs" />
+    <Compile Include="../../src/Json2dirTester/Tree.cs" Link="Tree.cs" />
+    <Compile Include="../../src/Json2dirTester/Cases.cs" Link="Cases.cs" />
+  </ItemGroup>
+</Project>

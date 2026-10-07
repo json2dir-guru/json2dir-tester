@@ -9,6 +9,8 @@ const string Usage = """
       json2dir-tester run (NAME... | --all) [options]
       json2dir-tester serve [--dir DIR] [--bind ADDR] [--port N]
       json2dir-tester export [--dir DIR] [--out DIR]
+      json2dir-tester bench (NAME... | --all) --dir DIR [benchmark options]
+      json2dir-tester bench-export --dir DIR --out DIR
 
     Run options:
       --suite NAME      only cases from cases/NAME (repeatable)
@@ -47,6 +49,10 @@ bool all = false, verbose = false;
 
 try
 {
+    // Benchmark options are independent of the existing conformance/export options.
+    if (args.Length > 0 && args[0] is "bench" or "bench-export")
+        return await Benchmarks.Main(args, Workspace.Discover(null, null));
+
     for (var i = 0; i < args.Length; i++)
     {
         string Next() => ++i < args.Length ? args[i] : throw new ArgumentException($"{args[i - 1]} needs a value");

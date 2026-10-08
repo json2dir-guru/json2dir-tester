@@ -31,12 +31,21 @@ static class Tree
         if (entry is DirectoryInfo)
             return Read(entry.FullName);
 
-        var data = File.ReadAllBytes(entry.FullName);
+        var mode = File.GetUnixFileMode(entry.FullName);
+        byte[] data;
+        try { data = File.ReadAllBytes(entry.FullName); }
+        catch (UnauthorizedAccessException) when ((mode & UnixFileMode.UserRead) == 0)
+        {
+            // A mode-000 conformance output is owned by the runner. Inspect its bytes
+            // without changing the permissions recorded in the result.
+            File.SetUnixFileMode(entry.FullName, mode | UnixFileMode.UserRead);
+            try { data = File.ReadAllBytes(entry.FullName); }
+            finally { File.SetUnixFileMode(entry.FullName, mode); }
+        }
         string content;
         try { content = StrictUtf8.GetString(data); }
         catch (DecoderFallbackException) { return new JsonArray("bytes", Convert.ToBase64String(data)); }
 
-        var mode = File.GetUnixFileMode(entry.FullName);
         var octal = Convert.ToString((int)mode, 8).PadLeft(4, '0');
         var exec = mode & ExecBits;
         JsonNode node = exec == 0 ? JsonValue.Create(content)

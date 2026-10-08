@@ -13,7 +13,8 @@ static class Runner
     /// Runs one case the way conformance/run.py does: the command runs in an empty target
     /// directory with the document on stdin, then the tree is read back and compared.
     /// </summary>
-    public static CaseResult Run(Case c, string command, TimeSpan timeout)
+    public static CaseResult Run(Case c, string command, TimeSpan timeout,
+        Func<string, string, byte[]?, TimeSpan, string, ShellResult>? execute = null)
     {
         // Root ignores permissions, so such cases run as "nobody" via setpriv (util-linux).
         var dropPrivileges = c.RequiresNonRoot && Environment.IsPrivilegedProcess;
@@ -42,7 +43,8 @@ static class Runner
                 resolved = $"{Setpriv} --reuid={Nobody.Split(':')[0]} --regid={Nobody.Split(':')[1]} --clear-groups -- /bin/sh -c {Shell.Quote(resolved)}";
             }
 
-            var result = Shell.Run(resolved, root, c.Input, timeout, umask: c.Umask);
+            var result = execute is null ? Shell.Run(resolved, root, c.Input, timeout, umask: c.Umask)
+                : execute(resolved, root, c.Input, timeout, c.Umask);
             if (result.TimedOut)
                 return new(c, Status.Fail, $"timed out after {timeout.TotalSeconds:g}s", result.Stderr);
 

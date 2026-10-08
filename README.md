@@ -75,6 +75,9 @@ Results are judged exactly like the conformance suite's `run.py`:
 
 ## Results
 
+For performance campaigns and publication on Awesome's Results page, see
+[benchmark methodology and reproduction](docs/benchmarks.md).
+
 | Implementation | conformance | upstream | specific |
 | --- | --- | --- | --- |
 | `json2dir` | 67/68 | 289/289 | 2/2 |

@@ -13,3 +13,5 @@ security-*.json
 security-*.txt
 prelim/
 site/
+.bench/
+__pycache__/

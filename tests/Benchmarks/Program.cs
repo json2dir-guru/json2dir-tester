@@ -179,8 +179,24 @@ try
         var tools = Path.Combine(smoke, "work", "runtimes", "tools", "bin"); Directory.CreateDirectory(tools);
         File.CreateSymbolicLink(Path.Combine(tools, "time"), timeCommand);
     }
-    var smokeStatus = await Benchmarks.Main(["bench", "--all", "--dir", smoke, "--filter", "one-file", "--storage", "disk",
-        "--warmups", "1", "--repetitions", "2", "--profiles", timeCommand is null ? "0" : "1", "--timeout", "2", "--budget", "20"], ws);
+    var console = Console.Out;
+    using var progress = new StringWriter();
+    int smokeStatus;
+    try
+    {
+        Console.SetOut(progress);
+        smokeStatus = await Benchmarks.Main(["bench", "--all", "--dir", smoke, "--filter", "one-file", "--storage", "disk",
+            "--warmups", "1", "--repetitions", "2", "--profiles", timeCommand is null ? "0" : "1", "--timeout", "2", "--budget", "20"], ws);
+    }
+    finally { Console.SetOut(console); }
+    var messages = progress.ToString();
+    Check(messages.IndexOf("Preparation:", StringComparison.Ordinal) < messages.IndexOf("Conformance:", StringComparison.Ordinal) &&
+        messages.IndexOf("Conformance:", StringComparison.Ordinal) < messages.IndexOf("Benchmarking:", StringComparison.Ordinal),
+        "logs distinguish preparation, conformance and benchmarking phases");
+    Check(messages.Contains("outside the benchmark budget") && messages.Contains("Conformance stub: 10/68 cases") &&
+        messages.Contains("Conformance stub: 68/68 cases") && messages.Contains("last case:"), "conformance logs show intermediate and final progress");
+    Check(messages.Contains("warmup round 1/1") && messages.Contains("timing round 2/2") && messages.Contains("one-file/disk complete: 1 ok"),
+        "benchmark logs show phases, rounds and workload outcomes");
     Check(smokeStatus == 0, "complete local campaign succeeds");
     await Benchmarks.Main(["bench-export", "--dir", smoke, "--out", Path.Combine(smoke, "export")], ws);
     var published = Benchmarks.Read<BenchCampaign>(Path.Combine(smoke, "export", "benchmarks.json"));

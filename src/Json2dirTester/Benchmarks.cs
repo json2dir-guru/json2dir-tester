@@ -111,13 +111,17 @@ static class Benchmarks
         var campaign = new BenchCampaign(1, id, created, options, locked, environment, implementations, fixtureInfos, cells, RequestedWorkloads: workloads);
         var raw = new BenchRaw(1, id, samples);
         void Save() { Write(Path.Combine(dir, "campaign.json"), campaign); Write(Path.Combine(dir, "samples.json"), raw); }
+        void Log(string message) => Console.WriteLine($"[{DateTime.UtcNow:HH:mm:ss}Z] {message}");
+        Log($"Preparation: {implementations.Count} implementations");
+        var prepared = 0;
         // Build all selected tools before timing any of them.
         foreach (var impl in implementations)
         {
             var definition = impl.Definition;
             var adapter = Adapter(definition);
             var source = adapter.SourceDir(ws);
-            Console.WriteLine($"prepare {definition.Name}");
+            Log($"Preparation [{++prepared}/{implementations.Count}]: {definition.Name} — " +
+                (definition.PackagePath is null ? "checking source and build" : "checking cached executable"));
             try
             {
                 if (definition.PackagePath is not null)
@@ -138,16 +142,26 @@ static class Benchmarks
                 }
             }
             catch (Exception e) when (e is IOException or InvalidOperationException or System.ComponentModel.Win32Exception)
-            { impl.Status = "build-failed"; impl.Reason = e.Message; }
+            { impl.Status = "build-failed"; impl.Reason = e.Message; Log($"Preparation failed: {definition.Name}: {e.Message}"); }
             Save();
         }
         // These are annotations, not a global eligibility gate.
         var cases = Cases.Load(ws.Cases).Where(c => c.Name.StartsWith("conformance/")).ToList();
-        foreach (var impl in implementations.Where(i => i.Status == "ready"))
+        var ready = implementations.Where(i => i.Status == "ready").ToList();
+        Log($"Preparation complete: {ready.Count} ready, {implementations.Count - ready.Count} failed");
+        Log($"Conformance: {ready.Count} implementations; these checks are outside the benchmark budget");
+        var checkedImplementations = 0;
+        foreach (var impl in ready)
         {
             var adapter = Adapter(impl.Definition);
-            foreach (var c in cases.Where(c => c.AppliesTo(adapter.Name)))
+            var applicable = cases.Where(c => c.AppliesTo(adapter.Name)).ToList();
+            var elapsed = Stopwatch.StartNew();
+            var lastProgress = TimeSpan.Zero;
+            var completed = 0; var passed = 0; var failed = 0; var skipped = 0;
+            Log($"Conformance [{++checkedImplementations}/{ready.Count}]: {adapter.Name} — 0/{applicable.Count} cases");
+            foreach (var c in applicable)
             {
+                string status, reason;
                 try
                 {
                     var result = Runner.Run(c, Command(adapter, adapter.Command, ws), TimeSpan.FromSeconds(options.Timeout),
@@ -156,10 +170,21 @@ static class Benchmarks
                             var execution = BenchProcess.Run(command, cwd, input, timeout, umask: umask).GetAwaiter().GetResult();
                             return new ShellResult(execution.LeftChildren ? null : execution.ExitCode, execution.Stdout, execution.Stderr);
                         });
-                    impl.Conformance.Add(new { @case = c.Name, status = result.Status.ToString().ToLowerInvariant(), result.Reason });
+                    status = result.Status.ToString().ToLowerInvariant(); reason = result.Reason;
+                    impl.Conformance.Add(new { @case = c.Name, status, result.Reason });
                 }
                 catch (Exception e) when (e is IOException or UnauthorizedAccessException)
-                { impl.Conformance.Add(new { @case = c.Name, status = "harness-error", reason = e.Message }); }
+                { status = "harness-error"; reason = e.Message; impl.Conformance.Add(new { @case = c.Name, status, reason }); }
+                completed++;
+                if (status == "pass") passed++;
+                else if (status == "skip") skipped++;
+                else { failed++; Log($"Conformance {adapter.Name}: {c.Name}: {status}: {reason}"); }
+                if (completed % 10 == 0 || completed == applicable.Count || elapsed.Elapsed - lastProgress >= TimeSpan.FromSeconds(10))
+                {
+                    Log($"Conformance {adapter.Name}: {completed}/{applicable.Count} cases; {passed} passed, {failed} failed, {skipped} skipped; " +
+                        $"{elapsed.Elapsed.TotalSeconds:F1}s elapsed; last case: {c.Name}");
+                    lastProgress = elapsed.Elapsed;
+                }
             }
             Save();
         }
@@ -172,10 +197,13 @@ static class Benchmarks
             bases["tmpfs"] = Path.Combine("/dev/shm", "json2dir-bench-" + id);
         var blocked = new Dictionary<(string Impl, string Storage, string Family, string Mode), int>();
         var random = new Random(options.Seed);
+        Log($"Benchmarking: {workloads.Count} workloads, {storages.Length} storage conditions, {implementations.Count} implementations");
+        var workloadNumber = 0;
         try
         {
             foreach (var w in workloads)
             {
+                Log($"Workload [{++workloadNumber}/{workloads.Count}]: {w.Id} — generating fixture");
                 var fixture = BenchFixtures.Generate(w, options.Seed);
                 var info = Describe(w, fixture);
                 fixtureInfos.Add(info);
@@ -183,7 +211,7 @@ static class Benchmarks
                 File.WriteAllBytes(inputPath, fixture.Input);
                 foreach (var storage in storages)
                 {
-                    Console.WriteLine($"benchmark {w.Id} on {storage}");
+                    Log($"Benchmark {w.Id} on {storage}");
                     var failures = new Dictionary<string, (string Status, string Reason)>();
                     foreach (var impl in implementations)
                     {
@@ -196,6 +224,11 @@ static class Benchmarks
                     {
                         for (var round = 0; round < rounds; round++)
                         {
+                            var active = implementations.Count(i => !failures.ContainsKey(i.Definition.Name) && i.BudgetUsedSeconds < options.Budget);
+                            if (active > 0) Log($"{w.Id}/{storage}: {phase} round {round + 1}/{rounds}; {active} implementations remaining");
+                            var roundElapsed = Stopwatch.StartNew();
+                            var lastProgress = TimeSpan.Zero;
+                            var completed = 0;
                             var order = implementations.ToArray(); random.Shuffle(order);
                             foreach (var impl in order)
                             {
@@ -218,18 +251,30 @@ static class Benchmarks
                                 if (sample.Status != "ok")
                                 {
                                     failures[name] = (sample.Status, sample.Reason);
+                                    Log($"{w.Id}/{storage}: {name}: {phase} round {round + 1}/{rounds}: {sample.Status}: {sample.Reason}");
                                     if (sample.Status == "timeout") blocked[(name, storage, w.Family, w.Mode)] = w.Size;
+                                }
+                                completed++;
+                                if (roundElapsed.Elapsed - lastProgress >= TimeSpan.FromSeconds(10))
+                                {
+                                    Log($"{w.Id}/{storage}: {phase} round {round + 1}/{rounds}; {completed}/{active} invocations completed; " +
+                                        $"{roundElapsed.Elapsed.TotalSeconds:F1}s elapsed; last implementation: {name}");
+                                    lastProgress = roundElapsed.Elapsed;
                                 }
                             }
                         }
                     }
+                    var outcomes = new Dictionary<string, int>();
                     foreach (var impl in implementations)
                     {
                         var name = impl.Definition.Name;
                         var own = samples.Where(s => s.Implementation == name && s.Workload == w.Id && s.Storage == storage).ToList();
                         var failed = failures.GetValueOrDefault(name);
-                        cells.Add(Summarize(name, info, storage, own, failed.Status ?? "ok", failed.Reason ?? "", options.Repetitions, options.Warmups, options.Profiles));
+                        var cell = Summarize(name, info, storage, own, failed.Status ?? "ok", failed.Reason ?? "", options.Repetitions, options.Warmups, options.Profiles);
+                        cells.Add(cell);
+                        outcomes[cell.Status] = outcomes.GetValueOrDefault(cell.Status) + 1;
                     }
+                    Log($"{w.Id}/{storage} complete: " + string.Join(", ", outcomes.OrderBy(pair => pair.Key).Select(pair => $"{pair.Value} {pair.Key}")));
                     Save();
                 }
                 File.Delete(inputPath);

@@ -71,11 +71,15 @@ def main():
     campaign = args.dir.resolve()
     if (campaign / "lock.json").exists() or (campaign / "campaign.json").exists():
         parser.error("use a new campaign directory")
+    prior = json.loads(args.lock.read_text()) if args.lock else None
+    if prior and "packageSet" in prior.get("provisioning", {}):
+        from prepare_packages import provision
+        provision(campaign, args.names, prior)
+        return
     work = campaign / "work"
     work.mkdir(parents=True)
     runtimes = work / "runtimes"
     runtimes.mkdir()
-    prior = json.loads(args.lock.read_text()) if args.lock else None
     if prior and prior["schemaVersion"] != 1:
         parser.error("unsupported lock version")
     names = args.names or (list(i["name"] for i in prior["implementations"]) if prior else DEFAULTS)

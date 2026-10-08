@@ -11,7 +11,7 @@ sealed record BenchSample(string Implementation, string Workload, string Storage
     double? SystemSeconds = null, double? MaxRssKiB = null);
 sealed record BenchStatistics(int Count, double Median, double Q1, double Q3, double Minimum, double Maximum);
 sealed record BenchLockedImplementation(string Name, string Repo, string Revision, string Command, string? Build,
-    string Language = "", string Description = "", string? Source = null);
+    string Language = "", string Description = "", string? Source = null, string? PackagePath = null);
 sealed record BenchLock(int SchemaVersion, Dictionary<string, string> Toolchains, BenchLockedImplementation[] Implementations,
     JsonElement? Provisioning = null);
 sealed class BenchImplementation
@@ -120,6 +120,12 @@ static class Benchmarks
             Console.WriteLine($"prepare {definition.Name}");
             try
             {
+                if (definition.PackagePath is not null)
+                {
+                    ValidatePackage(definition);
+                    Save();
+                    continue;
+                }
                 var revision = await BenchProcess.Run("git rev-parse HEAD", source, null, TimeSpan.FromSeconds(10));
                 var dirty = await BenchProcess.Run("git status --porcelain", source, null, TimeSpan.FromSeconds(10));
                 if (revision.ExitCode != 0 || revision.Stdout.Trim() != definition.Revision || dirty.ExitCode != 0 || dirty.Stdout.Length > 0)
@@ -241,6 +247,17 @@ static class Benchmarks
         campaign = campaign with { Completed = true }; Save();
         Console.WriteLine($"saved campaign {id} to {dir}");
         return cells.Any(c => c.Status != "ok") ? 1 : 0;
+    }
+
+    internal static void ValidatePackage(BenchLockedImplementation definition)
+    {
+        var path = definition.PackagePath;
+        if (path is null || Path.GetDirectoryName(path) != "/nix/store" ||
+            definition.Name != Path.GetFileName(definition.Name) || definition.Build is not null ||
+            definition.Command != Shell.Quote(Path.Combine(path, "bin", definition.Name)))
+            throw new InvalidOperationException("invalid packaged executable in benchmark lock");
+        if (!File.Exists(Path.Combine(path, "bin", definition.Name)))
+            throw new IOException("locked package is missing; reproduce the campaign before benchmarking");
     }
 
     static Implementation Adapter(BenchLockedImplementation i) => new(i.Name, i.Description, i.Repo, i.Build, i.Command, Source: i.Source, Language: i.Language);

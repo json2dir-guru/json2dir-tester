@@ -6,22 +6,46 @@ process runner and result format. Existing conformance commands are unchanged.
 
 ## Run and publish
 
-With Git, Python 3.11+ and Nix (`nix-command` and `flakes` enabled):
+With Python 3.11+ and Nix (`nix-command` and `flakes` enabled), configure the
+public binary cache in `nix.conf`:
+
+```conf
+extra-substituters = https://json2dirpkgs.cachix.org
+extra-trusted-public-keys = json2dirpkgs.cachix.org-1:65NBBfjvYOT+/ebY7XFg/XXSWTTsrCvGJuEhEVcRSGM=
+```
+
+Prepare packaged executables and run a campaign:
 
 ```sh
-python3 benchmarks/prepare.py --dir .bench/campaign
+python3 benchmarks/prepare_packages.py --dir .bench/campaign
 export PATH="$PWD/.bench/campaign/work/runtimes/tools/bin:$PATH"
 ./run.sh bench --all --dir .bench/campaign
 ./run.sh bench-export --dir .bench/campaign --out .bench/export
 ```
 
-Preparation selects Rust, Zig, Python, JavaScript, C#, Nushell, Scheme and Nix.
-Supply implementation names to prepare a different selection. It reuses manifest
+Packaged preparation selects all 107 implementations in the pinned
+[json2dirpkgs](https://github.com/monadix/json2dirpkgs) revision. Supply package
+names for a subset. It downloads executables and their dependencies with local
+builds disabled, and fails visibly if the publishing workflow has not populated
+the cache. No Cachix token is needed. Commands use the packaged wrappers, which
+include runtime dependencies and may differ from upstream build flags; comparisons
+describe these Nix packages. The Rust reference is currently absent from this
+package selection; Awesome's page lets readers choose another baseline.
+
+The campaign lock records the immutable package-set URL and NAR hash, each
+implementation's source pin, executable store path, the pinned Nixpkgs, benchmark
+tool versions and the complete realised runtime closure. GC roots keep downloaded
+outputs available throughout the campaign. Package preparation and downloads
+finish before measurements; cached implementations are not rebuilt by the runner.
+
+The original source-build mode remains available through `benchmarks/prepare.py`.
+With Git, it selects Rust, Zig, Python, JavaScript, C#, Nushell, Scheme and Nix by
+default. Supply implementation names to prepare a different selection. It reuses manifest
 commands, replacing the initial eight implementations' workstation-specific
 runtime paths with the campaign's Nix toolchain environment. Other adapters may
 need additional runtime provisioning; unsupported builds are not rankings.
 
-The first preparation resolves current source commits and nixpkgs, then writes
+Source preparation resolves current source commits and nixpkgs, then writes
 `lock.json`. This is a generated campaign lock, not a claim that upstream HEADs
 are stable. Nix verifies source/package hashes; the lock retains its revision,
 source NAR hash, realised store closure, actual tool versions and a dated Rust
@@ -32,14 +56,20 @@ before measurements. Reproduce the software selection in a **new** directory:
 python3 benchmarks/prepare.py --lock .bench/campaign/lock.json --dir .bench/reproduction
 ```
 
-The benchmark command requires a prepared lock and clean sources at its recorded
-commits. It builds all selected implementations and annotates their existing
+The benchmark command requires a prepared lock. For source builds it requires
+clean sources at the recorded commits; packaged campaigns require the locked
+executables in the Nix store. It prepares all implementations and annotates their existing
 conformance results before timing. Unrelated conformance failures do not exclude
 correct workloads. Build failures are visible. Conformance inspection temporarily
 adds owner read permission to mode-000 files and restores the original mode.
 
-The manually triggered **Benchmarks** Actions workflow runs this pipeline on one
-`ubuntu-24.04` VM. An optional workload filter permits shorter campaigns. Download
+The manually triggered **Benchmarks** Actions workflow downloads the packaged
+selection from Cachix and runs sequentially on one `ubuntu-24.04` VM. It uses no
+upload secret. An optional workload filter permits shorter campaigns. Its default
+per-implementation timing budget is 120 seconds, configurable at dispatch, to
+accommodate 107 implementations within the runner's six-hour limit. Conformance
+annotation is additional; slow implementations may leave workloads unmeasured.
+Local campaigns retain the ten-minute budget described below. Download
 its artifact, export if necessary, and replace Awesome's `results/benchmarks.json`
 and `results/benchmark-samples.json` together through a PR. Its existing Pages
 workflow publishes the data. No cross-repository credentials are needed. Older

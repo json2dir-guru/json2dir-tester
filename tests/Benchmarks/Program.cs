@@ -162,6 +162,17 @@ try
     Check(init.ExitCode == 0, "local smoke adapter committed");
     var revision = await BenchProcess.Run("git rev-parse HEAD", stub, null, TimeSpan.FromSeconds(2));
     var smokeLock = new BenchLock(1, [], [new("stub", "local", revision.Stdout.Trim(), "python3 {src}/json2dir.py", null)]);
+    var missingPackage = "/nix/store/00000000000000000000000000000000-benchmark-missing";
+    var packaged = new BenchLockedImplementation("stub", "local", "revision", missingPackage + "/bin/stub", null,
+        PackagePath: missingPackage);
+    try { Benchmarks.ValidatePackage(packaged); throw new Exception("accepted missing package"); }
+    catch (IOException) { }
+    try { Benchmarks.ValidatePackage(packaged with { Command = "python3 other.py" }); throw new Exception("accepted changed package command"); }
+    catch (InvalidOperationException) { }
+    try { Benchmarks.ValidatePackage(packaged with { Build = "make" }); throw new Exception("accepted package rebuild"); }
+    catch (InvalidOperationException) { }
+    try { Benchmarks.ValidatePackage(packaged with { PackagePath = stub }); throw new Exception("accepted package outside Nix store"); }
+    catch (InvalidOperationException) { }
     File.WriteAllText(Path.Combine(smoke, "lock.json"), JsonSerializer.Serialize(smokeLock, Benchmarks.Json));
     if (timeCommand is not null)
     {

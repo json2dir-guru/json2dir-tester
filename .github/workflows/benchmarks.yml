@@ -3,6 +3,10 @@ name: Benchmarks
 on:
   workflow_dispatch:
     inputs:
+      baseline_run:
+        description: Prior benchmark run ID for incremental reuse (empty runs everything)
+        default: ''
+        type: string
       suite:
         description: Workload suite (standard has 8 workloads, extended has 26)
         default: standard
@@ -25,6 +29,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
 
 concurrency:
   group: benchmarks
@@ -40,6 +45,7 @@ jobs:
       WORKLOAD_FILTER: ${{ inputs.filter }}
       BENCHMARK_TIMEOUT: ${{ inputs.timeout }}
       BENCHMARK_BUDGET: ${{ inputs.budget }}
+      BASELINE_RUN: ${{ inputs.baseline_run }}
       DOTNET_CLI_TELEMETRY_OPTOUT: '1'
     steps:
       - name: Set campaign deadline
@@ -58,6 +64,21 @@ jobs:
         run: |
           python3 benchmarks/prepare_packages.py --dir "$CAMPAIGN"
           echo "$PWD/$CAMPAIGN/work/runtimes/tools/bin" >> "$GITHUB_PATH"
+      - name: Download baseline results
+        if: inputs.baseline_run != ''
+        timeout-minutes: 10
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          [[ "$BASELINE_RUN" =~ ^[0-9]+$ ]] || { echo "Invalid baseline run ID"; exit 1; }
+          gh run download "$BASELINE_RUN" --repo "$GITHUB_REPOSITORY" \
+            --name "json2dir-benchmark-$BASELINE_RUN" --dir .bench/baseline
+      - name: Select added, changed and unfinished implementations
+        run: |
+          python3 benchmarks/bundle.py plan --campaign "$CAMPAIGN" --baseline .bench/baseline \
+            --plan .bench/plan.json --suite "$BENCHMARK_SUITE" --filter "$WORKLOAD_FILTER" \
+            --timeout "$BENCHMARK_TIMEOUT" --budget "$BENCHMARK_BUDGET"
+          python3 -c 'import json; print("BENCHMARK_METHODOLOGY_SHA256=" + json.load(open(".bench/plan.json"))["methodologySha256"])' >> "$GITHUB_ENV"
       - name: Check runner and fixtures
         timeout-minutes: 10
         run: |
@@ -67,6 +88,11 @@ jobs:
       - name: Run sequential campaign
         timeout-minutes: 345
         run: |
+          mapfile -t names < <(python3 -c 'import json; print("\n".join(json.load(open(".bench/plan.json"))["runNames"]))')
+          if [[ ${#names[@]} -eq 0 || -z "${names[0]}" ]]; then
+            echo "All requested results are reusable; no measurements needed"
+            exit 0
+          fi
           remaining=$(( BENCHMARK_DEADLINE - $(date +%s) ))
           if (( remaining <= 0 )); then
             echo "Campaign deadline already reached"
@@ -74,15 +100,19 @@ jobs:
           fi
           # The runner saves on cancellation; this guard also bounds blocked cleanup.
           timeout --kill-after=30s "$(( remaining + 30 ))s" \
-            dotnet src/Json2dirTester/bin/Release/net10.0/json2dir-tester.dll bench --all \
+            dotnet src/Json2dirTester/bin/Release/net10.0/json2dir-tester.dll bench "${names[@]}" \
             --dir "$CAMPAIGN" --suite "$BENCHMARK_SUITE" --filter "$WORKLOAD_FILTER" \
             --timeout "$BENCHMARK_TIMEOUT" --budget "$BENCHMARK_BUDGET" --max-duration "$remaining"
-      - name: Export completed measurements
+      - name: Export and bundle measurements
         if: always()
         timeout-minutes: 5
         run: |
           if [[ -f "$CAMPAIGN/campaign.json" && -f "$CAMPAIGN/samples.json" ]]; then
             dotnet src/Json2dirTester/bin/Release/net10.0/json2dir-tester.dll bench-export --dir "$CAMPAIGN" --out .bench/export
+          fi
+          if [[ -f .bench/plan.json ]]; then
+            python3 benchmarks/bundle.py merge --campaign "$CAMPAIGN" --baseline .bench/baseline \
+              --plan .bench/plan.json --out .bench/bundle
           fi
       - name: Upload campaign and publication data
         if: always()
@@ -97,3 +127,5 @@ jobs:
             .bench/campaign/campaign.json
             .bench/campaign/samples.json
             .bench/export/
+            .bench/bundle/
+            .bench/plan.json

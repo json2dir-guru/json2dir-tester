@@ -11,7 +11,7 @@ import subprocess
 
 from prepare import nix_url, run
 
-DEFAULT_REF = "github:monadix/json2dirpkgs/2dd32280eba87e4781a16252440fe71fb0167280"
+DEFAULT_REF = "github:monadix/json2dirpkgs/1155eccfb926e8b60860762d41d536e3a6a7bd4b"
 TOOLS = ["coreutils", "dotnet-sdk_10", "git", "nix", "python3", "time", "util-linux"]
 
 

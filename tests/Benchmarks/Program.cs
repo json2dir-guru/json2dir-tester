@@ -98,12 +98,13 @@ try
     Check(shellResult.ExitCode == 0 && shellResult.Stdout == "" && shellResult.Stderr == "" &&
         File.ReadAllBytes(Path.Combine(temp, "inherited-stdin.bin")).SequenceEqual(binaryInput),
         "standard shell supports inherited output while feeding stdin");
-    foreach (var (inherit, input) in new (bool, byte[]?)[] { (false, binaryInput), (true, binaryInput), (false, null) })
+    var blockedInput = new byte[4 * 1048576];
+    foreach (var (inherit, input) in new (bool, byte[]?)[] { (false, blockedInput), (true, blockedInput), (false, null) })
     {
         clock.Restart();
         try
         {
-            shellResult = Shell.Run("sleep 20 <&0 & echo $! > shell-child.pid; printf partial; printf diagnostic >&2; exit 7",
+            shellResult = Shell.Run("exec 3<&0; sleep 20 <&3 & echo $! > shell-child.pid; printf partial; printf diagnostic >&2; exit 7",
                 temp, input, TimeSpan.FromMilliseconds(300), inheritOutput: inherit);
             Check(shellResult.TimedOut && clock.Elapsed.TotalSeconds < 4,
                 $"standard shell bounds inherited child pipes with inheritOutput={inherit}, stdin={input is not null}");

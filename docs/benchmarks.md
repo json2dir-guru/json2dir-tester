@@ -23,14 +23,13 @@ export PATH="$PWD/.bench/campaign/work/runtimes/tools/bin:$PATH"
 ./run.sh bench-export --dir .bench/campaign --out .bench/export
 ```
 
-Packaged preparation selects all 107 implementations in the pinned
+Packaged preparation selects all 160 implementations in the pinned
 [json2dirpkgs](https://github.com/monadix/json2dirpkgs) revision. Supply package
 names for a subset. It downloads executables and their dependencies with local
 builds disabled, and fails visibly if the publishing workflow has not populated
 the cache. No Cachix token is needed. Commands use the packaged wrappers, which
 include runtime dependencies and may differ from upstream build flags; comparisons
-describe these Nix packages. The Rust reference is currently absent from this
-package selection; Awesome's page lets readers choose another baseline.
+describe these Nix packages. The Rust reference is included in this package selection.
 
 The campaign lock records the immutable package-set URL and NAR hash, each
 implementation's source pin, executable store path, the pinned Nixpkgs, benchmark
@@ -79,6 +78,41 @@ Download its artifact, export if necessary, and replace Awesome's `results/bench
 and `results/benchmark-samples.json` together through a PR. Its existing Pages
 workflow publishes the data. No cross-repository credentials are needed. Older
 campaigns remain Actions artifacts for 90 days; the website shows the latest one.
+
+## Incremental runs and complete downloads
+
+Set the workflow's `baseline_run` input to an earlier **Benchmarks** run ID from
+the same repository. The workflow downloads its artifact, benchmarks added or
+changed implementations and retries unfinished entries. Leave the input empty
+for a fresh full campaign. Expired or missing baseline artifacts fail visibly.
+
+Reuse requires matching executable store paths, source revisions, benchmark tool
+versions and pinned Nixpkgs identity, harness and conformance-case hashes, suite/filter and timing options.
+A package-set revision change alone does not invalidate unchanged executables.
+Resource/setup failures are retried; completed timeout and incorrect-output
+results remain valid recorded outcomes. A deadline-interrupted rerun retains
+compatible completed pairs from the baseline. Package preparation still downloads
+the complete executable selection before timing.
+
+The latest artifact contains `bundle/index.json` with the combined results and
+their originating campaign IDs. Under `bundle/campaigns/<id>/`, each campaign
+keeps its original export, raw samples, lock, date and runner environment. Removed
+or changed package versions are excluded from the current combined results;
+campaigns still referenced by the index are carried forward. When nothing changed,
+the workflow uploads a complete bundle without running measurements.
+
+Download that one artifact from the Actions run page or with:
+
+```sh
+gh run download RUN_ID --repo json2dir-guru/json2dir-tester --dir bench-results/RUN_ID
+```
+
+The bundle may contain measurements from different machines and dates; it is not
+a single campaign suitable for cross-run rankings. The existing Awesome export
+remains a separate campaign. Older artifacts without bundle fingerprints can be
+read, but require a fresh run before incremental reuse is possible. Results do
+not need to be committed to this repository; each new artifact carries the
+referenced previous measurements forward beyond their original artifact's expiry.
 
 ## Workloads and metrics
 

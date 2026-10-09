@@ -110,7 +110,10 @@ static class Benchmarks
         using var duration = new CancellationTokenSource();
         if (options.MaxDuration is { } seconds) duration.CancelAfter(TimeSpan.FromSeconds(seconds));
         var cancellation = duration.Token;
-        var environment = new Dictionary<string, string>();
+        var environment = new Dictionary<string, string>
+        {
+            ["benchmarkMethodologySha256"] = Environment.GetEnvironmentVariable("BENCHMARK_METHODOLOGY_SHA256") ?? "unavailable"
+        };
         var samples = new List<BenchSample>(); var fixtureInfos = new List<BenchFixtureInfo>();
         var cells = new List<BenchCell>();
         var id = DateTime.UtcNow.ToString("yyyyMMddTHHmmssZ", CultureInfo.InvariantCulture) + "-" + Guid.NewGuid().ToString("N")[..8];

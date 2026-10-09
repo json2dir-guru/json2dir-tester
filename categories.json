@@ -60,7 +60,8 @@
       "fsharp",
       "vbnet",
       "cil",
-      "dafny"
+      "dafny",
+      "csharp-fast"
     ],
     "Scripting": [
       "python",

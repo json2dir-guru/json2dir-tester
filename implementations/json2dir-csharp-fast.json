@@ -1,0 +1,9 @@
+{
+  "name": "json2dir-csharp-fast",
+  "description": "Performance-focused C# (.NET 10): SIMD lexer over raw UTF-8 bytes, in-place zero-copy strings, flat node array, *at() syscalls via libc P/Invoke; self-contained ReadyToRun with a static PGO profile",
+  "language": "C# (R2R + static PGO, SIMD)",
+  "repo": "https://github.com/json2dir-guru/json2dir-csharp-fast",
+  "source": "projects/json2dir-csharp-fast",
+  "build": "export DOTNET_CLI_TELEMETRY_OPTOUT=1 DOTNET_NOLOGO=1 DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1 NUGET_PACKAGES={runtimes}/dotnet-tools/nuget\n# .NET 10 SDK from WSL (/usr/bin/dotnet); runtime pack and crossgen2 are restored into runtimes/dotnet-tools/nuget.\ndotnet publish -c Release --nologo -v quiet -o {src}/out {src}/json2dir-fast.csproj",
+  "command": "{src}/out/json2dir-fast"
+}

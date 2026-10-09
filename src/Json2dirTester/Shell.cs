@@ -30,27 +30,58 @@ static class Shell
         psi.ArgumentList.Add("-c");
         psi.ArgumentList.Add($"umask {umask}\n" + command);
 
+        var clock = Stopwatch.StartNew();
         using var process = Process.Start(psi)!;
-        var stdout = inheritOutput ? Task.FromResult("") : process.StandardOutput.ReadToEndAsync();
-        var stderr = inheritOutput ? Task.FromResult("") : process.StandardError.ReadToEndAsync();
+        using var cancellation = new CancellationTokenSource();
+        async Task<string> CaptureOutput(StreamReader reader)
+        {
+            var output = new StringBuilder();
+            var buffer = new char[4096];
+            try
+            {
+                int count;
+                while ((count = await reader.ReadAsync(buffer.AsMemory(), cancellation.Token)) != 0)
+                    output.Append(buffer, 0, count);
+            }
+            catch (OperationCanceledException) when (cancellation.IsCancellationRequested) { }
+            return output.ToString();
+        }
+        var stdout = inheritOutput ? Task.FromResult("") : CaptureOutput(process.StandardOutput);
+        var stderr = inheritOutput ? Task.FromResult("") : CaptureOutput(process.StandardError);
+        async Task FeedInput()
+        {
+            try
+            {
+                try
+                {
+                    if (stdin is not null)
+                        await process.StandardInput.BaseStream.WriteAsync(stdin, cancellation.Token);
+                }
+                finally { process.StandardInput.Close(); }
+            }
+            catch (IOException)
+            {
+                // The implementation exited without reading all of its input.
+            }
+            catch (OperationCanceledException) when (cancellation.IsCancellationRequested) { }
+        }
+        var completed = Task.WhenAll(FeedInput(), process.WaitForExitAsync(), stdout, stderr);
+        var elapsed = clock.Elapsed;
+        var remaining = timeout is null || timeout == Timeout.InfiniteTimeSpan
+            ? Timeout.InfiniteTimeSpan
+            : timeout.Value > elapsed ? timeout.Value - elapsed : TimeSpan.Zero;
         try
         {
-            if (stdin is not null)
-                process.StandardInput.BaseStream.Write(stdin);
-            process.StandardInput.Close();
+            completed.WaitAsync(remaining).GetAwaiter().GetResult();
         }
-        catch (IOException)
+        catch (TimeoutException)
         {
-            // The implementation exited without reading all of its input.
-        }
-
-        if (!process.WaitForExit(timeout ?? Timeout.InfiniteTimeSpan))
-        {
-            process.Kill(entireProcessTree: true);
-            process.WaitForExit();
+            cancellation.Cancel();
+            try { process.Kill(entireProcessTree: true); }
+            catch (InvalidOperationException) { } // The process exited as the deadline elapsed.
+            completed.GetAwaiter().GetResult();
             return new ShellResult(null, stdout.Result, stderr.Result);
         }
-        process.WaitForExit();
         return new ShellResult(process.ExitCode, stdout.Result, stderr.Result);
     }
 

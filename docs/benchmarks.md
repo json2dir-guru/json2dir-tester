@@ -65,17 +65,28 @@ adds owner read permission to mode-000 files and restores the original mode.
 
 The manually triggered **Benchmarks** Actions workflow downloads the packaged
 selection from Cachix and runs sequentially on one `ubuntu-24.04` VM. It uses no
-upload secret. An optional workload filter permits shorter campaigns. Its default
-per-implementation timing budget is 120 seconds, configurable at dispatch, to
-accommodate 107 implementations within the runner's six-hour limit. Conformance
-annotation is additional; slow implementations may leave workloads unmeasured.
-Local campaigns retain the ten-minute budget described below. Download
-its artifact, export if necessary, and replace Awesome's `results/benchmarks.json`
+upload secret. Its suite input defaults to the eight-workload standard suite;
+select extended for all 26 workloads. An optional workload filter applies within
+the selected suite. The default allowance is 240 seconds per implementation,
+workload and storage pair; each invocation has a 30-second deadline. Both limits
+are configurable at dispatch. Downloads, preparation and conformance count toward
+an overall deadline 345 minutes after the first job step, reserving 15 minutes
+within the six-hour job limit for cleanup, export and upload. Reaching the deadline
+cancels the active invocation, retains completed pairs, and leaves interrupted or
+unstarted pairs unranked. Individual invocation and pair limits are unchanged.
+Export and upload run as separate steps even when the campaign stops or fails.
+Download its artifact, export if necessary, and replace Awesome's `results/benchmarks.json`
 and `results/benchmark-samples.json` together through a PR. Its existing Pages
 workflow publishes the data. No cross-repository credentials are needed. Older
 campaigns remain Actions artifacts for 90 days; the website shows the latest one.
 
 ## Workloads and metrics
+
+The standard suite runs `empty`, `files-1000`, `payload-8MiB`, `balanced-1000`,
+`depth-64`, `escapes-1MiB`, `config` and `update`: eight workloads, or sixteen pairs
+with both disk and tmpfs. `--suite extended` retains all 26 workloads below
+(52 pairs with both storages). For example, `--suite extended --filter payload-64MiB`
+selects the largest payload workload.
 
 | Family | Sizes | Purpose |
 | --- | --- | --- |
@@ -130,21 +141,39 @@ rejects special files before opening them. The outside sentinel must remain a
 regular file with its original contents. This is an output check, not a security
 sandbox against deliberately hostile implementations.
 
-The invocation deadline defaults to 30 seconds. The per-implementation benchmark
-budget defaults to ten minutes, including target preparation, verification and
-cleanup; provisioning, compilation and conformance annotation are excluded.
-Preparation or verification can finish slightly past the budget; the next
-invocation will not start. A timeout skips larger sizes within that family and
-storage condition. Budget exhaustion, wrong output, leaked descendants, missing
+The invocation deadline defaults to 30 seconds. Each implementation receives a
+fresh 240-second budget for every workload/storage pair, including target
+preparation, verification and cleanup; fixture generation, provisioning,
+compilation and conformance annotation are excluded. Preparation or verification
+can finish slightly past the budget; the next invocation in that pair will not
+start. A command timeout skips larger sizes within that family and storage
+condition. A deadline shortened by the remaining pair budget is instead reported
+as budget exhaustion and does not suppress later workloads or storage conditions.
+Slow pairs can still exhaust these limits and remain incomplete.
+Budget exhaustion, wrong output, leaked descendants, missing
 resources and command failures remain explicit. A process group is terminated
 on timeout or descendant leaks; implementations that deliberately escape their
 session are unsupported. Directory permissions are repaired during cleanup
 without following symlinks.
 
-`--filter`, `--storage disk|tmpfs|both`, `--repetitions`, `--warmups`, `--profiles`,
-`--timeout`, `--budget` and `--seed` override campaign defaults. Results never
-append to an existing campaign. `campaign.json` and `samples.json` are checkpointed
-between workloads. The version-1 export contains summaries, workload metadata,
+`--suite standard|extended`, `--filter`, `--storage disk|tmpfs|both`,
+`--repetitions`, `--warmups`, `--profiles`, `--timeout`, `--budget`, `--max-duration` and `--seed`
+override campaign defaults. Results never
+append to an existing campaign. Options record the suite and
+`budgetScope: "implementation-workload-storage"`; exports of older campaigns keep
+these fields null when absent, retaining their original campaign-wide budget.
+Result `budgetUsedSeconds` records charged seconds for that pair, including
+preparation, verification and cleanup; implementation `budgetUsedSeconds` sums
+all pairs. Export preserves this telemetry separately from recomputed latency
+samples; older results without it retain null. `campaign.json` and `samples.json`
+are checkpointed after each storage pair and approximately every ten seconds
+between invocations. `--max-duration SEC` bounds the benchmark command's
+preparation, conformance and timing phases together; local runs have no overall
+deadline unless it is supplied. Stopped campaigns record `stopReason` and remain
+`completed: false`; completed pairs remain usable when exported. The workflow
+passes the time remaining after setup and downloads, with an external timeout as
+a guard against blocked cleanup. The version-1 export contains summaries,
+workload metadata,
 source/build/toolchain provenance and environment information, plus raw samples
 in a separate file linked by campaign ID. Export validates samples and recomputes
 statistics; interrupted campaigns retain incomplete cells, which receive no

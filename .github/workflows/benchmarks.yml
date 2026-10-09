@@ -3,13 +3,24 @@ name: Benchmarks
 on:
   workflow_dispatch:
     inputs:
+      suite:
+        description: Workload suite (standard has 8 workloads, extended has 26)
+        default: standard
+        type: choice
+        options:
+          - standard
+          - extended
       filter:
-        description: Optional workload substring (empty runs the complete suite)
+        description: Optional workload substring (empty runs the selected suite)
         default: ''
         type: string
+      timeout:
+        description: Seconds per invocation (command deadline)
+        default: '30'
+        type: string
       budget:
-        description: Benchmark budget in seconds per implementation (excludes conformance)
-        default: '120'
+        description: Seconds per implementation/workload/storage pair (excludes conformance)
+        default: '240'
         type: string
 
 permissions:
@@ -25,33 +36,57 @@ jobs:
     timeout-minutes: 360
     env:
       CAMPAIGN: .bench/campaign
+      BENCHMARK_SUITE: ${{ inputs.suite }}
       WORKLOAD_FILTER: ${{ inputs.filter }}
+      BENCHMARK_TIMEOUT: ${{ inputs.timeout }}
       BENCHMARK_BUDGET: ${{ inputs.budget }}
       DOTNET_CLI_TELEMETRY_OPTOUT: '1'
     steps:
+      - name: Set campaign deadline
+        run: echo "BENCHMARK_DEADLINE=$(( $(date +%s) + 345 * 60 ))" >> "$GITHUB_ENV"
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        timeout-minutes: 10
       - uses: cachix/install-nix-action@13d8dd58da0234aa297dedd986986ccb8e7f3e24 # v31
+        timeout-minutes: 10
       - uses: cachix/cachix-action@38b082610b782e7e93e209c35fd730d399dee866 # v17
+        timeout-minutes: 10
         with:
           name: json2dirpkgs
           skipPush: true
       - name: Download locked packages and benchmark tools
+        timeout-minutes: 30
         run: |
           python3 benchmarks/prepare_packages.py --dir "$CAMPAIGN"
           echo "$PWD/$CAMPAIGN/work/runtimes/tools/bin" >> "$GITHUB_PATH"
       - name: Check runner and fixtures
+        timeout-minutes: 10
         run: |
           python3 -m unittest discover -s benchmarks -v
           dotnet run --project tests/Benchmarks -c Release
           dotnet build src/Json2dirTester -c Release --nologo
       - name: Run sequential campaign
+        timeout-minutes: 345
         run: |
-          status=0
-          ./run.sh bench --all --dir "$CAMPAIGN" --filter "$WORKLOAD_FILTER" --budget "$BENCHMARK_BUDGET" || status=$?
-          ./run.sh bench-export --dir "$CAMPAIGN" --out .bench/export
-          exit "$status"
+          remaining=$(( BENCHMARK_DEADLINE - $(date +%s) ))
+          if (( remaining <= 0 )); then
+            echo "Campaign deadline already reached"
+            exit 2
+          fi
+          # The runner saves on cancellation; this guard also bounds blocked cleanup.
+          timeout --kill-after=30s "$(( remaining + 30 ))s" \
+            dotnet src/Json2dirTester/bin/Release/net10.0/json2dir-tester.dll bench --all \
+            --dir "$CAMPAIGN" --suite "$BENCHMARK_SUITE" --filter "$WORKLOAD_FILTER" \
+            --timeout "$BENCHMARK_TIMEOUT" --budget "$BENCHMARK_BUDGET" --max-duration "$remaining"
+      - name: Export completed measurements
+        if: always()
+        timeout-minutes: 5
+        run: |
+          if [[ -f "$CAMPAIGN/campaign.json" && -f "$CAMPAIGN/samples.json" ]]; then
+            dotnet src/Json2dirTester/bin/Release/net10.0/json2dir-tester.dll bench-export --dir "$CAMPAIGN" --out .bench/export
+          fi
       - name: Upload campaign and publication data
         if: always()
+        timeout-minutes: 8
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: json2dir-benchmark-${{ github.run_id }}

@@ -5,7 +5,8 @@ using System.Text.Json;
 namespace Json2dirTester;
 
 sealed record BenchOptions(string Directory, string[] Names, bool All, string Storage = "both", string? Filter = null,
-    int Repetitions = 15, int Warmups = 3, int Profiles = 3, double Timeout = 30, double Budget = 600, int Seed = 1729);
+    int Repetitions = 15, int Warmups = 3, int Profiles = 3, double Timeout = 30, double Budget = 240, int Seed = 1729,
+    string? Suite = null, string? BudgetScope = null, double? MaxDuration = null);
 sealed record BenchSample(string Implementation, string Workload, string Storage, string Phase, int Round,
     string Status, string Reason, double? Milliseconds, double? UserSeconds = null,
     double? SystemSeconds = null, double? MaxRssKiB = null);
@@ -26,10 +27,10 @@ sealed record BenchFixtureInfo(string Id, string Family, int Size, string Mode, 
     int Files, int Directories, int Links, int Scripts, long InputBytes, long PayloadBytes, int Depth);
 sealed record BenchCell(string Implementation, string Workload, string Storage, string Status, string Reason,
     BenchStatistics? Timing, double? EntriesPerSecond, double? MiBPerSecond,
-    double? UserSeconds, double? SystemSeconds, double? MaxRssKiB);
+    double? UserSeconds, double? SystemSeconds, double? MaxRssKiB, double? BudgetUsedSeconds = null);
 sealed record BenchCampaign(int SchemaVersion, string Id, string Created, BenchOptions Options, BenchLock Lock,
     Dictionary<string, string> Environment, List<BenchImplementation> Implementations,
-    List<BenchFixtureInfo> Workloads, List<BenchCell> Results, bool Completed = false, List<BenchWorkload>? RequestedWorkloads = null);
+    List<BenchFixtureInfo> Workloads, List<BenchCell> Results, bool Completed = false, List<BenchWorkload>? RequestedWorkloads = null, string? StopReason = null);
 sealed record BenchRaw(int SchemaVersion, string CampaignId, List<BenchSample> Samples);
 
 static class Benchmarks
@@ -41,8 +42,8 @@ static class Benchmarks
     {
         var names = new List<string>(); var all = false;
         string? directory = null, output = null, filter = null;
-        var storage = "both"; var repetitions = 15; var warmups = 3; var profiles = 3;
-        double timeout = 30, budget = 600; var seed = 1729;
+        var suite = "standard"; var storage = "both"; var repetitions = 15; var warmups = 3; var profiles = 3;
+        double timeout = 30, budget = 240; double? maxDuration = null; var seed = 1729;
         for (var i = 1; i < args.Length; i++)
         {
             string Next() => ++i < args.Length ? args[i] : throw new ArgumentException($"{args[i - 1]} needs a value");
@@ -52,15 +53,17 @@ static class Benchmarks
                 case "--out": output = Path.GetFullPath(Next()); break;
                 case "--all": all = true; break;
                 case "--storage": storage = Next(); break;
+                case "--suite": suite = Next(); break;
                 case "--filter": filter = Next(); break;
                 case "--repetitions": repetitions = ParseInt(Next()); break;
                 case "--warmups": warmups = ParseInt(Next()); break;
                 case "--profiles": profiles = ParseInt(Next()); break;
                 case "--timeout": timeout = ParseDouble(Next()); break;
                 case "--budget": budget = ParseDouble(Next()); break;
+                case "--max-duration": maxDuration = ParseDouble(Next()); break;
                 case "--seed": seed = ParseInt(Next()); break;
                 case "--help":
-                    Console.WriteLine("bench NAME...|--all --dir DIR [--storage disk|tmpfs|both] [--filter TEXT] [--repetitions 15] [--warmups 3] [--profiles 3] [--timeout 30] [--budget 600] [--seed 1729]\nbench-export --dir DIR --out DIR\nPrepare DIR/lock.json and DIR/work first with benchmarks/prepare.py.");
+                    Console.WriteLine("bench NAME...|--all --dir DIR [--suite standard|extended] [--storage disk|tmpfs|both] [--filter TEXT] [--repetitions 15] [--warmups 3] [--profiles 3] [--timeout 30] [--budget 240] [--max-duration SEC] [--seed 1729]\nBudget is seconds per implementation/workload/storage pair; standard has 8 workloads (16 pairs on both storages), extended has 26 (52 pairs).\nbench-export --dir DIR --out DIR\nPrepare DIR/lock.json and DIR/work first with benchmarks/prepare.py.");
                     return 0;
                 case var option when option.StartsWith('-'): throw new ArgumentException($"unknown benchmark option {option}");
                 default: names.Add(args[i]); break;
@@ -74,12 +77,13 @@ static class Benchmarks
         }
         if (!OperatingSystem.IsLinux()) throw new ArgumentException("benchmarks require Linux");
         if (all == (names.Count > 0)) throw new ArgumentException("name implementations or pass --all");
+        if (suite is not ("standard" or "extended")) throw new ArgumentException("suite must be standard or extended");
         if (storage is not ("disk" or "tmpfs" or "both")) throw new ArgumentException("storage must be disk, tmpfs or both");
-        if (repetitions < 1 || warmups < 0 || profiles < 0 || timeout <= 0 || budget <= 0)
-            throw new ArgumentException("repetitions, timeout and budget must be positive; warmups/profiles must be nonnegative");
+        if (repetitions < 1 || warmups < 0 || profiles < 0 || timeout <= 0 || budget <= 0 || maxDuration <= 0)
+            throw new ArgumentException("repetitions, timeout, budget and max-duration must be positive; warmups/profiles must be nonnegative");
         if (File.Exists(Path.Combine(directory, "campaign.json")))
             throw new ArgumentException("campaign already exists; use a new directory to avoid mixing runs");
-        var options = new BenchOptions(directory, names.ToArray(), all, storage, filter, repetitions, warmups, profiles, timeout, budget, seed);
+        var options = new BenchOptions(directory, names.ToArray(), all, storage, filter, repetitions, warmups, profiles, timeout, budget, seed, suite, "implementation-workload-storage", maxDuration);
         return await Run(options, original);
     }
 
@@ -100,10 +104,13 @@ static class Benchmarks
         var ws = new Workspace(original.Repo, work, Path.Combine(work, "others"), Path.Combine(work, "runtimes"));
         var implementations = locked.Implementations.Where(i => options.All || options.Names.Contains(i.Name))
             .Select(i => new BenchImplementation { Definition = i }).ToList();
-        var workloads = BenchFixtures.Workloads().Where(w => options.Filter is null || w.Id.Contains(options.Filter, StringComparison.Ordinal)).ToList();
+        var workloads = BenchFixtures.Workloads(options.Suite ?? "standard").Where(w => options.Filter is null || w.Id.Contains(options.Filter, StringComparison.Ordinal)).ToList();
         if (workloads.Count == 0) throw new ArgumentException("no workloads match --filter");
         Directory.CreateDirectory(dir);
-        var environment = await EnvironmentInfo(dir, original.Repo);
+        using var duration = new CancellationTokenSource();
+        if (options.MaxDuration is { } seconds) duration.CancelAfter(TimeSpan.FromSeconds(seconds));
+        var cancellation = duration.Token;
+        var environment = new Dictionary<string, string>();
         var samples = new List<BenchSample>(); var fixtureInfos = new List<BenchFixtureInfo>();
         var cells = new List<BenchCell>();
         var id = DateTime.UtcNow.ToString("yyyyMMddTHHmmssZ", CultureInfo.InvariantCulture) + "-" + Guid.NewGuid().ToString("N")[..8];
@@ -112,186 +119,229 @@ static class Benchmarks
         var raw = new BenchRaw(1, id, samples);
         void Save() { Write(Path.Combine(dir, "campaign.json"), campaign); Write(Path.Combine(dir, "samples.json"), raw); }
         void Log(string message) => Console.WriteLine($"[{DateTime.UtcNow:HH:mm:ss}Z] {message}");
-        Log($"Preparation: {implementations.Count} implementations");
-        var prepared = 0;
-        // Build all selected tools before timing any of them.
-        foreach (var impl in implementations)
-        {
-            var definition = impl.Definition;
-            var adapter = Adapter(definition);
-            var source = adapter.SourceDir(ws);
-            Log($"Preparation [{++prepared}/{implementations.Count}]: {definition.Name} — " +
-                (definition.PackagePath is null ? "checking source and build" : "checking cached executable"));
-            try
-            {
-                if (definition.PackagePath is not null)
-                {
-                    ValidatePackage(definition);
-                    Save();
-                    continue;
-                }
-                var revision = await BenchProcess.Run("git rev-parse HEAD", source, null, TimeSpan.FromSeconds(10));
-                var dirty = await BenchProcess.Run("git status --porcelain", source, null, TimeSpan.FromSeconds(10));
-                if (revision.ExitCode != 0 || revision.Stdout.Trim() != definition.Revision || dirty.ExitCode != 0 || dirty.Stdout.Length > 0)
-                    throw new InvalidOperationException("source differs from locked revision or has local changes");
-                if (definition.Build is { } build)
-                {
-                    var result = await BenchProcess.Run(Command(adapter, build, ws), source, null, TimeSpan.FromMinutes(15));
-                    if (result.ExitCode != 0 || result.LeftChildren)
-                        throw new InvalidOperationException("build failed: " + Shell.Tail(result.Stderr));
-                }
-            }
-            catch (Exception e) when (e is IOException or InvalidOperationException or System.ComponentModel.Win32Exception)
-            { impl.Status = "build-failed"; impl.Reason = e.Message; Log($"Preparation failed: {definition.Name}: {e.Message}"); }
-            Save();
-        }
-        // These are annotations, not a global eligibility gate.
-        var cases = Cases.Load(ws.Cases).Where(c => c.Name.StartsWith("conformance/")).ToList();
-        var ready = implementations.Where(i => i.Status == "ready").ToList();
-        Log($"Preparation complete: {ready.Count} ready, {implementations.Count - ready.Count} failed");
-        Log($"Conformance: {ready.Count} implementations; these checks are outside the benchmark budget");
-        var checkedImplementations = 0;
-        foreach (var impl in ready)
-        {
-            var adapter = Adapter(impl.Definition);
-            var applicable = cases.Where(c => c.AppliesTo(adapter.Name)).ToList();
-            var elapsed = Stopwatch.StartNew();
-            var lastProgress = TimeSpan.Zero;
-            var completed = 0; var passed = 0; var failed = 0; var skipped = 0;
-            Log($"Conformance [{++checkedImplementations}/{ready.Count}]: {adapter.Name} — 0/{applicable.Count} cases");
-            foreach (var c in applicable)
-            {
-                string status, reason;
-                try
-                {
-                    var result = Runner.Run(c, Command(adapter, adapter.Command, ws), TimeSpan.FromSeconds(options.Timeout),
-                        (command, cwd, input, timeout, umask) =>
-                        {
-                            var execution = BenchProcess.Run(command, cwd, input, timeout, umask: umask).GetAwaiter().GetResult();
-                            return new ShellResult(execution.LeftChildren ? null : execution.ExitCode, execution.Stdout, execution.Stderr);
-                        });
-                    status = result.Status.ToString().ToLowerInvariant(); reason = result.Reason;
-                    impl.Conformance.Add(new { @case = c.Name, status, result.Reason });
-                }
-                catch (Exception e) when (e is IOException or UnauthorizedAccessException)
-                { status = "harness-error"; reason = e.Message; impl.Conformance.Add(new { @case = c.Name, status, reason }); }
-                completed++;
-                if (status == "pass") passed++;
-                else if (status == "skip") skipped++;
-                else { failed++; Log($"Conformance {adapter.Name}: {c.Name}: {status}: {reason}"); }
-                if (completed % 10 == 0 || completed == applicable.Count || elapsed.Elapsed - lastProgress >= TimeSpan.FromSeconds(10))
-                {
-                    Log($"Conformance {adapter.Name}: {completed}/{applicable.Count} cases; {passed} passed, {failed} failed, {skipped} skipped; " +
-                        $"{elapsed.Elapsed.TotalSeconds:F1}s elapsed; last case: {c.Name}");
-                    lastProgress = elapsed.Elapsed;
-                }
-            }
-            Save();
-        }
-        var storages = options.Storage == "both" ? new[] { "disk", "tmpfs" } : [options.Storage];
-        var bases = new Dictionary<string, string>();
-        bases["disk"] = Path.Combine(dir, "targets");
-        var tmpfs = await BenchProcess.Run("findmnt -n -o FSTYPE -T /dev/shm", dir, null, TimeSpan.FromSeconds(5));
-        environment["tmpfsFilesystem"] = tmpfs.Stdout.Trim();
-        if (tmpfs.ExitCode == 0 && tmpfs.Stdout.Trim() == "tmpfs")
-            bases["tmpfs"] = Path.Combine("/dev/shm", "json2dir-bench-" + id);
-        var blocked = new Dictionary<(string Impl, string Storage, string Family, string Mode), int>();
-        var random = new Random(options.Seed);
-        Log($"Benchmarking: {workloads.Count} workloads, {storages.Length} storage conditions, {implementations.Count} implementations");
-        var workloadNumber = 0;
+        Save();
         try
         {
-            foreach (var w in workloads)
+            foreach (var pair in await EnvironmentInfo(dir, original.Repo, cancellation)) environment[pair.Key] = pair.Value;
+            Log($"Preparation: {implementations.Count} implementations");
+            var prepared = 0;
+            // Build all selected tools before timing any of them.
+            foreach (var impl in implementations)
             {
-                Log($"Workload [{++workloadNumber}/{workloads.Count}]: {w.Id} — generating fixture");
-                var fixture = BenchFixtures.Generate(w, options.Seed);
-                var info = Describe(w, fixture);
-                fixtureInfos.Add(info);
-                var inputPath = Path.Combine(dir, "input.json");
-                File.WriteAllBytes(inputPath, fixture.Input);
-                foreach (var storage in storages)
+                cancellation.ThrowIfCancellationRequested();
+                var definition = impl.Definition;
+                var adapter = Adapter(definition);
+                var source = adapter.SourceDir(ws);
+                Log($"Preparation [{++prepared}/{implementations.Count}]: {definition.Name} — " +
+                    (definition.PackagePath is null ? "checking source and build" : "checking cached executable"));
+                try
                 {
-                    Log($"Benchmark {w.Id} on {storage}");
-                    var failures = new Dictionary<string, (string Status, string Reason)>();
-                    foreach (var impl in implementations)
+                    if (definition.PackagePath is not null)
                     {
-                        if (impl.Status != "ready") failures[impl.Definition.Name] = (impl.Status, impl.Reason);
-                        else if (!bases.ContainsKey(storage)) failures[impl.Definition.Name] = ("storage-unavailable", "tmpfs is not mounted at /dev/shm");
-                        else if (blocked.TryGetValue((impl.Definition.Name, storage, w.Family, w.Mode), out var limit) && w.Size > limit)
-                            failures[impl.Definition.Name] = ("skipped", "smaller workload in this family timed out");
+                        ValidatePackage(definition);
+                        Save();
+                        continue;
                     }
-                    foreach (var (phase, rounds) in new[] { ("warmup", options.Warmups), ("timing", options.Repetitions), ("profile", options.Profiles) })
+                    var revision = await BenchProcess.Run("git rev-parse HEAD", source, null, TimeSpan.FromSeconds(10), cancellationToken: cancellation);
+                    var dirty = await BenchProcess.Run("git status --porcelain", source, null, TimeSpan.FromSeconds(10), cancellationToken: cancellation);
+                    if (revision.ExitCode != 0 || revision.Stdout.Trim() != definition.Revision || dirty.ExitCode != 0 || dirty.Stdout.Length > 0)
+                        throw new InvalidOperationException("source differs from locked revision or has local changes");
+                    if (definition.Build is { } build)
                     {
-                        for (var round = 0; round < rounds; round++)
+                        var result = await BenchProcess.Run(Command(adapter, build, ws), source, null, TimeSpan.FromMinutes(15), cancellationToken: cancellation);
+                        if (result.ExitCode != 0 || result.LeftChildren)
+                            throw new InvalidOperationException("build failed: " + Shell.Tail(result.Stderr));
+                    }
+                }
+                catch (Exception e) when (e is IOException or InvalidOperationException or System.ComponentModel.Win32Exception)
+                { impl.Status = "build-failed"; impl.Reason = e.Message; Log($"Preparation failed: {definition.Name}: {e.Message}"); }
+                Save();
+            }
+            // These are annotations, not a global eligibility gate.
+            var cases = Cases.Load(ws.Cases).Where(c => c.Name.StartsWith("conformance/")).ToList();
+            var ready = implementations.Where(i => i.Status == "ready").ToList();
+            Log($"Preparation complete: {ready.Count} ready, {implementations.Count - ready.Count} failed");
+            Log($"Conformance: {ready.Count} implementations; these checks are outside the benchmark budget");
+            var checkedImplementations = 0;
+            foreach (var impl in ready)
+            {
+                var adapter = Adapter(impl.Definition);
+                var applicable = cases.Where(c => c.AppliesTo(adapter.Name)).ToList();
+                var elapsed = Stopwatch.StartNew();
+                var lastProgress = TimeSpan.Zero;
+                var completed = 0; var passed = 0; var failed = 0; var skipped = 0;
+                Log($"Conformance [{++checkedImplementations}/{ready.Count}]: {adapter.Name} — 0/{applicable.Count} cases");
+                foreach (var c in applicable)
+                {
+                    cancellation.ThrowIfCancellationRequested();
+                    string status, reason;
+                    try
+                    {
+                        var result = Runner.Run(c, Command(adapter, adapter.Command, ws), TimeSpan.FromSeconds(options.Timeout),
+                            (command, cwd, input, timeout, umask) =>
+                            {
+                                var execution = BenchProcess.Run(command, cwd, input, timeout, umask: umask, cancellationToken: cancellation).GetAwaiter().GetResult();
+                                return new ShellResult(execution.LeftChildren ? null : execution.ExitCode, execution.Stdout, execution.Stderr);
+                            });
+                        status = result.Status.ToString().ToLowerInvariant(); reason = result.Reason;
+                        impl.Conformance.Add(new { @case = c.Name, status, result.Reason });
+                    }
+                    catch (Exception e) when (e is IOException or UnauthorizedAccessException)
+                    { status = "harness-error"; reason = e.Message; impl.Conformance.Add(new { @case = c.Name, status, reason }); }
+                    completed++;
+                    if (status == "pass") passed++;
+                    else if (status == "skip") skipped++;
+                    else { failed++; Log($"Conformance {adapter.Name}: {c.Name}: {status}: {reason}"); }
+                    if (completed % 10 == 0 || completed == applicable.Count || elapsed.Elapsed - lastProgress >= TimeSpan.FromSeconds(10))
+                    {
+                        Log($"Conformance {adapter.Name}: {completed}/{applicable.Count} cases; {passed} passed, {failed} failed, {skipped} skipped; " +
+                            $"{elapsed.Elapsed.TotalSeconds:F1}s elapsed; last case: {c.Name}");
+                        lastProgress = elapsed.Elapsed;
+                    }
+                }
+                Save();
+            }
+            var storages = options.Storage == "both" ? new[] { "disk", "tmpfs" } : [options.Storage];
+            var bases = new Dictionary<string, string>();
+            bases["disk"] = Path.Combine(dir, "targets");
+            var tmpfs = await BenchProcess.Run("findmnt -n -o FSTYPE -T /dev/shm", dir, null, TimeSpan.FromSeconds(5), cancellationToken: cancellation);
+            environment["tmpfsFilesystem"] = tmpfs.Stdout.Trim();
+            if (tmpfs.ExitCode == 0 && tmpfs.Stdout.Trim() == "tmpfs")
+                bases["tmpfs"] = Path.Combine("/dev/shm", "json2dir-bench-" + id);
+            var blocked = new Dictionary<(string Impl, string Storage, string Family, string Mode), int>();
+            var random = new Random(options.Seed);
+            Log($"Benchmarking: {options.Suite} suite, {workloads.Count} workloads, {storages.Length} storage conditions " +
+                $"({workloads.Count * storages.Length} pairs per implementation), {implementations.Count} implementations; " +
+                $"{options.Budget:G} seconds per implementation/workload/storage pair, {options.Timeout:G} seconds per invocation");
+            var workloadNumber = 0;
+            try
+            {
+                foreach (var w in workloads)
+                {
+                    cancellation.ThrowIfCancellationRequested();
+                    Log($"Workload [{++workloadNumber}/{workloads.Count}]: {w.Id} — generating fixture");
+                    var fixture = BenchFixtures.Generate(w, options.Seed);
+                    var info = Describe(w, fixture);
+                    fixtureInfos.Add(info);
+                    var inputPath = Path.Combine(dir, "input.json");
+                    File.WriteAllBytes(inputPath, fixture.Input);
+                    foreach (var storage in storages)
+                    {
+                        Log($"Benchmark {w.Id} on {storage}");
+                        var failures = new Dictionary<string, (string Status, string Reason)>();
+                        var pairUsedSeconds = implementations.ToDictionary(i => i.Definition.Name, _ => 0d);
+                        foreach (var impl in implementations)
                         {
-                            var active = implementations.Count(i => !failures.ContainsKey(i.Definition.Name) && i.BudgetUsedSeconds < options.Budget);
-                            if (active > 0) Log($"{w.Id}/{storage}: {phase} round {round + 1}/{rounds}; {active} implementations remaining");
-                            var roundElapsed = Stopwatch.StartNew();
-                            var lastProgress = TimeSpan.Zero;
-                            var completed = 0;
-                            var order = implementations.ToArray(); random.Shuffle(order);
-                            foreach (var impl in order)
+                            if (impl.Status != "ready") failures[impl.Definition.Name] = (impl.Status, impl.Reason);
+                            else if (!bases.ContainsKey(storage)) failures[impl.Definition.Name] = ("storage-unavailable", "tmpfs is not mounted at /dev/shm");
+                            else if (blocked.TryGetValue((impl.Definition.Name, storage, w.Family, w.Mode), out var limit) && w.Size > limit)
+                                failures[impl.Definition.Name] = ("skipped", "smaller workload in this family timed out");
+                        }
+                        void RecordPair()
+                        {
+                            cells.RemoveAll(c => c.Workload == w.Id && c.Storage == storage);
+                            foreach (var impl in implementations)
                             {
                                 var name = impl.Definition.Name;
-                                if (failures.ContainsKey(name)) continue;
-                                if (impl.BudgetUsedSeconds >= options.Budget)
-                                { failures[name] = ("budget-exhausted", "implementation campaign budget exhausted"); continue; }
-                                var spent = Stopwatch.StartNew();
-                                var remaining = options.Budget - impl.BudgetUsedSeconds;
-                                BenchSample sample;
-                                try
+                                var own = samples.Where(s => s.Implementation == name && s.Workload == w.Id && s.Storage == storage).ToList();
+                                var failed = failures.GetValueOrDefault(name);
+                                cells.Add(Summarize(name, info, storage, own, failed.Status ?? "ok", failed.Reason ?? "",
+                                    options.Repetitions, options.Warmups, options.Profiles, pairUsedSeconds[name]));
+                            }
+                        }
+                        var checkpoint = Stopwatch.StartNew();
+                        try
+                        {
+                            foreach (var (phase, rounds) in new[] { ("warmup", options.Warmups), ("timing", options.Repetitions), ("profile", options.Profiles) })
+                            {
+                                for (var round = 0; round < rounds; round++)
                                 {
-                                    sample = await Trial(impl.Definition, ws, fixture, w, storage, phase, round,
-                                        bases[storage], inputPath, TimeSpan.FromSeconds(Math.Min(options.Timeout, remaining)));
-                                }
-                                catch (Exception e) when (e is IOException or UnauthorizedAccessException or System.ComponentModel.Win32Exception)
-                                { sample = new(name, w.Id, storage, phase, round, "harness-error", e.Message, null); }
-                                impl.BudgetUsedSeconds += spent.Elapsed.TotalSeconds;
-                                samples.Add(sample);
-                                if (sample.Status != "ok")
-                                {
-                                    failures[name] = (sample.Status, sample.Reason);
-                                    Log($"{w.Id}/{storage}: {name}: {phase} round {round + 1}/{rounds}: {sample.Status}: {sample.Reason}");
-                                    if (sample.Status == "timeout") blocked[(name, storage, w.Family, w.Mode)] = w.Size;
-                                }
-                                completed++;
-                                if (roundElapsed.Elapsed - lastProgress >= TimeSpan.FromSeconds(10))
-                                {
-                                    Log($"{w.Id}/{storage}: {phase} round {round + 1}/{rounds}; {completed}/{active} invocations completed; " +
-                                        $"{roundElapsed.Elapsed.TotalSeconds:F1}s elapsed; last implementation: {name}");
-                                    lastProgress = roundElapsed.Elapsed;
+                                    var active = implementations.Count(i => !failures.ContainsKey(i.Definition.Name) && pairUsedSeconds[i.Definition.Name] < options.Budget);
+                                    if (active > 0) Log($"{w.Id}/{storage}: {phase} round {round + 1}/{rounds}; {active} implementations remaining");
+                                    var roundElapsed = Stopwatch.StartNew();
+                                    var lastProgress = TimeSpan.Zero;
+                                    var completed = 0;
+                                    var order = implementations.ToArray(); random.Shuffle(order);
+                                    foreach (var impl in order)
+                                    {
+                                        cancellation.ThrowIfCancellationRequested();
+                                        var name = impl.Definition.Name;
+                                        if (failures.ContainsKey(name)) continue;
+                                        if (pairUsedSeconds[name] >= options.Budget)
+                                        { failures[name] = ("budget-exhausted", "implementation/workload/storage budget exhausted"); continue; }
+                                        var spent = Stopwatch.StartNew();
+                                        var remaining = options.Budget - pairUsedSeconds[name];
+                                        BenchSample sample;
+                                        try
+                                        {
+                                            sample = await Trial(impl.Definition, ws, fixture, w, storage, phase, round,
+                                                bases[storage], inputPath, options.Timeout, remaining, cancellation);
+                                        }
+                                        catch (OperationCanceledException) when (cancellation.IsCancellationRequested)
+                                        {
+                                            var interruptedSpend = spent.Elapsed.TotalSeconds;
+                                            pairUsedSeconds[name] += interruptedSpend;
+                                            impl.BudgetUsedSeconds += interruptedSpend;
+                                            throw;
+                                        }
+                                        catch (Exception e) when (e is IOException or UnauthorizedAccessException or System.ComponentModel.Win32Exception)
+                                        { sample = new(name, w.Id, storage, phase, round, "harness-error", e.Message, null); }
+                                        var used = spent.Elapsed.TotalSeconds;
+                                        pairUsedSeconds[name] += used;
+                                        impl.BudgetUsedSeconds += used;
+                                        samples.Add(sample);
+                                        if (sample.Status != "ok")
+                                        {
+                                            failures[name] = (sample.Status, sample.Reason);
+                                            Log($"{w.Id}/{storage}: {name}: {phase} round {round + 1}/{rounds}: {sample.Status}: {sample.Reason}");
+                                            if (sample.Status == "timeout") blocked[(name, storage, w.Family, w.Mode)] = w.Size;
+                                        }
+                                        if (checkpoint.Elapsed >= TimeSpan.FromSeconds(10))
+                                        {
+                                            RecordPair(); Save(); checkpoint.Restart();
+                                        }
+                                        completed++;
+                                        if (roundElapsed.Elapsed - lastProgress >= TimeSpan.FromSeconds(10))
+                                        {
+                                            Log($"{w.Id}/{storage}: {phase} round {round + 1}/{rounds}; {completed}/{active} invocations completed; " +
+                                                $"{roundElapsed.Elapsed.TotalSeconds:F1}s elapsed; last implementation: {name}");
+                                            lastProgress = roundElapsed.Elapsed;
+                                        }
+                                    }
                                 }
                             }
                         }
+                        finally { RecordPair(); Save(); }
+                        var outcomes = cells.Where(c => c.Workload == w.Id && c.Storage == storage)
+                            .GroupBy(c => c.Status).ToDictionary(g => g.Key, g => g.Count());
+                        Log($"{w.Id}/{storage} complete: " + string.Join(", ", outcomes.OrderBy(pair => pair.Key).Select(pair => $"{pair.Value} {pair.Key}")) +
+                            $"; maximum pair spend {pairUsedSeconds.Values.Max():F2}/{options.Budget:G}s");
+                        Save();
                     }
-                    var outcomes = new Dictionary<string, int>();
-                    foreach (var impl in implementations)
-                    {
-                        var name = impl.Definition.Name;
-                        var own = samples.Where(s => s.Implementation == name && s.Workload == w.Id && s.Storage == storage).ToList();
-                        var failed = failures.GetValueOrDefault(name);
-                        var cell = Summarize(name, info, storage, own, failed.Status ?? "ok", failed.Reason ?? "", options.Repetitions, options.Warmups, options.Profiles);
-                        cells.Add(cell);
-                        outcomes[cell.Status] = outcomes.GetValueOrDefault(cell.Status) + 1;
-                    }
-                    Log($"{w.Id}/{storage} complete: " + string.Join(", ", outcomes.OrderBy(pair => pair.Key).Select(pair => $"{pair.Value} {pair.Key}")));
-                    Save();
+                    File.Delete(inputPath);
                 }
-                File.Delete(inputPath);
             }
-        }
-        finally
-        {
-            try
+            finally
             {
-                foreach (var target in bases.Values) BenchFixtures.Cleanup(target);
-                File.Delete(Path.Combine(dir, "input.json"));
+                try
+                {
+                    foreach (var target in bases.Values) BenchFixtures.Cleanup(target);
+                    File.Delete(Path.Combine(dir, "input.json"));
+                }
+                finally { Save(); }
             }
-            finally { Save(); }
+            cancellation.ThrowIfCancellationRequested();
+            campaign = campaign with { Completed = true }; Save();
+            Console.WriteLine($"saved campaign {id} to {dir}");
+            return cells.Any(c => c.Status != "ok") ? 1 : 0;
         }
-        campaign = campaign with { Completed = true }; Save();
-        Console.WriteLine($"saved campaign {id} to {dir}");
-        return cells.Any(c => c.Status != "ok") ? 1 : 0;
+        catch (OperationCanceledException) when (cancellation.IsCancellationRequested)
+        {
+            campaign = campaign with { StopReason = "campaign time limit reached" };
+            Log("Campaign time limit reached; completed pairs retained and unfinished pairs remain unranked");
+            Save();
+            return 2;
+        }
     }
 
     internal static void ValidatePackage(BenchLockedImplementation definition)
@@ -311,8 +361,10 @@ static class Benchmarks
         "export XDG_CACHE_HOME=" + Shell.Quote(Path.Combine(ws.Runtimes, "cache")) + "\n" + i.Expand(template, ws);
 
     static async Task<BenchSample> Trial(BenchLockedImplementation impl, Workspace ws, BenchFixture fixture,
-        BenchWorkload w, string storage, string phase, int round, string targetBase, string inputPath, TimeSpan timeout)
+        BenchWorkload w, string storage, string phase, int round, string targetBase, string inputPath, double timeoutSeconds, double budgetSeconds, CancellationToken cancellation = default)
     {
+        cancellation.ThrowIfCancellationRequested();
+        var preparation = Stopwatch.StartNew();
         var sandbox = Path.Combine(targetBase, Guid.NewGuid().ToString("N"));
         var root = Path.Combine(sandbox, "root"); Directory.CreateDirectory(root);
         try
@@ -324,9 +376,14 @@ static class Benchmarks
             var timeCommand = Path.Combine(ws.Runtimes, "tools", "bin", "time");
             if (phase == "profile" && !File.Exists(timeCommand))
                 return new(impl.Name, w.Id, storage, phase, round, "resource-unavailable", "GNU time is missing", null);
-            var result = await BenchProcess.Run(command, root, fixture.Input, timeout, phase == "profile", timeCommand: timeCommand);
-            var status = result.ExitCode is null ? "timeout" : result.LeftChildren ? "left-children" : result.ExitCode != 0 ? "exit-error" : "ok";
-            var reason = status == "timeout" ? "invocation deadline exceeded" : status == "left-children" ? "command left descendant processes running"
+            var remaining = budgetSeconds - preparation.Elapsed.TotalSeconds;
+            if (remaining <= 0)
+                return new(impl.Name, w.Id, storage, phase, round, "budget-exhausted", "pair budget exhausted during target preparation", null);
+            var budgetLimited = remaining < timeoutSeconds;
+            var result = await BenchProcess.Run(command, root, fixture.Input, TimeSpan.FromSeconds(Math.Min(timeoutSeconds, remaining)), phase == "profile", timeCommand: timeCommand, cancellationToken: cancellation);
+            var status = result.ExitCode is null ? (budgetLimited ? "budget-exhausted" : "timeout") : result.LeftChildren ? "left-children" : result.ExitCode != 0 ? "exit-error" : "ok";
+            var reason = status == "budget-exhausted" ? "implementation/workload/storage deadline exceeded"
+                : status == "timeout" ? "invocation deadline exceeded" : status == "left-children" ? "command left descendant processes running"
                 : status == "exit-error" ? $"exit {result.ExitCode}: {Shell.Tail(result.Stderr)}" : "";
             if (status == "ok")
             {
@@ -366,7 +423,7 @@ static class Benchmarks
     }
 
     internal static BenchCell Summarize(string name, BenchFixtureInfo info, string storage, List<BenchSample> samples,
-        string status, string reason, int repetitions, int warmups = 0, int profiles = 0)
+        string status, string reason, int repetitions, int warmups = 0, int profiles = 0, double? budgetUsedSeconds = null)
     {
         var timing = Statistics(samples.Where(s => s.Phase == "timing" && s.Status == "ok").Select(s => s.Milliseconds!.Value));
         if (status == "ok" && timing?.Count != repetitions) { status = "incomplete"; reason = "not all timing rounds completed"; }
@@ -379,17 +436,17 @@ static class Benchmarks
         return new(name, info.Id, storage, status, reason, timing,
             status == "ok" && seconds > 0 ? (info.Files + info.Directories + info.Links + info.Scripts) / seconds : null,
             status == "ok" && seconds > 0 ? info.PayloadBytes / 1048576d / seconds : null,
-            Median(s => s.UserSeconds), Median(s => s.SystemSeconds), Median(s => s.MaxRssKiB));
+            Median(s => s.UserSeconds), Median(s => s.SystemSeconds), Median(s => s.MaxRssKiB), budgetUsedSeconds);
     }
 
-    static async Task<Dictionary<string, string>> EnvironmentInfo(string dir, string repo)
+    static async Task<Dictionary<string, string>> EnvironmentInfo(string dir, string repo, CancellationToken cancellation = default)
     {
         var result = new Dictionary<string, string>();
         foreach (var (key, command) in new[] { ("kernel", "uname -srmo"), ("cpu", "lscpu"),
             ("filesystem", "findmnt -n -o FSTYPE,OPTIONS,SOURCE -T " + Shell.Quote(dir)), ("testerRevision", "git -C " + Shell.Quote(repo) + " rev-parse HEAD"),
             ("testerWorkingTree", "git -C " + Shell.Quote(repo) + " status --porcelain") })
         {
-            var execution = await BenchProcess.Run(command, dir, null, TimeSpan.FromSeconds(5));
+            var execution = await BenchProcess.Run(command, dir, null, TimeSpan.FromSeconds(5), cancellationToken: cancellation);
             result[key] = execution.ExitCode == 0 ? execution.Stdout.Trim() : "unavailable";
         }
         foreach (var key in new[] { "ImageOS", "ImageVersion", "RUNNER_OS", "RUNNER_ARCH", "GITHUB_RUN_ID", "GITHUB_SHA" })
@@ -419,6 +476,8 @@ static class Benchmarks
         foreach (var w in campaign.RequestedWorkloads ?? [])
             if (!campaign.Workloads.Any(i => i.Id == w.Id)) campaign.Workloads.Add(Describe(w, BenchFixtures.Generate(w, options.Seed)));
         var storages = options.Storage == "both" ? new[] { "disk", "tmpfs" } : [options.Storage];
+        if (campaign.Results.Any(c => c.BudgetUsedSeconds is { } used && (!double.IsFinite(used) || used < 0)))
+            throw new ArgumentException("invalid pair budget usage");
         var identities = new HashSet<(string, string, string, string, int)>();
         foreach (var sample in raw.Samples)
         {
@@ -442,7 +501,7 @@ static class Benchmarks
             var failure = own.FirstOrDefault(s => s.Status != "ok");
             var status = failure?.Status ?? prior?.Status ?? (impl.Status == "ready" ? "incomplete" : impl.Status);
             var reason = failure?.Reason ?? prior?.Reason ?? (impl.Status == "ready" ? "campaign stopped before this workload completed" : impl.Reason);
-            recomputed.Add(Summarize(name, w, storage, own, status, reason, options.Repetitions, options.Warmups, options.Profiles));
+            recomputed.Add(Summarize(name, w, storage, own, status, reason, options.Repetitions, options.Warmups, options.Profiles, prior?.BudgetUsedSeconds));
         }
         campaign = campaign with { Results = recomputed };
         Directory.CreateDirectory(output);

@@ -14,8 +14,9 @@ static class BenchProcess
     [DllImport("libc", SetLastError = true)] static extern int kill(int pid, int signal);
 
     public static async Task<BenchExecution> Run(string command, string cwd, byte[]? input, TimeSpan timeout,
-        bool profile = false, string umask = "022", string timeCommand = "/usr/bin/time")
+        bool profile = false, string umask = "022", string timeCommand = "/usr/bin/time", CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
         var resourcePath = Path.Combine(cwd, ".resources-" + Guid.NewGuid().ToString("N"));
         var psi = new ProcessStartInfo("setsid")
         {
@@ -31,7 +32,8 @@ static class BenchProcess
         psi.Environment["LC_ALL"] = "C.UTF-8";
         psi.Environment["DOTNET_CLI_TELEMETRY_OPTOUT"] = "1";
         psi.Environment["DOTNET_NOLOGO"] = "1";
-        using var deadline = new CancellationTokenSource(timeout);
+        using var deadline = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        deadline.CancelAfter(timeout);
         var clock = Stopwatch.StartNew();
         using var process = Process.Start(psi) ?? throw new InvalidOperationException("failed to start setsid");
         var stdout = Drain(process.StandardOutput);
@@ -72,6 +74,7 @@ static class BenchProcess
                 (user, system, rss) = (u, s, r);
         }
         File.Delete(resourcePath);
+        cancellationToken.ThrowIfCancellationRequested();
         return new(timedOut ? null : process.ExitCode, elapsed,
             stdout.IsCompletedSuccessfully ? stdout.Result : "", stderr.IsCompletedSuccessfully ? stderr.Result : "",
             children, user, system, rss);

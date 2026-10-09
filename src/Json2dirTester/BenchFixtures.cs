@@ -15,7 +15,19 @@ sealed record BenchFixture(byte[] Input, Dictionary<string, BenchEntry> Expected
 
 static class BenchFixtures
 {
-    public static List<BenchWorkload> Workloads() =>
+    public static List<BenchWorkload> Workloads(string suite = "standard")
+    {
+        var extended = ExtendedWorkloads();
+        return suite switch
+        {
+            "standard" => extended.Where(w => w.Id is "empty" or "files-1000" or "payload-8MiB" or
+                "balanced-1000" or "depth-64" or "escapes-1MiB" or "config" or "update").ToList(),
+            "extended" => extended,
+            _ => throw new ArgumentException("suite must be standard or extended"),
+        };
+    }
+
+    static List<BenchWorkload> ExtendedWorkloads() =>
     [
         new("empty", "startup", 0), new("one-file", "startup", 1),
         .. new[] { 100, 1000, 10000 }.Select(n => new BenchWorkload($"files-{n}", "files", n)),

@@ -13,7 +13,15 @@ if (!OperatingSystem.IsLinux()) throw new Exception("Tests require Linux");
 var temp = Directory.CreateTempSubdirectory("json2dir-bench-tests-").FullName;
 try
 {
-    foreach (var w in BenchFixtures.Workloads())
+    var standard = BenchFixtures.Workloads();
+    Check(standard.Select(w => w.Id).SequenceEqual(new[] { "empty", "files-1000", "payload-8MiB", "balanced-1000",
+        "depth-64", "escapes-1MiB", "config", "update" }), "standard suite has eight ordered workloads and sixteen storage pairs");
+    Check(BenchFixtures.Workloads("extended").Count == 26, "extended suite retains 26 workloads and 52 storage pairs");
+    Check(!standard.Any(w => w.Id == "payload-64MiB") && BenchFixtures.Workloads("extended").Any(w => w.Id == "payload-64MiB"),
+        "extended workloads remain explicitly selectable");
+    var defaults = new BenchOptions(temp, [], true);
+    Check(defaults is { Timeout: 30, Budget: 240, Warmups: 3, Repetitions: 15, Profiles: 3 }, "benchmark limit and repetition defaults");
+    foreach (var w in BenchFixtures.Workloads("extended"))
     {
         var fixture = BenchFixtures.Generate(w, 1729);
         var again = BenchFixtures.Generate(w, 1729);
@@ -77,6 +85,44 @@ try
     Check(cell.Status == "incomplete" && cell.MiBPerSecond is null, "partial samples excluded from rankings");
 
     var clock = Stopwatch.StartNew();
+    var shellResult = Shell.Run("sleep 20", temp, new byte[4 * 1048576], TimeSpan.FromMilliseconds(300));
+    Check(shellResult.TimedOut && clock.Elapsed.TotalSeconds < 4, "standard shell deadline applies while stdin is blocked");
+    shellResult = Shell.Run("exec 0<&-; sleep 0.1; exit 7", temp, new byte[4 * 1048576], TimeSpan.FromSeconds(2));
+    Check(shellResult.ExitCode == 7, "standard shell preserves exit status after early stdin close");
+    var binaryInput = Enumerable.Range(0, 1048576).Select(i => (byte)i).ToArray();
+    shellResult = Shell.Run("cat > stdin.bin; head -c 200000 /dev/zero; head -c 200000 /dev/zero >&2", temp, binaryInput, null);
+    Check(shellResult.ExitCode == 0 && File.ReadAllBytes(Path.Combine(temp, "stdin.bin")).SequenceEqual(binaryInput) &&
+        shellResult.Stdout.Length == 200000 && shellResult.Stderr.Length == 200000,
+        "standard shell preserves binary stdin and drains both output streams with no deadline");
+    shellResult = Shell.Run("cat > inherited-stdin.bin", temp, binaryInput, TimeSpan.FromSeconds(2), inheritOutput: true);
+    Check(shellResult.ExitCode == 0 && shellResult.Stdout == "" && shellResult.Stderr == "" &&
+        File.ReadAllBytes(Path.Combine(temp, "inherited-stdin.bin")).SequenceEqual(binaryInput),
+        "standard shell supports inherited output while feeding stdin");
+    foreach (var (inherit, input) in new (bool, byte[]?)[] { (false, binaryInput), (true, binaryInput), (false, null) })
+    {
+        clock.Restart();
+        try
+        {
+            shellResult = Shell.Run("sleep 20 <&0 & echo $! > shell-child.pid; printf partial; printf diagnostic >&2; exit 7",
+                temp, input, TimeSpan.FromMilliseconds(300), inheritOutput: inherit);
+            Check(shellResult.TimedOut && clock.Elapsed.TotalSeconds < 4,
+                $"standard shell bounds inherited child pipes with inheritOutput={inherit}, stdin={input is not null}");
+            if (!inherit)
+                Check(shellResult.Stdout == "partial" && shellResult.Stderr == "diagnostic", "standard shell retains partial timeout output");
+        }
+        finally
+        {
+            if (File.Exists(Path.Combine(temp, "shell-child.pid")))
+            {
+                var childId = int.Parse(File.ReadAllText(Path.Combine(temp, "shell-child.pid")));
+                try { using var child = Process.GetProcessById(childId); child.Kill(); }
+                catch (ArgumentException) { }
+                catch (InvalidOperationException) { }
+                File.Delete(Path.Combine(temp, "shell-child.pid"));
+            }
+        }
+    }
+    clock.Restart();
     var result = await BenchProcess.Run("sleep 20", temp, new byte[4 * 1048576], TimeSpan.FromMilliseconds(300));
     Check(result.ExitCode is null && clock.Elapsed.TotalSeconds < 4, "deadline applies while stdin is blocked");
     result = await BenchProcess.Run("exit 0", temp, new byte[4 * 1048576], TimeSpan.FromSeconds(2));
@@ -185,7 +231,7 @@ try
     try
     {
         Console.SetOut(progress);
-        smokeStatus = await Benchmarks.Main(["bench", "--all", "--dir", smoke, "--filter", "one-file", "--storage", "disk",
+        smokeStatus = await Benchmarks.Main(["bench", "--all", "--dir", smoke, "--suite", "extended", "--filter", "one-file", "--storage", "disk",
             "--warmups", "1", "--repetitions", "2", "--profiles", timeCommand is null ? "0" : "1", "--timeout", "2", "--budget", "20"], ws);
     }
     finally { Console.SetOut(console); }
@@ -202,6 +248,107 @@ try
     var published = Benchmarks.Read<BenchCampaign>(Path.Combine(smoke, "export", "benchmarks.json"));
     Check(published.Completed && published.Results.Single().Status == "ok" && published.Results.Single().Timing?.Count == 2,
         "complete campaign exports verified timings and completion state");
+    var recordedSmoke = Benchmarks.Read<BenchCampaign>(Path.Combine(smoke, "campaign.json"));
+    Check(published.Results.Single().BudgetUsedSeconds is > 0 &&
+        published.Results.Single().BudgetUsedSeconds == recordedSmoke.Results.Single().BudgetUsedSeconds &&
+        published.Results.Single().BudgetUsedSeconds == published.Implementations.Single().BudgetUsedSeconds &&
+        messages.Contains("maximum pair spend"), "export preserves actual charged pair time separately from latency samples");
     Check(published.Implementations.Single().Conformance.Count > 0, "campaign includes conformance annotations");
+    Check(published.Options is { Suite: "extended", BudgetScope: "implementation-workload-storage" } &&
+        messages.Contains("extended suite, 1 workloads, 1 storage conditions (1 pairs per implementation)") && messages.Contains("20 seconds per implementation/workload/storage pair"),
+        "campaign provenance and logs describe selected suite and per-pair allowance");
+
+    // Use the committed local adapter but empty conformance cases to isolate limits.
+    var limitsRepo = Path.Combine(temp, "limits-repo"); Directory.CreateDirectory(Path.Combine(limitsRepo, "cases"));
+    var limitsWs = ws with { Repo = limitsRepo };
+    var bounded = Path.Combine(temp, "campaign-limited"); Directory.CreateDirectory(bounded);
+    var boundedCommand = "python3 -c " + Shell.Quote("import json, sys, time; data=json.load(sys.stdin); time.sleep(20) if data else None");
+    var boundedLock = smokeLock with { Implementations = [smokeLock.Implementations.Single() with { Command = boundedCommand, Source = stub }] };
+    File.WriteAllText(Path.Combine(bounded, "lock.json"), JsonSerializer.Serialize(boundedLock, Benchmarks.Json));
+    var campaignClock = Stopwatch.StartNew();
+    var boundedStatus = await Benchmarks.Main(["bench", "--all", "--dir", bounded, "--storage", "disk",
+        "--warmups", "0", "--repetitions", "1", "--profiles", "0", "--timeout", "20", "--budget", "60", "--max-duration", "2"], limitsWs);
+    Check(boundedStatus == 2 && campaignClock.Elapsed < TimeSpan.FromSeconds(8),
+        "whole campaign deadline stops an active invocation independently of unchanged invocation and pair limits");
+    await Benchmarks.Main(["bench-export", "--dir", bounded, "--out", Path.Combine(bounded, "export")], limitsWs);
+    var boundedExport = Benchmarks.Read<BenchCampaign>(Path.Combine(bounded, "export", "benchmarks.json"));
+    Check(!boundedExport.Completed && boundedExport.StopReason == "campaign time limit reached" &&
+        boundedExport.Options is { Timeout: 20, Budget: 60, MaxDuration: 2 }, "stopped campaign exports its deadline and retains individual limits");
+    Check(boundedExport.Results.Single(c => c.Workload == "empty").Status == "ok" &&
+        boundedExport.Results.Where(c => c.Workload != "empty").All(c => c.Status == "incomplete" && c.EntriesPerSecond is null),
+        "completed faster benchmarks remain ranked while interrupted and unstarted benchmarks stay unranked");
+    Check(!Directory.Exists(Path.Combine(bounded, "targets")), "campaign deadline cleans benchmark targets");
+
+    var conformanceRepo = Path.Combine(temp, "bounded-conformance-repo");
+    Directory.CreateDirectory(Path.Combine(conformanceRepo, "cases", "conformance", "core"));
+    File.WriteAllText(Path.Combine(conformanceRepo, "cases", "conformance", "core", "001-slow.json"),
+        "{\"description\":\"slow case\",\"section\":\"4\",\"level\":\"core\",\"expect\":{\"tree\":{}},\"input\":{}}");
+    var conformanceBound = Path.Combine(temp, "conformance-limited"); Directory.CreateDirectory(conformanceBound);
+    File.WriteAllText(Path.Combine(conformanceBound, "lock.json"), JsonSerializer.Serialize(boundedLock with
+        { Implementations = [boundedLock.Implementations.Single() with { Command = "sleep 20" }] }, Benchmarks.Json));
+    var conformanceStatus = await Benchmarks.Main(["bench", "--all", "--dir", conformanceBound,
+        "--storage", "disk", "--timeout", "20", "--max-duration", "1"], ws with { Repo = conformanceRepo });
+    Check(conformanceStatus == 2 && Benchmarks.Read<BenchCampaign>(Path.Combine(conformanceBound, "campaign.json"))
+        is { Completed: false, StopReason: "campaign time limit reached" }, "campaign deadline also covers conformance annotations");
+    await Benchmarks.Main(["bench-export", "--dir", conformanceBound, "--out", Path.Combine(conformanceBound, "export")], limitsWs);
+    Check(Benchmarks.Read<BenchCampaign>(Path.Combine(conformanceBound, "export", "benchmarks.json")).Results
+        .All(c => c.Status == "incomplete"), "a campaign stopped before timing can still export explicit incomplete results");
+
+    using (var cancelProcess = new CancellationTokenSource(TimeSpan.FromMilliseconds(100)))
+    {
+        var childFile = Path.Combine(temp, "cancel-child.pid");
+        try
+        {
+            await BenchProcess.Run("sleep 20 & echo $! > " + Shell.Quote(childFile) + "; wait", temp, null,
+                TimeSpan.FromSeconds(20), cancellationToken: cancelProcess.Token);
+            Check(false, "campaign cancellation must propagate");
+        }
+        catch (OperationCanceledException) when (cancelProcess.IsCancellationRequested) { }
+        var childPid = File.ReadAllText(childFile).Trim();
+        var childState = Path.Combine("/proc", childPid, "stat");
+        Check(!File.Exists(childState) || File.ReadAllText(childState).Split(')')[1].TrimStart().StartsWith('Z'),
+            "campaign cancellation terminates the active invocation's process group");
+    }
+    async Task<BenchCampaign> LimitCampaign(string name, string timeout, string budget)
+    {
+        var directory = Path.Combine(temp, name); Directory.CreateDirectory(directory);
+        var slowLock = smokeLock with { Implementations = [smokeLock.Implementations.Single() with { Command = "sleep 20", Source = stub }] };
+        File.WriteAllText(Path.Combine(directory, "lock.json"), JsonSerializer.Serialize(slowLock, Benchmarks.Json));
+        await Benchmarks.Main(["bench", "--all", "--dir", directory, "--suite", "extended", "--filter", "files-", "--storage", "both",
+            "--warmups", "0", "--repetitions", "2", "--profiles", "0", "--timeout", timeout, "--budget", budget], limitsWs);
+        await Benchmarks.Main(["bench-export", "--dir", directory, "--out", Path.Combine(directory, "export")], limitsWs);
+        return Benchmarks.Read<BenchCampaign>(Path.Combine(directory, "export", "benchmarks.json"));
+    }
+    var budgetLimited = await LimitCampaign("budget-limited", "2", "0.1");
+    var availableCells = budgetLimited.Results.Where(c => c.Status != "storage-unavailable").ToList();
+    Check(availableCells.Count >= 3 && availableCells.All(c => c.Status == "budget-exhausted" && c.Timing is null && c.MiBPerSecond is null),
+        "pair budget exhaustion does not skip larger workloads or rank incomplete pairs");
+    var budgetRaw = Benchmarks.Read<BenchRaw>(Path.Combine(temp, "budget-limited", "samples.json"));
+    Check(availableCells.All(c => budgetRaw.Samples.Any(s => s.Workload == c.Workload && s.Storage == c.Storage && s.Status == "budget-exhausted")),
+        "every later workload and available storage gets a fresh pair budget and invocation");
+    Check(budgetLimited.Implementations.Single().BudgetUsedSeconds > budgetLimited.Options.Budget,
+        "accumulated budget telemetry does not prevent later pairs running");
+    Check(availableCells.All(c => c.BudgetUsedSeconds >= budgetLimited.Options.Budget) &&
+        Math.Abs(budgetLimited.Results.Sum(c => c.BudgetUsedSeconds ?? 0) - budgetLimited.Implementations.Single().BudgetUsedSeconds) < 1e-9,
+        "export retains per-pair exhaustion spend and its accumulated total");
+    var commandLimited = await LimitCampaign("command-limited", "0.1", "2");
+    Check(commandLimited.Results.Where(c => c.Status != "storage-unavailable").All(c =>
+        c.Status == (c.Workload == "files-100" ? "timeout" : "skipped")),
+        "command deadlines still suppress larger workloads within each storage family");
+
+    var legacyPath = Path.Combine(temp, "legacy"); Directory.CreateDirectory(legacyPath);
+    var legacyJson = JsonSerializer.SerializeToNode(campaign, Benchmarks.Json)!;
+    legacyJson["options"]!.AsObject().Remove("suite");
+    legacyJson["options"]!.AsObject().Remove("budgetScope");
+    legacyJson["options"]!["timeout"] = 30;
+    legacyJson["options"]!["budget"] = 600;
+    foreach (var legacyResult in legacyJson["results"]!.AsArray()) legacyResult!.AsObject().Remove("budgetUsedSeconds");
+    File.WriteAllText(Path.Combine(legacyPath, "campaign.json"), legacyJson.ToJsonString());
+    File.WriteAllText(Path.Combine(legacyPath, "samples.json"), JsonSerializer.Serialize(new BenchRaw(1, "test", [sample]), Benchmarks.Json));
+    await Benchmarks.Main(["bench-export", "--dir", legacyPath, "--out", Path.Combine(legacyPath, "export")], ws);
+    var legacy = Benchmarks.Read<BenchCampaign>(Path.Combine(legacyPath, "export", "benchmarks.json"));
+    Check(legacy.Options is { Suite: null, BudgetScope: null, MaxDuration: null, Timeout: 30, Budget: 600 } && legacy.StopReason is null,
+        "legacy export retains original limits without claiming new suite or budget semantics");
+    Check(legacy.Results.All(c => c.BudgetUsedSeconds is null), "legacy export does not invent charged pair time from latency samples");
 }
 finally { Directory.Delete(temp, true); }

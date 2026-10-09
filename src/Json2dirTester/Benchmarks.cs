@@ -112,7 +112,8 @@ static class Benchmarks
         var cancellation = duration.Token;
         var environment = new Dictionary<string, string>
         {
-            ["benchmarkMethodologySha256"] = Environment.GetEnvironmentVariable("BENCHMARK_METHODOLOGY_SHA256") ?? "unavailable"
+            ["benchmarkMethodologySha256"] = Environment.GetEnvironmentVariable("BENCHMARK_METHODOLOGY_SHA256") ?? "unavailable",
+            ["conformance"] = "not run; use the separate conformance workflow"
         };
         var samples = new List<BenchSample>(); var fixtureInfos = new List<BenchFixtureInfo>();
         var cells = new List<BenchCell>();
@@ -160,50 +161,8 @@ static class Benchmarks
                 { impl.Status = "build-failed"; impl.Reason = e.Message; Log($"Preparation failed: {definition.Name}: {e.Message}"); }
                 Save();
             }
-            // These are annotations, not a global eligibility gate.
-            var cases = Cases.Load(ws.Cases).Where(c => c.Name.StartsWith("conformance/")).ToList();
-            var ready = implementations.Where(i => i.Status == "ready").ToList();
-            Log($"Preparation complete: {ready.Count} ready, {implementations.Count - ready.Count} failed");
-            Log($"Conformance: {ready.Count} implementations; these checks are outside the benchmark budget");
-            var checkedImplementations = 0;
-            foreach (var impl in ready)
-            {
-                var adapter = Adapter(impl.Definition);
-                var applicable = cases.Where(c => c.AppliesTo(adapter.Name)).ToList();
-                var elapsed = Stopwatch.StartNew();
-                var lastProgress = TimeSpan.Zero;
-                var completed = 0; var passed = 0; var failed = 0; var skipped = 0;
-                Log($"Conformance [{++checkedImplementations}/{ready.Count}]: {adapter.Name} — 0/{applicable.Count} cases");
-                foreach (var c in applicable)
-                {
-                    cancellation.ThrowIfCancellationRequested();
-                    string status, reason;
-                    try
-                    {
-                        var result = Runner.Run(c, Command(adapter, adapter.Command, ws), TimeSpan.FromSeconds(options.Timeout),
-                            (command, cwd, input, timeout, umask) =>
-                            {
-                                var execution = BenchProcess.Run(command, cwd, input, timeout, umask: umask, cancellationToken: cancellation).GetAwaiter().GetResult();
-                                return new ShellResult(execution.LeftChildren ? null : execution.ExitCode, execution.Stdout, execution.Stderr);
-                            });
-                        status = result.Status.ToString().ToLowerInvariant(); reason = result.Reason;
-                        impl.Conformance.Add(new { @case = c.Name, status, result.Reason });
-                    }
-                    catch (Exception e) when (e is IOException or UnauthorizedAccessException)
-                    { status = "harness-error"; reason = e.Message; impl.Conformance.Add(new { @case = c.Name, status, reason }); }
-                    completed++;
-                    if (status == "pass") passed++;
-                    else if (status == "skip") skipped++;
-                    else { failed++; Log($"Conformance {adapter.Name}: {c.Name}: {status}: {reason}"); }
-                    if (completed % 10 == 0 || completed == applicable.Count || elapsed.Elapsed - lastProgress >= TimeSpan.FromSeconds(10))
-                    {
-                        Log($"Conformance {adapter.Name}: {completed}/{applicable.Count} cases; {passed} passed, {failed} failed, {skipped} skipped; " +
-                            $"{elapsed.Elapsed.TotalSeconds:F1}s elapsed; last case: {c.Name}");
-                        lastProgress = elapsed.Elapsed;
-                    }
-                }
-                Save();
-            }
+            var ready = implementations.Count(i => i.Status == "ready");
+            Log($"Preparation complete: {ready} ready, {implementations.Count - ready} failed");
             var storages = options.Storage == "both" ? new[] { "disk", "tmpfs" } : [options.Storage];
             var bases = new Dictionary<string, string>();
             bases["disk"] = Path.Combine(dir, "targets");

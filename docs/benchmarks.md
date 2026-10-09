@@ -57,10 +57,9 @@ python3 benchmarks/prepare.py --lock .bench/campaign/lock.json --dir .bench/repr
 
 The benchmark command requires a prepared lock. For source builds it requires
 clean sources at the recorded commits; packaged campaigns require the locked
-executables in the Nix store. It prepares all implementations and annotates their existing
-conformance results before timing. Unrelated conformance failures do not exclude
-correct workloads. Build failures are visible. Conformance inspection temporarily
-adds owner read permission to mode-000 files and restores the original mode.
+executables in the Nix store. It prepares all implementations before timing.
+Benchmark runs do not execute the conformance suite; every measured invocation
+still verifies its own output. Build failures are visible.
 
 The manually triggered **Benchmarks** Actions workflow downloads the packaged
 selection from Cachix and runs sequentially on one `ubuntu-24.04` VM. It uses no
@@ -68,7 +67,7 @@ upload secret. Its suite input defaults to the eight-workload standard suite;
 select extended for all 26 workloads. An optional workload filter applies within
 the selected suite. The default allowance is 240 seconds per implementation,
 workload and storage pair; each invocation has a 30-second deadline. Both limits
-are configurable at dispatch. Downloads, preparation and conformance count toward
+are configurable at dispatch. Downloads and preparation count toward
 an overall deadline 345 minutes after the first job step, reserving 15 minutes
 within the six-hour job limit for cleanup, export and upload. Reaching the deadline
 cancels the active invocation, retains completed pairs, and leaves interrupted or
@@ -87,7 +86,7 @@ changed implementations and retries unfinished entries. Leave the input empty
 for a fresh full campaign. Expired or missing baseline artifacts fail visibly.
 
 Reuse requires matching executable store paths, source revisions, benchmark tool
-versions and pinned Nixpkgs identity, harness and conformance-case hashes, suite/filter and timing options.
+versions and pinned Nixpkgs identity, harness hashes, suite/filter and timing options.
 A package-set revision change alone does not invalidate unchanged executables.
 Resource/setup failures are retried; completed timeout and incorrect-output
 results remain valid recorded outcomes. A deadline-interrupted rerun retains
@@ -178,7 +177,7 @@ sandbox against deliberately hostile implementations.
 The invocation deadline defaults to 30 seconds. Each implementation receives a
 fresh 240-second budget for every workload/storage pair, including target
 preparation, verification and cleanup; fixture generation, provisioning,
-compilation and conformance annotation are excluded. Preparation or verification
+and compilation are excluded. Preparation or verification
 can finish slightly past the budget; the next invocation in that pair will not
 start. A command timeout skips larger sizes within that family and storage
 condition. A deadline shortened by the remaining pair budget is instead reported
@@ -202,7 +201,7 @@ all pairs. Export preserves this telemetry separately from recomputed latency
 samples; older results without it retain null. `campaign.json` and `samples.json`
 are checkpointed after each storage pair and approximately every ten seconds
 between invocations. `--max-duration SEC` bounds the benchmark command's
-preparation, conformance and timing phases together; local runs have no overall
+preparation and timing phases together; local runs have no overall
 deadline unless it is supplied. Stopped campaigns record `stopReason` and remain
 `completed: false`; completed pairs remain usable when exported. The workflow
 passes the time remaining after setup and downloads, with an external timeout as

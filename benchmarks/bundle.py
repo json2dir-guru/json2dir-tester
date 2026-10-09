@@ -30,7 +30,7 @@ def digest(value):
 
 def methodology():
     hashed = hashlib.sha256()
-    files = [*ROOT.glob("src/**/*.cs"), *ROOT.glob("src/**/*.csproj"), *ROOT.glob("cases/conformance/**/*.json")]
+    files = [*ROOT.glob("src/**/*.cs"), *ROOT.glob("src/**/*.csproj")]
     for path in sorted(p for p in files if not {"bin", "obj"}.intersection(p.relative_to(ROOT).parts)):
         hashed.update(path.relative_to(ROOT).as_posix().encode() + b"\0")
         hashed.update(hashlib.sha256(path.read_bytes()).digest())

@@ -31,6 +31,21 @@ static class Implementations
         AllowTrailingCommas = true,
     };
 
+    public static List<Implementation> FromLock(BenchLock locked, List<Implementation> manifests)
+    {
+        if (locked.SchemaVersion != 1 || locked.Implementations.Length == 0 ||
+            locked.Implementations.Select(i => i.Name).Distinct().Count() != locked.Implementations.Length)
+            throw new ArgumentException("invalid packaged implementation lock");
+        return locked.Implementations.Select(item =>
+        {
+            if (item.PackagePath is null) throw new ArgumentException("--lock requires packaged implementations");
+            Benchmarks.ValidatePackage(item);
+            var manifest = manifests.FirstOrDefault(i => i.Name == item.Name);
+            return new Implementation(item.Name, item.Description, item.Repo, null, item.Command,
+                Timeout: manifest?.Timeout, Language: item.Language, Suites: manifest?.Suites);
+        }).ToList();
+    }
+
     public static List<Implementation> Load(string directory) =>
         Directory.EnumerateFiles(directory, "*.json")
             .Order(StringComparer.Ordinal)

@@ -18,6 +18,7 @@ const string Usage = """
       --filter TEXT     only cases whose name contains TEXT
       --timeout SEC     time limit per case (default: the implementation's "timeout", else 10)
       --json FILE       also write results as JSON
+      --lock FILE       run cached implementations from a packaged campaign lock
       --verbose         print stderr of failing cases
       --cases DIR       load cases from DIR instead of cases/
 
@@ -41,7 +42,7 @@ const string Usage = """
 var positional = new List<string>();
 var suites = new List<string>();
 var levels = new List<string>();
-string? filter = null, jsonPath = null, sources = null, runtimes = null, casesDir = null, serveDir = null, outDir = null;
+string? filter = null, jsonPath = null, sources = null, runtimes = null, casesDir = null, serveDir = null, outDir = null, lockPath = null;
 var bind = "127.0.0.1";
 var port = 8080;
 TimeSpan? timeout = null;
@@ -65,6 +66,7 @@ try
             case "--filter": filter = Next(); break;
             case "--timeout": timeout = TimeSpan.FromSeconds(double.Parse(Next(), System.Globalization.CultureInfo.InvariantCulture)); break;
             case "--json": jsonPath = Path.GetFullPath(Next()); break;
+            case "--lock": lockPath = Path.GetFullPath(Next()); break;
             case "--sources": sources = Next(); break;
             case "--runtimes": runtimes = Next(); break;
             case "--cases": casesDir = Path.GetFullPath(Next()); break;
@@ -82,6 +84,11 @@ try
 
     var ws = Workspace.Discover(sources, runtimes);
     var known = Implementations.Load(ws.ImplementationsDir);
+    if (lockPath is not null)
+    {
+        if (positional[0] != "run") throw new ArgumentException("--lock is only supported by run");
+        known = Implementations.FromLock(Benchmarks.Read<BenchLock>(lockPath), known);
+    }
 
     List<Implementation> Select()
     {

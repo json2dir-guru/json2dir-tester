@@ -76,7 +76,8 @@ Results are judged exactly like the conformance suite's `run.py`:
 ## Results
 
 For performance campaigns and publication on Awesome's Results page, see
-[benchmark methodology and reproduction](docs/benchmarks.md).
+[benchmark methodology and reproduction](docs/benchmarks.md). For the separate
+workflow that checks cached implementations, see [packaged conformance checks](docs/conformance.md).
 
 | Implementation | conformance | upstream | specific |
 | --- | --- | --- | --- |

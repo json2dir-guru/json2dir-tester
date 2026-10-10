@@ -237,11 +237,8 @@ try
     }
     finally { Console.SetOut(console); }
     var messages = progress.ToString();
-    Check(messages.IndexOf("Preparation:", StringComparison.Ordinal) < messages.IndexOf("Conformance:", StringComparison.Ordinal) &&
-        messages.IndexOf("Conformance:", StringComparison.Ordinal) < messages.IndexOf("Benchmarking:", StringComparison.Ordinal),
-        "logs distinguish preparation, conformance and benchmarking phases");
-    Check(messages.Contains("outside the benchmark budget") && messages.Contains("Conformance stub: 10/68 cases") &&
-        messages.Contains("Conformance stub: 68/68 cases") && messages.Contains("last case:"), "conformance logs show intermediate and final progress");
+    Check(messages.IndexOf("Preparation:", StringComparison.Ordinal) < messages.IndexOf("Benchmarking:", StringComparison.Ordinal) &&
+        !messages.Contains("Conformance:"), "benchmark logs proceed from preparation to timing without a conformance phase");
     Check(messages.Contains("warmup round 1/1") && messages.Contains("timing round 2/2") && messages.Contains("one-file/disk complete: 1 ok"),
         "benchmark logs show phases, rounds and workload outcomes");
     Check(smokeStatus == 0, "complete local campaign succeeds");
@@ -254,12 +251,13 @@ try
         published.Results.Single().BudgetUsedSeconds == recordedSmoke.Results.Single().BudgetUsedSeconds &&
         published.Results.Single().BudgetUsedSeconds == published.Implementations.Single().BudgetUsedSeconds &&
         messages.Contains("maximum pair spend"), "export preserves actual charged pair time separately from latency samples");
-    Check(published.Implementations.Single().Conformance.Count > 0, "campaign includes conformance annotations");
+    Check(published.Implementations.Single().Conformance.Count == 0 && published.Environment["conformance"].StartsWith("not run"),
+        "campaign explicitly records that conformance was not run");
     Check(published.Options is { Suite: "extended", BudgetScope: "implementation-workload-storage" } &&
         messages.Contains("extended suite, 1 workloads, 1 storage conditions (1 pairs per implementation)") && messages.Contains("20 seconds per implementation/workload/storage pair"),
         "campaign provenance and logs describe selected suite and per-pair allowance");
 
-    // Use the committed local adapter but empty conformance cases to isolate limits.
+    // Use the committed local adapter to isolate limits.
     var limitsRepo = Path.Combine(temp, "limits-repo"); Directory.CreateDirectory(Path.Combine(limitsRepo, "cases"));
     var limitsWs = ws with { Repo = limitsRepo };
     var bounded = Path.Combine(temp, "campaign-limited"); Directory.CreateDirectory(bounded);
@@ -280,20 +278,20 @@ try
         "completed faster benchmarks remain ranked while interrupted and unstarted benchmarks stay unranked");
     Check(!Directory.Exists(Path.Combine(bounded, "targets")), "campaign deadline cleans benchmark targets");
 
-    var conformanceRepo = Path.Combine(temp, "bounded-conformance-repo");
-    Directory.CreateDirectory(Path.Combine(conformanceRepo, "cases", "conformance", "core"));
-    File.WriteAllText(Path.Combine(conformanceRepo, "cases", "conformance", "core", "001-slow.json"),
-        "{\"description\":\"slow case\",\"section\":\"4\",\"level\":\"core\",\"expect\":{\"tree\":{}},\"input\":{}}");
-    var conformanceBound = Path.Combine(temp, "conformance-limited"); Directory.CreateDirectory(conformanceBound);
-    File.WriteAllText(Path.Combine(conformanceBound, "lock.json"), JsonSerializer.Serialize(boundedLock with
-        { Implementations = [boundedLock.Implementations.Single() with { Command = "sleep 20" }] }, Benchmarks.Json));
-    var conformanceStatus = await Benchmarks.Main(["bench", "--all", "--dir", conformanceBound,
-        "--storage", "disk", "--timeout", "20", "--max-duration", "1"], ws with { Repo = conformanceRepo });
-    Check(conformanceStatus == 2 && Benchmarks.Read<BenchCampaign>(Path.Combine(conformanceBound, "campaign.json"))
-        is { Completed: false, StopReason: "campaign time limit reached" }, "campaign deadline also covers conformance annotations");
-    await Benchmarks.Main(["bench-export", "--dir", conformanceBound, "--out", Path.Combine(conformanceBound, "export")], limitsWs);
-    Check(Benchmarks.Read<BenchCampaign>(Path.Combine(conformanceBound, "export", "benchmarks.json")).Results
-        .All(c => c.Status == "incomplete"), "a campaign stopped before timing can still export explicit incomplete results");
+    // A conformance fixture that cannot be parsed must not be loaded by benchmarking.
+    var unrelatedRepo = Path.Combine(temp, "unrelated-conformance-repo");
+    Directory.CreateDirectory(Path.Combine(unrelatedRepo, "cases", "conformance"));
+    File.WriteAllText(Path.Combine(unrelatedRepo, "cases", "conformance", "broken.json"), "not JSON");
+    var independent = Path.Combine(temp, "without-conformance"); Directory.CreateDirectory(independent);
+    File.WriteAllText(Path.Combine(independent, "lock.json"), JsonSerializer.Serialize(smokeLock with
+        { Implementations = [smokeLock.Implementations.Single() with { Source = stub }] }, Benchmarks.Json));
+    var independentStatus = await Benchmarks.Main(["bench", "--all", "--dir", independent,
+        "--filter", "empty", "--storage", "disk", "--warmups", "0", "--repetitions", "1", "--profiles", "0"], ws with { Repo = unrelatedRepo });
+    Check(independentStatus == 0, "benchmarking does not load unrelated conformance fixtures");
+    try { Implementations.FromLock(smokeLock, []); throw new Exception("accepted source lock for conformance"); }
+    catch (ArgumentException) { }
+    try { Implementations.FromLock(smokeLock with { Implementations = [packaged] }, []); throw new Exception("accepted missing conformance package"); }
+    catch (IOException) { }
 
     using (var cancelProcess = new CancellationTokenSource(TimeSpan.FromMilliseconds(100)))
     {

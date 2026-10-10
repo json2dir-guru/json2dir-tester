@@ -1,0 +1,80 @@
+name: Conformance
+
+on:
+  workflow_dispatch:
+    inputs:
+      implementations:
+        description: Space-separated package names (empty selects all 160)
+        default: ''
+        type: string
+      timeout:
+        description: Seconds per conformance case
+        default: '30'
+        type: string
+      budget:
+        description: Seconds per implementation, including verification and cleanup
+        default: '2400'
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: conformance
+  cancel-in-progress: false
+
+jobs:
+  conformance:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    env:
+      CAMPAIGN: .conformance/packages
+      PACKAGE_NAMES: ${{ inputs.implementations }}
+      CASE_TIMEOUT: ${{ inputs.timeout }}
+      IMPLEMENTATION_BUDGET: ${{ inputs.budget }}
+      LC_ALL: C.UTF-8
+      DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+    steps:
+      - name: Set conformance deadline
+        run: echo "CONFORMANCE_DEADLINE=$(( $(date +%s) + 345 * 60 ))" >> "$GITHUB_ENV"
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        timeout-minutes: 10
+      - uses: cachix/install-nix-action@13d8dd58da0234aa297dedd986986ccb8e7f3e24 # v31
+        timeout-minutes: 10
+      - uses: cachix/cachix-action@38b082610b782e7e93e209c35fd730d399dee866 # v17
+        timeout-minutes: 10
+        with:
+          name: json2dirpkgs
+          skipPush: true
+      - name: Download locked packages and runner tools
+        timeout-minutes: 30
+        run: |
+          read -r -a names <<< "$PACKAGE_NAMES"
+          python3 benchmarks/prepare_packages.py --dir "$CAMPAIGN" "${names[@]}"
+          echo "$PWD/$CAMPAIGN/work/runtimes/tools/bin" >> "$GITHUB_PATH"
+          echo "XDG_CACHE_HOME=$PWD/$CAMPAIGN/work/runtimes/cache" >> "$GITHUB_ENV"
+      - name: Build runner
+        timeout-minutes: 10
+        run: dotnet build src/Json2dirTester -c Release --nologo
+      - name: Check conformance
+        timeout-minutes: 345
+        run: |
+          remaining=$(( CONFORMANCE_DEADLINE - $(date +%s) ))
+          if (( remaining <= 0 )); then
+            echo "Conformance deadline already reached"
+            exit 2
+          fi
+          timeout --kill-after=30s "$(( remaining + 30 ))s" \
+            python3 benchmarks/conformance.py --dir "$CAMPAIGN" --out .conformance/results \
+            --timeout "$CASE_TIMEOUT" --budget "$IMPLEMENTATION_BUDGET" --max-duration "$remaining"
+      - name: Upload conformance reports and package provenance
+        if: always()
+        timeout-minutes: 8
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: json2dir-conformance-${{ github.run_id }}
+          include-hidden-files: true
+          retention-days: 90
+          path: |
+            .conformance/packages/lock.json
+            .conformance/results/
